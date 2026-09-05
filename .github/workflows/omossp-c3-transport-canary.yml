@@ -20,7 +20,10 @@ jobs:
       - name: Run frozen exact-evidence transport canary
         run: python omossp_c3_transport_canary.py
       - name: Show result summary
-        run: cat omossp_c3_output/transport_result.sha256 && python - <<'PY'
+        shell: bash
+        run: |
+          cat omossp_c3_output/transport_result.sha256
+          python - <<'PY'
           import json
           d=json.load(open('omossp_c3_output/transport_result.json'))
           for r in d['results']:
