@@ -1,0 +1,33 @@
+name: OMOSSP C3 transport canary
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-evidence-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run frozen exact-evidence transport canary
+        run: python omossp_c3_transport_canary.py
+      - name: Show result summary
+        run: cat omossp_c3_output/transport_result.sha256 && python - <<'PY'
+          import json
+          d=json.load(open('omossp_c3_output/transport_result.json'))
+          for r in d['results']:
+              print(r['rank'], r['repo'], [(t['target_index'],t['terminal'],t['attempts'][-1].get('status')) for t in r['targets']])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: omossp-c3-transport-canary
+          path: omossp_c3_output
+          if-no-files-found: error
