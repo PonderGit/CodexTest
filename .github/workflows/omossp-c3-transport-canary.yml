@@ -13,24 +13,31 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || {
+            echo "FREE_ONLY_GATE=FAIL__REPOSITORY_NOT_PUBLIC"
+            exit 96
+          }
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Run frozen exact-evidence transport canary
         run: python omossp_c3_transport_canary.py
-      - name: Show result summary
+
+      - name: Emit replayable result to workflow log
         shell: bash
         run: |
+          echo "===== OMOSSP_C3_RESULT_SHA256 ====="
           cat omossp_c3_output/transport_result.sha256
-          python - <<'PY'
-          import json
-          d=json.load(open('omossp_c3_output/transport_result.json'))
-          for r in d['results']:
-              print(r['rank'], r['repo'], [(t['target_index'],t['terminal'],t['attempts'][-1].get('status')) for t in r['targets']])
-          PY
-      - uses: actions/upload-artifact@v4
-        with:
-          name: omossp-c3-transport-canary
-          path: omossp_c3_output
-          if-no-files-found: error
+          echo "===== OMOSSP_C3_RESULT_JSON_BEGIN ====="
+          cat omossp_c3_output/transport_result.json
+          echo "===== OMOSSP_C3_RESULT_JSON_END ====="
