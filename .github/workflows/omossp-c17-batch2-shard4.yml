@@ -1,0 +1,47 @@
+name: OMOSSP C17 Batch2 Shard4 execution
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  c17-batch2-shard4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || exit 96
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify frozen C13 production authority
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, pathlib
+          assert hashlib.sha256(pathlib.Path("production_batches/omossp_c13_batch2.json").read_bytes()).hexdigest()=="7f8a35eedb519f5d3202d40eae2aa4718a1450db55357ffb210a44c276591acb"
+          assert hashlib.sha256(pathlib.Path("omossp_c13_production_worker.py").read_bytes()).hexdigest()=="fd6d7ef2b2e771125b53fa4d2649a8107397dd9ee2add5171fb1880154bb82de"
+          print("C17_AUTHORITY_GATE=PASS")
+          PY
+      - name: Run frozen Batch2 Shard4 only
+        env:
+          OMOSSP_BATCH_FILE: production_batches/omossp_c13_batch2.json
+          OMOSSP_SHARD: "4"
+        run: python omossp_c13_production_worker.py
+      - name: Emit replayable Shard4 result
+        shell: bash
+        run: |
+          echo "===== OMOSSP_C17_SHARD4_CANONICAL_SHA256 ====="
+          cat omossp_c13_output/c13_batch2_shard4.sha256
+          echo "===== OMOSSP_C17_SHARD4_JSON_BEGIN ====="
+          cat omossp_c13_output/c13_batch2_shard4.json
+          echo "===== OMOSSP_C17_SHARD4_JSON_END ====="
