@@ -1,0 +1,57 @@
+{
+  "protocol": "OMOSSP_C12_HACKAGE_REGRESSION_FIXTURES_R1",
+  "source": "existing captured Batch-1 acquisition evidence only",
+  "positives": [
+    {
+      "source_scale_rank": 10,
+      "source_repo_name": "src-openeuler/ghc-regex-posix",
+      "ident": "regex-posix",
+      "hackage": {
+        "evidence_id": "E_C7_44605260edf7a29296aada3d",
+        "source_url": "https://hackage.haskell.org/package/regex-posix",
+        "text_extract_sha256": "68961c5da82ee1edcaf75be7cdd51be044fba6879c181ab97372416d33dd35ef",
+        "text_extract": "regex-posix: POSIX Backend for \"Text.Regex\" (regex-base)\n\nHackage :: [Package]\n\nSearch \n\nBrowse\n\nWhat's new\n\nUpload\n\nUser accounts\n\nregex-posix\n: \nPOSIX Backend for \"Text.Regex\" (regex-base)\n\n[ \nbsd3\n, \nlibrary\n, \ntext\n]\n[ \nPropose Tags\n]\n[ \nReport a vulnerability\n]\n\nThe POSIX regex backend for \nregex-base\n.\n\nThe main appeal of this backend is that it's very lightweight due to its reliance on the ubiquitous \nPOSIX.2 regex\nfacility that is provided by the standard C library on most POSIX platforms.\n\nSee also \nhttps://wiki.haskell.org/Regular_expressions\nfor more information.\n\n[\nSkip to Readme\n]\n\nModules\n\n[\nIndex\n] [\nQuick Jump\n]\n\nText\n\nRegex\n\nText.Regex.Posix\n\nText.Regex.Posix.ByteString\n\nText.Regex.Posix.ByteString.Lazy\n\nText.Regex.Posix.Sequence\n\nText.Regex.Posix.String\n\nText.Regex.Posix.Wrap\n\nFlags\n\nAutomatic Flags\n\nName\n\nDescription\n\nDefault\n\n_regex-posix-clib\n\nUse \nregex-posix-clib\npackage (used by default on Windows)\n\nDisabled\n\nUse \n\n-f <flag>\n\nto enable a flag, or \n\n-f -<flag>\n\nto disable that flag. \n\nMore info\n\nDownloads\n\nregex-posix-0.96.0.2.tar.gz\n[\nbrowse\n] (Cabal source package)\n\nPackage description\n(as included in the package)\n\nMaintainer's Corner\n\nPackage maintainers\n\nAndreasAbel\n, \nHerbertValerioRiedel\n, \nphadej\n, \ntopos\n\nFor package maintainers and hackage trustees\n\nedit package information\n\nCandidates\n\n0.96.0.0\n, \n0.96.0.1\n, \n0.96.0.2\n\nVersions \n[\nRSS\n]\n\n0.71\n, \n0.72\n, \n0.72.0.1\n, \n0.72.0.2\n, \n0.72.0.3\n, \n0.91\n, \n0.92\n, \n0.93\n, \n0.93.1\n, \n0.93.2\n, \n0.94.0\n, \n0.94.1\n, \n0.94.2\n, \n0.94.4\n, \n0.95.0\n, \n0.95.1\n, \n0.95.2\n, \n0.96.0.0\n, \n0.96.0.1\n, \n0.96.0.2\n\nChange ",
+        "expected_valid": true
+      },
+      "spec": {
+        "evidence_id": "E_C7_109b1827c408283bec8fd96c",
+        "source_url": "https://gitee.com/src-openeuler/ghc-regex-posix/raw/master/ghc-regex-posix.spec",
+        "text_extract_sha256": "d60bda0d72c62f5006608664b46293570ded4ceb2da7d49e215651ddbad00263",
+        "text_extract": "\\n\\n%global pkg_name regex-posix\n%global pkgver %{pkg_name}-%{version}\n\nName:           ghc-%{pkg_name}\nVersion:        0.96.0.1\nRelease:        1\nSummary:        POSIX Backend for \"Text.Regex\" (regex-base)\nLicense:        BSD-3-Clause\nURL:            https://hackage.haskell.org/package/%{pkg_name}\nSource0:        https://hackage.haskell.org/package/%{pkg_name}-%{version}/%{pkg_name}-%{version}.tar.gz\nSource1:        https://hackage.haskell.org/package/%{pkg_name}-%{version}/revision/3.cabal#/%{pkg_name}.cabal\nBuildRequires:  ghc-Cabal-devel\nBuildRequires:  ghc-array-devel\nBuildRequires:  ghc-array-prof\nBuildRequires:  ghc-base-devel\nBuildRequires:  ghc-base-prof\nBuildRequires:  ghc-bytestring-devel\nBuildRequires:  ghc-bytestring-prof\nBuildRequires:  ghc-containers-devel\nBuildRequires:  ghc-containers-prof\nBuildRequires:  ghc-regex-base-devel\nBuildRequires:  ghc-regex-base-prof\nBuildRequires"
+      }
+    },
+    {
+      "source_scale_rank": 108,
+      "source_repo_name": "src-openeuler/ghc-hslua-list",
+      "ident": "hslua-list",
+      "hackage": {
+        "evidence_id": "E_C7_df80ff12384050b22d7c79cb",
+        "source_url": "https://hackage.haskell.org/package/hslua-list",
+        "text_extract_sha256": "540d7f3d76e55523ed405db26a44380755312d105cebc4adba8aeda89b2a86a4",
+        "text_extract": "hslua-list: Opinionated, but extensible Lua list type.\n\nHackage :: [Package]\n\nSearch \n\nBrowse\n\nWhat's new\n\nUpload\n\nUser accounts\n\nhslua-list\n: \nOpinionated, but extensible Lua list type.\n\n[ \nforeign\n, \nlibrary\n, \nmit\n]\n[ \nPropose Tags\n]\n[ \nReport a vulnerability\n]\n\nList type for Lua, with a Haskell interface.\n\n[\nSkip to Readme\n]\n\nModules\n\n[\nIndex\n] [\nQuick Jump\n]\n\nHsLua\n\nHsLua.List\n\nDownloads\n\nhslua-list-1.1.4.tar.gz\n[\nbrowse\n] (Cabal source package)\n\nPackage description\n(as included in the package)\n\nMaintainer's Corner\n\nPackage maintainers\n\ntarleb\n\nFor package maintainers and hackage trustees\n\nedit package information\n\nCandidates\n\n1.1.0\n, \n1.1.3\n\nVersions \n[\nRSS\n]\n\n1.0.0\n, \n1.1.0\n, \n1.1.0.1\n, \n1.1.1\n, \n1.1.2\n, \n1.1.3\n, \n1.1.4\n\nChange log\n\nCHANGELOG.md\n\nDependencies\n\nbase\n(>=4.9.1 && <5)\n, \n\nbytestring\n(>=0.10.2 && <0.13)\n, \n\nhslua-core\n(>=2.1 && <2.4)\n\n[\ndetails\n]\n\nTested with\n\nghc ==8.4.4, ghc ==8.6.5, ghc ==8.8.4, ghc ==8.10.7, ghc ==9.0.2, ghc ==9.2.8, ghc ==9.4.8, ghc ==9.6.5, ghc ==9.8.2, ghc ==9.10.1\n\nLicense\n\nMIT\n\nCopyright\n\n© 2022-2024 Albert Krewinkel\n\nAuthor\n\nAlbert Krewinkel\n\nMaintainer\n\nAlbert Krewinkel <tarleb@hslua.org>\n\nUploaded\n\nby \ntarleb\nat \n2024-10-01T12:12:52Z\n\nStability\n\nUnknown\n\n-->\n\nCategory\n\nForeign\n\nHome page\n\nhttps://hslua.org/\n\nBug tracker\n\nhttps://github.com/hslua/hslua/issues\n\nSource repo\n\nhead: git clone \nhttps://github.com/hslua/hslua\n(hslua-list)\n\nDistributions\n\nArch:\n1.1.4\n, Fedora:\n1.1.4\n, LTSHaskell:\n1.1.4\n, Stackage:\n1.1.4\n\nReverse Dependencies\n\n3 direct, 172 indirect \n[\ndetails\n]\n\nDownloads\n\n4842 total (13 in the last 30 days)\n\nRating\n\n",
+        "expected_valid": true
+      },
+      "spec": {
+        "evidence_id": "E_C7_2a88f237349c0f86093119b5",
+        "source_url": "https://gitee.com/src-openeuler/ghc-hslua-list/raw/master/ghc-hslua-list.spec",
+        "text_extract_sha256": "739d4025fe7ee99363154acc5d489059e9e34fe8c26b7aee1611676fa0514311",
+        "text_extract": "\\n\\n%global pkg_name hslua-list\n%global pkgver %{pkg_name}-%{version}\n%bcond_with tests\n\nName:           ghc-%{pkg_name}\nVersion:        1.1.4\nRelease:        1\nSummary:        Opinionated, but extensible Lua list type\nLicense:        MIT\nURL:            https://hackage.haskell.org/package/%{pkg_name}\nSource0:        https://hackage.haskell.org/package/%{pkg_name}-%{version}/%{pkg_name}-%{version}.tar.gz\nBuildRequires:  ghc-Cabal-devel\nBuildRequires:  ghc-base-devel\nBuildRequires:  ghc-base-prof\nBuildRequires:  ghc-bytestring-devel\nBuildRequires:  ghc-bytestring-prof\nBuildRequires:  ghc-hslua-core-devel\nBuildRequires:  ghc-hslua-core-prof\nBuildRequires:  ghc-rpm-macros\nExcludeArch:    %{ix86}\n%if %{with tests}\nBuildRequires:  ghc-tasty-devel\nBuildRequires:  ghc-tasty-lua-devel\nBuildRequires:  ghc-tasty-lua-prof\nBuildRequires:  ghc-tasty-prof\n%endif\n\n%description\nList type for Lua, with a Has"
+      }
+    }
+  ],
+  "negatives": [
+    {
+      "type": "NONMATCHING_IDENT",
+      "base_positive_rank": 10,
+      "ident": "definitely-not-regex-posix",
+      "expected_valid": false
+    },
+    {
+      "type": "CHALLENGE_TRUE",
+      "base_positive_rank": 108,
+      "ident": "hslua-list",
+      "force_challenge": true,
+      "expected_valid": false
+    }
+  ]
+}
