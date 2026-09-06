@@ -1,0 +1,34 @@
+{
+  "protocol": "OMOSSP_C21_LOCATOR_ROLE_QUALIFIED_CONTRACT_R1",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "batch3_membership_sha256": "74c1b9ca2f362ea5cb755b50cadcf3a5820ab59891445bd79fc325da2f28ccdd",
+  "qualified_worker_sha256": "7decd7442e311e75c0d35ea41e1fee112138c44cdf1dd0001ef9c73035b65506",
+  "exact_runner_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+  "field_role_policy": {
+    "identity_bearing_candidate_fields": [
+      "URL",
+      "VCS"
+    ],
+    "artifact_or_build_source_fields": [
+      "Source",
+      "Source0",
+      "Source1...SourceN"
+    ],
+    "non_identity_fields_pending_separate_semantic_qualification": [
+      "Homepage",
+      "HomePage",
+      "SCM",
+      "Upstream",
+      "ProjectURL"
+    ],
+    "source_fields_may_be_acquired": true,
+    "source_fields_may_independently_nominate_identity": false,
+    "name_package_owner_similarity_allowed": false
+  },
+  "rank242_corrective_state": "AUTO_ACCEPT_P1_APPEND_ONLY_CORRECTIVE_ADDENDUM",
+  "historical_c19_human_gate_record_preserved": true,
+  "performance_outcomes_accessed": false,
+  "final_project_entity_id_minted": false,
+  "batch3_shard2_status": "NOT_AUTHORIZED_PENDING_SEPARATE_CONTINUATION_GATE",
+  "full_frame_status": "NOT_AUTHORIZED"
+}
