@@ -1,0 +1,1 @@
+Trigger C7 production-pack offline preflight only. No evidence acquisition.
