@@ -1,0 +1,35 @@
+name: OMOSSP C12 Hackage regression
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  c12-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || exit 96
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile corrected worker
+        run: python -m py_compile omossp_c12_production_worker.py
+      - name: Run offline C12 regression
+        run: python production_regression/test_omossp_c12_hackage.py
+      - name: Emit file hashes
+        shell: bash
+        run: |
+          sha256sum omossp_c12_production_worker.py
+          sha256sum production_regression/omossp_c12_hackage_fixtures.json
+          sha256sum production_regression/test_omossp_c12_hackage.py
