@@ -1,0 +1,46 @@
+name: OMOSSP C13 Batch2 hash preflight
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  c13-hash-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || exit 96
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compute Batch2 frozen hashes offline
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib
+          p=pathlib.Path("production_batches/omossp_c13_batch2.json")
+          b=json.loads(p.read_text(encoding="utf-8"))
+          assert b["protocol"]=="OMOSSP_PHASE_C13_PRODUCTION_BATCH2_FREEZE_R1"
+          rows=b["rows"]
+          assert len(rows)==100
+          assert len({int(r["source_scale_rank"]) for r in rows})==100
+          assert not any(any("performance" in k.lower() for k in r.keys()) for r in rows)
+          rows_sha=hashlib.sha256(json.dumps(rows,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+          sel_sha=hashlib.sha256(json.dumps(b["selection_rule"],ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+          print("C13_HASH_PREFLIGHT=PASS")
+          print("BATCH2_MEMBERSHIP_SHA256="+rows_sha)
+          print("BATCH2_SELECTION_FREEZE_SHA256="+sel_sha)
+          print("BATCH2_PRELIM_FILE_SHA256="+hashlib.sha256(p.read_bytes()).hexdigest())
+          PY
