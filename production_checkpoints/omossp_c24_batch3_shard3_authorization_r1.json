@@ -1,0 +1,102 @@
+{
+  "protocol": "OMOSSP_C24_BATCH3_SHARD3_CONTINUATION_AUTHORIZATION_R1",
+  "status": "AUTHORIZED_NOT_EXECUTED",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "batch3_membership_sha256": "74c1b9ca2f362ea5cb755b50cadcf3a5820ab59891445bd79fc325da2f28ccdd",
+  "batch3_selection_freeze_sha256": "8ca3a8bb179992c9fbb2ecc00fbba9be7ed2a3857bb4f8f072ba00b9c0f91ebc",
+  "c21_qualified_worker_sha256": "7decd7442e311e75c0d35ea41e1fee112138c44cdf1dd0001ef9c73035b65506",
+  "c23_checkpoint": {
+    "path": "production_checkpoints/omossp_c23_batch3_shard2_checkpoint_r1.json",
+    "git_blob_sha": "eca2aa20f792ebdb0ffc3a27a9755352153c26c2",
+    "status": "CHECKPOINT_COMMITTED__NO_HUMAN_GATE",
+    "replay_canonical_sha256": "f2002fa3094af3986b165d2ac7a22d530943d6640fab3f2d099628993a93f195"
+  },
+  "c24_production_worker": {
+    "path": "omossp_c24_production_worker.py",
+    "sha256": "3f08127d9e565756e175102141c1f408f06347b22be8124ad6f02618e4107e25",
+    "git_blob_sha": "84fe01eae1fbddd86b783c9f2e42cd902105bc66",
+    "promotion_commit": "d15d895b3a8f97ebe66ce10260895e24c13c002d",
+    "scientific_core_byte_equivalent_after_namespace_normalization": true,
+    "authorized_shard_only": 3
+  },
+  "production_workflow": {
+    "path": ".github/workflows/omossp-c24-batch3-shard3.yml",
+    "sha256": "1e3567ce004648dbc45ea22137e7016a383d764c63cb7c61276d1377c1b6edcd",
+    "git_blob_sha": "c2de2c80c83b43418a86bf6879b50564a7666e11",
+    "promotion_commit": "a115fd935512b988bacbd541f3682cb380c79662",
+    "trigger": "workflow_dispatch",
+    "automatic_pr_trigger": false,
+    "runner": "ubuntu-latest",
+    "artifact_upload": false,
+    "actions_cache": false
+  },
+  "regression_test": {
+    "path": "production_regression/test_omossp_c24_productionization.py",
+    "sha256": "67c7bbe2d357bc8ba72210c21751fb6c8f282ef637a0fbcb5d9b9aa82d8da029",
+    "git_blob_sha": "66faa1922ff447f43c16859216cbb1f7a6f63d29",
+    "promotion_commit": "a75e170f40b1ef8d17d382766e34e43d79e6018a"
+  },
+  "qualification": {
+    "pr": 27,
+    "pr_merged": false,
+    "run_id": 34041848137,
+    "job_id": 101509925488,
+    "conclusion": "success",
+    "free_only_gate": "PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE",
+    "c21_locator_role_regression": "PASS",
+    "c24_productionization_preflight": "PASS",
+    "c21_scientific_core_byte_equivalent_after_namespace_normalization": true,
+    "c23_checkpoint": "PASS",
+    "exact_runner_r2_sha": "PASS",
+    "batch3_membership_sha": "PASS",
+    "batch3_selection_sha": "PASS",
+    "production_workflow": "MANUAL_ONLY",
+    "performance_sealed": true,
+    "final_project_entity_id_minted": false
+  },
+  "exact_runner_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+  "shard3": {
+    "index": 3,
+    "position_range": [
+      51,
+      75
+    ],
+    "row_count": 25,
+    "source_scale_ranks": [
+      "285",
+      "286",
+      "287",
+      "288",
+      "289",
+      "290",
+      "291",
+      "292",
+      "293",
+      "294",
+      "295",
+      "296",
+      "297",
+      "298",
+      "299",
+      "300",
+      "301",
+      "302",
+      "303",
+      "304",
+      "305",
+      "306",
+      "307",
+      "308",
+      "309"
+    ]
+  },
+  "c21_rank242_corrective_addendum_preserved": true,
+  "c23_shard2_checkpoint_preserved": true,
+  "performance_outcomes_accessed": false,
+  "final_project_entity_id_minted": false,
+  "batch3_membership_changed": false,
+  "batch3_shard3_authorized": true,
+  "batch3_shard3_executed": false,
+  "batch3_shard4_authorized": false,
+  "full_frame_authorized": false
+}
