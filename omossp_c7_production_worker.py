@@ -5,9 +5,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
-UA="OMOSSP-C6-GenericWorker/1.0"
+UA="OMOSSP-C7-ProductionWorker/1.0"
 BATCH=Path(os.environ.get("OMOSSP_BATCH_FILE","production_batches/omossp_c7_batch1.json"))
-OUT=Path("omossp_c6_output")
+OUT=Path("omossp_c7_output")
 OUT.mkdir(exist_ok=True)
 
 PACKAGE_CLASSES={"PACKAGE_CONTAINER","UNRESOLVED_SOURCE_CONTAINER"}
@@ -67,7 +67,7 @@ def bounded(text:str,n=1600)->str:
 
 def make_card(row,class_id,evidence_class,evidence_type,url,rec,body,extract:str,summary:str):
     tb=extract.encode("utf-8")
-    eid="E_C6_"+hashlib.sha256(f"{row['source_scale_rank']}|{class_id}|{url}|{sha(tb)}".encode()).hexdigest()[:24]
+    eid="E_C7_"+hashlib.sha256(f"{row['source_scale_rank']}|{class_id}|{url}|{sha(tb)}".encode()).hexdigest()[:24]
     return {
       "evidence_id":eid,
       "source_scale_rank":row["source_scale_rank"],
