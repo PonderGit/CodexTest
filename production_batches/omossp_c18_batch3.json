@@ -17,9 +17,9 @@
     "membership": "contiguous positions 1-25,26-50,51-75,76-100 in frozen Batch-3",
     "resume": "rerun only failed/unverified shard; never replace members; append-only outputs"
   },
-  "selection_freeze_sha256": "PENDING_C18_OFFLINE_PREFLIGHT",
-  "membership_sha256": "PENDING_C18_OFFLINE_PREFLIGHT",
-  "status": "FROZEN_PENDING_HASH_FINALIZATION",
+  "selection_freeze_sha256": "8ca3a8bb179992c9fbb2ecc00fbba9be7ed2a3857bb4f8f072ba00b9c0f91ebc",
+  "membership_sha256": "74c1b9ca2f362ea5cb755b50cadcf3a5820ab59891445bd79fc325da2f28ccdd",
+  "status": "FROZEN_PENDING_PRODUCTION_PREFLIGHT",
   "rows": [
     {
       "source_scale_rank": "234",
