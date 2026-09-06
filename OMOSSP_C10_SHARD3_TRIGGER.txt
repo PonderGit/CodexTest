@@ -1,0 +1,1 @@
+Trigger OMOSSP C10 Batch-1 Shard-3 only. Frozen membership; no other shard.
