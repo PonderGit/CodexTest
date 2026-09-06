@@ -1,0 +1,1020 @@
+{
+  "protocol": "OMOSSP_PHASE_C7_PRODUCTION_BATCH1_FREEZE_R1",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "batch_sha256": "6c1dcae51c3be074cf0ddc825f0c8d7fdc455c0b8bf19cebc23c0b4d2915c243",
+  "selection_rule": {
+    "eligibility": "performance_outcomes_accessed=false AND entity_validation_state_operational NOT IN {EXACT_ENTITY_VALIDATED, NON_SOFTWARE}",
+    "ordering": "source_scale_rank ascending",
+    "batch_size": 100,
+    "replacement": false,
+    "yield_or_performance_selection": false
+  },
+  "checkpoint_rule": {
+    "shard_size": 25,
+    "shard_count": 4,
+    "shard_membership": "contiguous positions 1-25,26-50,51-75,76-100 within frozen Batch-1",
+    "resume": "rerun only a failed/unverified shard; never replace members"
+  },
+  "rows": [
+    {
+      "source_scale_rank": "1",
+      "frame_id": "16184959",
+      "platform": "gitee",
+      "source_repo_name": "openharmony/bundlemanager_bundle_framework",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "2",
+      "frame_id": "10887114",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/kf5-kplotting",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "3",
+      "frame_id": "9940440",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Data-Compare",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "5",
+      "frame_id": "19017753",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/sos",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "6",
+      "frame_id": "9877877",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/python-pyrad",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "9",
+      "frame_id": "25128194",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/percona-xtrabackup",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "10",
+      "frame_id": "32078416",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/ghc-regex-posix",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "11",
+      "frame_id": "29245810",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/patchelf",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "12",
+      "frame_id": "6960304",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/sg3_utils",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "13",
+      "frame_id": "29080405",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/warehouse_ros",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "14",
+      "frame_id": "10143284",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/thunarx-python",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "15",
+      "frame_id": "9876796",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/python-click-man",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "16",
+      "frame_id": "40435135",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/civetweb",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "17",
+      "frame_id": "24031458",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/mimetic",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "18",
+      "frame_id": "9877835",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/python-pylast",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "19",
+      "frame_id": "10092895",
+      "platform": "gitee",
+      "source_repo_name": "openeuler/syscontainer-tools",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "https://gitee.com/openeuler/syscontainer-tools",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "LOCATOR_EXTRACTED__P1_PROJECT_BOUNDARY_PENDING"
+    },
+    {
+      "source_scale_rank": "20",
+      "frame_id": "19016724",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/libsmi",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "22",
+      "frame_id": "9940252",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-CGI-Application-Plugin-TT",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "23",
+      "frame_id": "22428832",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/fam",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "24",
+      "frame_id": "19017737",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/system-storage-manager",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "25",
+      "frame_id": "23528976",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/serd",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "26",
+      "frame_id": "11617970",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/biber",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "28",
+      "frame_id": "22428749",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/lightdm",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "29",
+      "frame_id": "7652119",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/sblim-sfcCommon",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "30",
+      "frame_id": "32206285",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/can-utils",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "32",
+      "frame_id": "25092290",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/libaliased-perl",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "33",
+      "frame_id": "29888946",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/wine-assistant",
+      "source_container_class": "DIRECT_PROJECT_CANDIDATE",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "34",
+      "frame_id": "26497448",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/gn",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "35",
+      "frame_id": "40217853",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/libdex",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "36",
+      "frame_id": "29801641",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/applications_clock",
+      "source_container_class": "DIRECT_PROJECT_CANDIDATE",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "37",
+      "frame_id": "33036797",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-ai/python-biopython",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "38",
+      "frame_id": "9941170",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Perl-Version",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "39",
+      "frame_id": "7349081",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/jimtcl",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "40",
+      "frame_id": "26376168",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/gegl",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "41",
+      "frame_id": "29789362",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-ai/python-tensorboard-data-server",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "42",
+      "frame_id": "22429448",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/lvm2",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "43",
+      "frame_id": "29080589",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/nao_lola",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "44",
+      "frame_id": "8058469",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/ibus-m17n",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "45",
+      "frame_id": "24158393",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/setxkbmap",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "46",
+      "frame_id": "19017518",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/dotconf",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "47",
+      "frame_id": "9940862",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Log-Any",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "48",
+      "frame_id": "6959957",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/lzop",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "49",
+      "frame_id": "43042353",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/openjph",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "50",
+      "frame_id": "7840001",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Module-Install-AuthorRequires",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "51",
+      "frame_id": "25202903",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/device_soc_xinsheng",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "52",
+      "frame_id": "17232768",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/qstardict",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "53",
+      "frame_id": "9941263",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Schedule-Cron",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "54",
+      "frame_id": "21941653",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/perl-Compress-Raw-Lzma",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "55",
+      "frame_id": "9878155",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/python-sockjs-tornado",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "56",
+      "frame_id": "28133151",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/sane-airscan",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "57",
+      "frame_id": "24469269",
+      "platform": "gitee",
+      "source_repo_name": "ubml/metadata-service-dev",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "58",
+      "frame_id": "19015881",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/tagsoup",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "59",
+      "frame_id": "9940308",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Class-C3-XS",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "60",
+      "frame_id": "25704633",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/device_soc_loongson_20231120",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "61",
+      "frame_id": "9877858",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/python-pynvml",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "62",
+      "frame_id": "9941242",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Return-Value",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "64",
+      "frame_id": "9940489",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Devel-Cycle",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "65",
+      "frame_id": "41747093",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/kf6-kuserfeedback",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "66",
+      "frame_id": "40801447",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/kylin-ai-subsystem",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "67",
+      "frame_id": "28289533",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/zita-alsa-pcmi",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "68",
+      "frame_id": "30674842",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/python-sphinxext-rediraffe",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "69",
+      "frame_id": "31692656",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/python-debian",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "70",
+      "frame_id": "11173346",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/jboss-integration",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "71",
+      "frame_id": "9941647",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Unicode-CaseFold",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "72",
+      "frame_id": "26556954",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/kylin-jailhouse",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "74",
+      "frame_id": "38515405",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/fluttertpc_flutter_statusbarcolor_ns",
+      "source_container_class": "THIRD_PARTY_COMPONENT_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "75",
+      "frame_id": "9941423",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Test-Dir",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "76",
+      "frame_id": "38141490",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/fluttertpc_flutter_pdfview",
+      "source_container_class": "THIRD_PARTY_COMPONENT_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "78",
+      "frame_id": "7479432",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/gstreamer1-plugins-good",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "http://gstreamer.freedesktop.org/",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "LOCATOR_EXTRACTED__P1_VALIDATION_PENDING"
+    },
+    {
+      "source_scale_rank": "79",
+      "frame_id": "17577704",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/openstack-java-sdk",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "80",
+      "frame_id": "7594196",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-XML-LibXML",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "81",
+      "frame_id": "25520502",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/libyaml-tiny-perl",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "82",
+      "frame_id": "7612872",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/librabbitmq",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "83",
+      "frame_id": "8058229",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/qt5-qtwayland",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "http://www.qt.io",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "LOCATOR_EXTRACTED__P1_VALIDATION_PENDING"
+    },
+    {
+      "source_scale_rank": "84",
+      "frame_id": "28110631",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/peony-print-pictures",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "85",
+      "frame_id": "9940691",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-HTML-Scrubber",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "86",
+      "frame_id": "33121218",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/ppc64-diag",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "87",
+      "frame_id": "8316110",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/obs-service-set_version",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "88",
+      "frame_id": "14557095",
+      "platform": "gitee",
+      "source_repo_name": "openharmony/arkui_ui_lite",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "89",
+      "frame_id": "25262333",
+      "platform": "gitee",
+      "source_repo_name": "opengauss/ops",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "91",
+      "frame_id": "29080310",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/control_box_rst",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "92",
+      "frame_id": "23681255",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/rubygem-sd_notify",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "93",
+      "frame_id": "9940963",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Module-Refresh",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "94",
+      "frame_id": "29890243",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/python3.11-urllib3",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "95",
+      "frame_id": "15335384",
+      "platform": "gitee",
+      "source_repo_name": "HarmonyOS-tpc/AnimatedCircleLoadingView",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "96",
+      "frame_id": "14559056",
+      "platform": "gitee",
+      "source_repo_name": "ascend/mindsdk-referenceapps",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "97",
+      "frame_id": "9876940",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/python-django-cache-url",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "98",
+      "frame_id": "11114420",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/lightdm-kiran-greeter",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "99",
+      "frame_id": "15335380",
+      "platform": "gitee",
+      "source_repo_name": "HarmonyOS-tpc/ArcProgressStackView",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "100",
+      "frame_id": "19016042",
+      "platform": "gitee",
+      "source_repo_name": "src-anolis-os/python-yubico",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "101",
+      "frame_id": "9941626",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-UNIVERSAL-can",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "103",
+      "frame_id": "41747138",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/kf6-kdav",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "104",
+      "frame_id": "9940340",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-Clone-Choose",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "105",
+      "frame_id": "29080534",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/laser_proc",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "106",
+      "frame_id": "11359186",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/springframework-amqp",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "107",
+      "frame_id": "23847699",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/R-highr",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "108",
+      "frame_id": "32078574",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/ghc-hslua-list",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "109",
+      "frame_id": "29866855",
+      "platform": "gitee",
+      "source_repo_name": "openeuler/PilotGo-plugin-mysql",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    },
+    {
+      "source_scale_rank": "111",
+      "frame_id": "17128608",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/lxmenu-data",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "CONTAINER_ROLE_EVIDENCE_BACKED__LOCATOR_EXTRACTION_PENDING"
+    },
+    {
+      "source_scale_rank": "112",
+      "frame_id": "24838448",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/tex-common",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "",
+      "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
+      "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
+    }
+  ]
+}
