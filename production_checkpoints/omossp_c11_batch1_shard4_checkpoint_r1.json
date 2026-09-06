@@ -1,0 +1,100 @@
+{
+  "protocol": "OMOSSP_PHASE_C11_BATCH1_SHARD4_CHECKPOINT_R1",
+  "date": "2026-09-06",
+  "batch": "B001",
+  "shard": 4,
+  "checkpoint_state": "CHECKPOINT_COMMITTED",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "selection_freeze_sha256": "6c1dcae51c3be074cf0ddc825f0c8d7fdc455c0b8bf19cebc23c0b4d2915c243",
+  "membership_sha256": "3ab635da2d7e94b010c7d9030df8d4806c980c74b0190f9189f83b148b63c93f",
+  "shard_position_range": [
+    76,
+    100
+  ],
+  "execution": {
+    "run_id": 34014727738,
+    "job_id": 101436433883,
+    "conclusion": "success",
+    "acquisition_canonical_sha256": "f51babaf664d3c06fe7e122c8f879d955ddb668dc4e271df0fe60bc5f1a65b7a",
+    "exact_route_attempts": 78,
+    "evidence_cards": 71,
+    "success_captured": 71,
+    "not_found_for_endpoint": 6,
+    "access_incomplete_after_retries": 1,
+    "evidence_class_order_violations": 0,
+    "duplicate_routes": 0
+  },
+  "exact_runner_r2": {
+    "runner_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+    "replay_canonical_sha256": "b31a6f448d46782bd417e3f839e91725d2a28a47923ca3a38bcfd05ffceb0285",
+    "rows": 25,
+    "auto_accept_p1": 6,
+    "auto_defer": 19,
+    "human_gate": 0,
+    "validation_errors": 0,
+    "final_project_entity_ids_minted": 0
+  },
+  "accepted_p1": [
+    {
+      "rank": 86,
+      "repo": "src-openeuler/ppc64-diag",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/power-ras/ppc64-diag"
+    },
+    {
+      "rank": 87,
+      "repo": "src-openeuler/obs-service-set_version",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/openSUSE/obs-service-set_version"
+    },
+    {
+      "rank": 92,
+      "repo": "src-openeuler/rubygem-sd_notify",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/agis/ruby-sdnotify"
+    },
+    {
+      "rank": 97,
+      "repo": "src-openeuler/python-django-cache-url",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/epicserve/django-cache-url"
+    },
+    {
+      "rank": 103,
+      "repo": "src-openeuler/kf6-kdav",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://invent.kde.org/frameworks/kdav"
+    },
+    {
+      "rank": 104,
+      "repo": "src-openeuler/perl-Clone-Choose",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "MetaCPAN:Clone-Choose"
+    }
+  ],
+  "seals": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "search_used": false,
+    "name_similarity_inference_used": false,
+    "paid_resources_used": false
+  },
+  "free_only_postflight": {
+    "public_repository": true,
+    "standard_runner": "ubuntu-latest",
+    "workflow_artifacts": 0,
+    "actions_cache": false,
+    "artifact_upload": false,
+    "direct_cost": "0"
+  },
+  "drive_artifacts": {
+    "acquisition_ledger_id": "1QBFk0xRUgisPCS1r34v2lzkn5qqR-M6ZF9j0rePGclU",
+    "runner_replay_bundle_id": "1zsje8ZgbDs2vdGp0FKtLxCxEGbWQGLJlktAupUS_yPw",
+    "exact_runner_replay_id": "1VeuDells3bEuZd5KAGhu2Wquydb3Wbd-dPsjGVhw9WI"
+  },
+  "authorization": {
+    "shard4_complete": true,
+    "batch1_complete": true,
+    "full_frame_execution_authorized": false
+  }
+}
