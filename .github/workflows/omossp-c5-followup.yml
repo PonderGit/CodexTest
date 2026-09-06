@@ -1,0 +1,39 @@
+name: OMOSSP C5 exact follow-up
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  c5-followup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || {
+            echo "FREE_ONLY_GATE=FAIL__REPOSITORY_NOT_PUBLIC"
+            exit 96
+          }
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run C5 exact follow-up
+        run: python omossp_c5_followup.py
+      - name: Emit follow-up result
+        shell: bash
+        run: |
+          echo "===== OMOSSP_C5F_CANONICAL_SHA256 ====="
+          cat omossp_c5_followup_output/c5_followup.sha256
+          echo "===== OMOSSP_C5F_JSON_BEGIN ====="
+          cat omossp_c5_followup_output/c5_followup.json
+          echo "===== OMOSSP_C5F_JSON_END ====="
