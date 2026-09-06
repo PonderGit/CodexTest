@@ -1,0 +1,80 @@
+{
+  "protocol": "OMOSSP_PHASE_C7_PRODUCTION_CONTRACT_R1",
+  "created_date": "2026-09-06",
+  "authority": {
+    "file": "POST_AUTO6_R4B_AUTO2_SOURCE_DISCOVERY_CUMULATIVE_R0001_R18827.csv",
+    "drive_id": "18RsEdDWz81WiWo_EcyYcKRd2HlbVNXsl",
+    "sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+    "rows": 18827
+  },
+  "scientific_authority": {
+    "runner_r2_file": "POST_AUTO6_R4B_HG07_R5_AUTONOMOUS_EXECUTION_RUNNER_R2.py",
+    "runner_r2_drive_id": "1hcT7G-H9Y5fuP4APqjUIKivMK7im9lEx",
+    "runner_r2_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+    "evidence_worker_contract_sha256": "b5a36f2639e17ecab7ea56311c796e7aeb6e6f961e9ca5542bd56643b05713eb",
+    "autonomous_execution_policy_sha256": "9b5c2dd09c4a5c2e0e7bfd5ea28bf8a557d2c733c2dda5eedc1b038163d8b590"
+  },
+  "free_only_guard": {
+    "document": "OMOSSP_FREE_ONLY_EXECUTION_COST_GUARD_R1_20260905",
+    "drive_id": "1Go_u6zCbXE_Hom6dAj7UMx1Xy_p3Rk5eRAJ_CdIODsc",
+    "required_gate": "PASS__VERIFIED_ZERO_DIRECT_COST",
+    "public_repository_only": true,
+    "approved_runner": "ubuntu-latest",
+    "artifact_upload_allowed": false,
+    "actions_cache_allowed": false,
+    "larger_or_gpu_runner_allowed": false,
+    "paid_api_database_storage_allowed": false
+  },
+  "production_pack": {
+    "repository": "PonderGit/CodexTest",
+    "worker_path": "omossp_c7_production_worker.py",
+    "worker_sha256": "f93599074fea90c114d3ccd5990f7d66b1dae5ef75bef460c09cd9b4267fb46c",
+    "workflow_path": ".github/workflows/omossp-c7-production.yml",
+    "workflow_sha256": "faa4f69b012af519f57842a623280fd715ed65dbd3cd74e1d4594dd085eaa3ea",
+    "workflow_trigger": "manual workflow_dispatch only"
+  },
+  "batch1": {
+    "file": "production_batches/omossp_c7_batch1.json",
+    "file_sha256": "00b853cf793c62ced37ae3cda7d6ec6e656e8d9793c98bce96a52474fe52664d",
+    "selection_freeze_sha256": "6c1dcae51c3be074cf0ddc825f0c8d7fdc455c0b8bf19cebc23c0b4d2915c243",
+    "membership_sha256": "3ab635da2d7e94b010c7d9030df8d4806c980c74b0190f9189f83b148b63c93f",
+    "rows": 100,
+    "min_rank": 1,
+    "max_rank": 112,
+    "shard_size": 25,
+    "shard_count": 4,
+    "status": "AUTHORIZED_NOT_EXECUTED"
+  },
+  "selection_rules": {
+    "eligibility": "performance_outcomes_accessed=false AND entity_validation_state_operational NOT IN {EXACT_ENTITY_VALIDATED, NON_SOFTWARE}",
+    "ordering": "source_scale_rank ascending",
+    "yield_or_performance_selection": false,
+    "case_replacement": false
+  },
+  "checkpoint_semantics": {
+    "unit": "immutable 25-row shard",
+    "states": [
+      "AUTHORIZED_NOT_EXECUTED",
+      "ACQUISITION_COMPLETE__RUNNER_REPLAY_PENDING",
+      "RUNNER_VERIFIED__CHECKPOINT_PENDING",
+      "CHECKPOINT_COMMITTED"
+    ],
+    "resume_rule": "rerun only a failed or unverified shard; never replace members; never overwrite prior run evidence",
+    "cumulative_ledger_rule": "append-only Drive evidence/adjudication records with immutable run/job/SHA provenance",
+    "duplicate_network_calls": "allowed on rerun; prior evidence is never overwritten"
+  },
+  "execution_boundaries": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "name_similarity_inference_allowed": false,
+    "search_engine_allowed": false,
+    "evidence_class_order": "EC01->EC02->EC03->EC04->EC05->EC06->EC07->EC08",
+    "evidence_exhaustion_shortcut_allowed": false,
+    "exact_runner_r2_required_after_each_shard": true
+  },
+  "authorization": {
+    "batch1_authorized": true,
+    "full_frame_execution_authorized": false,
+    "next_permissible_action": "Execute Batch-1 Shard-1 only, verify FREE-ONLY postflight, replay exact Runner R2, commit checkpoint before Shard-2."
+  }
+}
