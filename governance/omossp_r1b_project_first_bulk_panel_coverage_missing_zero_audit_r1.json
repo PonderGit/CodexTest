@@ -1,0 +1,133 @@
+{
+  "protocol": "OMOSSP_R1B_PROJECT_FIRST_BULK_PANEL_COVERAGE_MISSING_ZERO_AUDIT_R1",
+  "date": "2026-09-06",
+  "status": "PASS__STRUCTURED_BULK_SUPPLEMENT_REQUIRED",
+  "gate": "PASS__R1B_COUNT_MISSING_KEY_SEMANTICS_RESOLVED__OLD_EXPLICIT_KEY_ATTRITION_SUPERSEDED_FOR_COUNTS__535_UNIQUE_OSS_COMPASS_GITEE_SINGLE_REPO_CANDIDATES__84_OPENDIGGER_OVERLAP__STRUCTURED_BULK_SUPPLEMENT_REQUIRED__GENERIC_IDENTITY_CRAWLER_STOP__TARGETED_API_CONDITIONAL_ONLY",
+  "paper_goal_alignment": {
+    "direct_purpose": "Determine whether current public structured data can form a project-first monthly panel and whether crawling remains necessary before Stata panel regression.",
+    "manuscript_writing_paused": true,
+    "stata_formal_regression_authorized": false
+  },
+  "missing_zero_semantics": {
+    "count_metrics": {
+      "examples": [
+        "issues_new",
+        "change_requests"
+      ],
+      "rule": "Within an established repository/source observability interval, an absent monthly period key in an OpenDigger count metric is a structural zero (no corresponding events), because OpenDigger sparse metric output omits zero-valued periods.",
+      "caveats": [
+        "Do not zero-fill months before repository/project exposure begins.",
+        "Do not zero-fill after observability ends or during unresolved migration/source loss.",
+        "A failed HTTP/API retrieval remains missing, not zero.",
+        "Use monthly metric keys for panel values; do not reconstruct monthly values from annual totals."
+      ]
+    },
+    "duration_rate_metrics": {
+      "examples": [
+        "issue_resolution_duration",
+        "issue_response_time",
+        "change_request_resolution_duration",
+        "change_request_response_time"
+      ],
+      "rule": "Absent month key does NOT mean zero duration/performance. It means no estimable event population for that metric-month unless source-specific documentation proves otherwise."
+    },
+    "implication": "R1A attrition based only on explicit monthly key presence is superseded for event-count metrics and must not be used as final panel completeness evidence."
+  },
+  "empirical_sparse_encoding_check": {
+    "sampled_repositories": 800,
+    "metric_files_checked": 1600,
+    "valid_json_files": 1166,
+    "no_such_key_files": 434,
+    "explicit_zero_months": 8,
+    "files_with_internal_missing_month_gaps": 696,
+    "files_with_internal_missing_month_gaps_pct": 59.7,
+    "annual_2024_total_present": 719,
+    "annual_2024_exact_monthly_sum_match": 608,
+    "annual_2024_mismatch": 111,
+    "annual_2025_total_present": 693,
+    "annual_2025_exact_monthly_sum_match": 653,
+    "annual_2025_mismatch": 40,
+    "interpretation": "Sparse monthly encoding is common. Annual and monthly representations are not always arithmetically identical; formal panel construction must use monthly series directly with version/provenance locks."
+  },
+  "old_a3_frame": {
+    "rows": 18827,
+    "role": "source/container discovery frame, not formal project panel",
+    "post_clear_nonproject_repositories": 4604,
+    "current_stage2_metadata_audited_repositories": 884,
+    "conclusion": "Still not analysis-ready and should not be processed one-by-one as the primary project-acquisition route."
+  },
+  "oss_compass_project_first_candidate_source": {
+    "source_repository": "oss-compass/compass-projects-information",
+    "source_head_sha": "deba099d78fee27272fc1fcb2fa98afaeff30f0d",
+    "snapshot_path": "governance/r1b_oss_compass_gitee_single_repository_snapshot_20260906.csv",
+    "snapshot_blob_sha": "afa8aeb4b95bf82297652771ffcd9fd9d356493a",
+    "source_rows": 541,
+    "unique_gitee_single_repository_candidates": 535,
+    "unique_owners": 343,
+    "community_definition_files": 423,
+    "github_single_repository_entries": 1769,
+    "caution": "OSS Compass single-repository entries are curated analysis candidates, not automatically validated OSS project entities."
+  },
+  "cross_coverage": {
+    "unique_oss_compass_gitee_candidates": 535,
+    "overlap_with_a3_opendigger_frame": 84,
+    "overlap_pct": 15.7,
+    "overlap_after_excluding_one_package_container": 83,
+    "outside_a3_frame": 451,
+    "old_intermediate_bug_note": "A transient calculation printed 534 due to a null/string comparison error. It is superseded. Correct overlap is 84.",
+    "overlap_metric_coverage": {
+      "both_issues_and_pr_files": 80,
+      "issue_file_missing_pr_present": 3,
+      "issue_present_pr_file_missing": 1,
+      "either_family_n_ge_20_2024_or_2025": 66,
+      "either_family_n_ge_40_2024_or_2025": 59,
+      "any_issue_or_pr_activity_in_both_2024_and_2025": 72
+    },
+    "implication": "The old A3/OpenDigger frame undercovers the more project-oriented Gitee candidate space; 451 curated Gitee single-repository candidates lie outside it."
+  },
+  "data_sufficiency_decision": {
+    "current_data_sufficient_for_formal_stata_panel": false,
+    "cleaning_alone_sufficient": false,
+    "additional_structured_bulk_data_required": true,
+    "current_general_identity_crawler_continue": false,
+    "generic_web_crawler_authorized": false,
+    "targeted_api_crawler_authorized_now": false,
+    "targeted_api_future_condition": "Only after a frozen regression variable is construct-critical and structured free sources are shown inadequate."
+  },
+  "binding_blockers_after_r1b": [
+    "project-unit validation/curation",
+    "repository/project exposure start-end window",
+    "coverage of construct-valid performance outcome variables",
+    "project-month variable coverage after zero-vs-missing semantics are correctly applied"
+  ],
+  "next_stage": {
+    "id": "R1C",
+    "title": "Curated Project-First Candidate Panel Coverage Audit",
+    "strategy": [
+      "Start from the 535 unique OSS Compass Gitee single-repository candidates.",
+      "Deduplicate and apply pre-specified software-project/canonical-repository exclusions.",
+      "Bulk-audit 24/36-month structured monthly metrics from OpenDigger and OSS Compass where available.",
+      "Establish repository exposure start/end before zero-filling count metrics.",
+      "Compute realistic post-cleaning N projects and NT project-month observations.",
+      "If Gitee-only post-cleaning N is adequate for the literature-grounded Stata panel design, keep a Gitee-only frame.",
+      "If inadequate, prospectively evaluate the 1,769 OSS Compass GitHub single-repository entries under cross-platform controls before any crawler is built."
+    ],
+    "exit_outputs": [
+      "N_raw_project_candidates",
+      "N_after_project_curation",
+      "N_with_24_month_coverage",
+      "N_with_36_month_coverage",
+      "project_month_NT",
+      "variable_coverage_matrix",
+      "targeted_API_gap_list_or_NONE"
+    ]
+  },
+  "prohibitions": [
+    "C26 Batch3 Shard4",
+    "Batch4 identity production",
+    "full 18,827-row one-by-one identity validation",
+    "generic crawler engineering",
+    "formal Stata regression",
+    "manuscript drafting"
+  ]
+}
