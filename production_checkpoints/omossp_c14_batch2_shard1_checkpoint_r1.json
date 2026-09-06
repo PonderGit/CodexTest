@@ -1,0 +1,126 @@
+{
+  "protocol": "OMOSSP_PHASE_C14_BATCH2_SHARD1_CHECKPOINT_R1",
+  "date": "2026-09-06",
+  "batch": "B002",
+  "shard": 1,
+  "checkpoint_state": "CHECKPOINT_COMMITTED",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "selection_freeze_sha256": "7836029c70a7ce55e5efcf5af6fbb06ea7f7fd1038dedcb0957ebf9dd0a4442b",
+  "membership_sha256": "1a801f5c6d9d98ebda950b3cf8d43676e091a7d335346495938d8f9548095b80",
+  "shard_position_range": [
+    1,
+    25
+  ],
+  "shard_ranks": [
+    113,
+    114,
+    115,
+    116,
+    118,
+    119,
+    121,
+    122,
+    123,
+    124,
+    125,
+    127,
+    128,
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    138,
+    139,
+    140,
+    142,
+    143
+  ],
+  "execution": {
+    "run_id": 34016503790,
+    "job_id": 101441085975,
+    "conclusion": "success",
+    "acquisition_canonical_sha256": "99b60680c4e589244e8d9ef54720c9303ac95126055d7356eb029b8aedc1d8af",
+    "exact_route_attempts": 68,
+    "evidence_cards": 59,
+    "success_captured": 59,
+    "not_found_for_endpoint": 9,
+    "access_incomplete_after_retries": 0,
+    "evidence_class_order_violations": 0,
+    "duplicate_routes": 0
+  },
+  "exact_runner_r2": {
+    "runner_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+    "replay_canonical_sha256": "28a0e796a165a1e18c9e97e4a306e0b380ef044139e11d55020d3acf48d367c5",
+    "rows": 25,
+    "auto_accept_p1": 5,
+    "auto_defer": 20,
+    "human_gate": 0,
+    "validation_errors": 0,
+    "final_project_entity_ids_minted": 0
+  },
+  "accepted_p1": [
+    {
+      "rank": 113,
+      "repo": "src-openeuler/python-jose",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/Demonware/jose"
+    },
+    {
+      "rank": 116,
+      "repo": "src-openeuler/perl-Sort-Versions",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "MetaCPAN:Sort-Versions"
+    },
+    {
+      "rank": 118,
+      "repo": "src-openeuler/perl-XML-Simple",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "MetaCPAN:XML-Simple"
+    },
+    {
+      "rank": 132,
+      "repo": "src-openeuler/perl-FFI-CheckLib",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "MetaCPAN:FFI-CheckLib"
+    },
+    {
+      "rank": 133,
+      "repo": "src-openeuler/ghc-mono-traversable",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "Hackage:mono-traversable"
+    }
+  ],
+  "seals": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "search_used": false,
+    "name_similarity_inference_used": false,
+    "paid_resources_used": false
+  },
+  "free_only_postflight": {
+    "public_repository": true,
+    "standard_runner": "ubuntu-latest",
+    "workflow_artifacts": 0,
+    "actions_cache": false,
+    "artifact_upload": false,
+    "direct_cost": "0"
+  },
+  "drive_artifacts": {
+    "acquisition_ledger_id": "1h_kKIfw8PKeo9DHna7JqNLIE-BftgH01cDGZAw_BUfI",
+    "runner_replay_bundle_id": "1d5o59SpKHJHP5fTpVvgNdL3eXAOBBWizsZle-DOuxlM",
+    "exact_runner_replay_id": "1Fxxu0JuREI2o3B0ax5anDXXAR_nj4DJ2lrMBX2dZl1g"
+  },
+  "authorization": {
+    "shard1_complete": true,
+    "shard2_may_proceed_after_free_only_preflight": true,
+    "remaining_shards": [
+      2,
+      3,
+      4
+    ],
+    "full_frame_execution_authorized": false
+  }
+}
