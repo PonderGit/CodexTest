@@ -1,0 +1,73 @@
+{
+  "protocol": "OMOSSP_BATCH1_POSTEXECUTION_CONTROL_REPLAY_HOLD_R1",
+  "date": "2026-09-06",
+  "batch": "B001",
+  "batch_checkpoint_commit": "dede6108299a594232cbcfd858a31cbf48561c14",
+  "aggregate_execution": {
+    "rows": 100,
+    "exact_route_attempts": 289,
+    "evidence_cards": 260,
+    "success_captured": 260,
+    "not_found_for_endpoint": 27,
+    "access_incomplete_after_retries": 2,
+    "auto_accept_p1_observed": 19,
+    "auto_defer_observed": 81,
+    "human_gate": 0,
+    "runner_validation_errors": 0
+  },
+  "auto_continue_rule_drive_id": "1b-7JGUz9hfcwoBZ8p7IGR2qzNtQU0jPUMS0T_IZEg3I",
+  "blocker": {
+    "code": "HOLD__BATCH2_AUTHORIZATION__HACKAGE_P1_REGEX_ESCAPE_REGRESSION",
+    "type": "IMPLEMENTATION_FALSE_NEGATIVE_RISK",
+    "frozen_scientific_rule_changed": false,
+    "authority_changed": false,
+    "performance_seal_broken": false,
+    "paid_resource_used": false,
+    "finding": "C7 production worker Hackage validity regex contains double-escaped raw-string tokens and therefore cannot recognize normal whitespace-delimited package-name lines.",
+    "worker_file": "omossp_c7_production_worker.py",
+    "worker_sha256": "f93599074fea90c114d3ccd5990f7d66b1dae5ef75bef460c09cd9b4267fb46c",
+    "suspect_lines": [
+      {
+        "line": 279,
+        "observed": "valid=(not challenge and re.search(r\"(?mi)^\\\\s*\"+re.escape(ident)+r\"\\\\s*$\",tx) is not None)",
+        "effect": "P1 Hackage registry validation false-negative"
+      },
+      {
+        "line": 190,
+        "observed": "re.match(r\"^(Name|Version|URL|Homepage|HomePage|Source\\\\d*|VCS|SCM|Upstream|ProjectURL)\\\\s*:\",...)",
+        "effect": "EC02 display/extract filtering defect; locator parser itself uses correctly escaped regex"
+      }
+    ],
+    "control_mismatch": {
+      "rank": 10,
+      "repo": "src-openeuler/ghc-regex-posix",
+      "c5_decision": "AUTO_ACCEPT_P1",
+      "c5_basis": "Hackage:regex-posix",
+      "c8_production_decision": "AUTO_DEFER",
+      "c8_hackage_transport": "SUCCESS_CAPTURED",
+      "c8_hackage_challenge": false,
+      "interpretation": "Known prior positive control regressed to defer without loss of evidence."
+    },
+    "other_batch1_hackage_candidate": {
+      "rank": 108,
+      "repo": "src-openeuler/ghc-hslua-list",
+      "production_decision": "AUTO_DEFER",
+      "hackage_transport": "SUCCESS_CAPTURED",
+      "hackage_challenge": false,
+      "interpretation": "Likely affected by the same false-negative implementation bug; requires corrective replay."
+    }
+  },
+  "preserved_validity": {
+    "existing_auto_accept_p1_invalidated": false,
+    "reason": "Bug is conservative/false-negative in the Hackage validation branch; no evidence that existing P1 accepts were produced by this defect.",
+    "raw_acquisition_outputs_overwritten": false,
+    "runner_outputs_overwritten": false
+  },
+  "authorization": {
+    "batch1_execution_complete": true,
+    "batch1_checkpoint_preserved": true,
+    "batch2_authorized": false,
+    "full_frame_authorized": false,
+    "next_stage": "C12 — Hackage P1 Regression Read-Only Audit + Minimal Code Repair + Outcome-Blind Corrective Replay"
+  }
+}
