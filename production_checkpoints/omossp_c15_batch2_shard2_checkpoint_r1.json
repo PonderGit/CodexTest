@@ -1,0 +1,125 @@
+{
+  "protocol": "OMOSSP_PHASE_C15_BATCH2_SHARD2_CHECKPOINT_R1",
+  "date": "2026-09-06",
+  "batch": "B002",
+  "shard": 2,
+  "checkpoint_state": "CHECKPOINT_COMMITTED",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "selection_freeze_sha256": "7836029c70a7ce55e5efcf5af6fbb06ea7f7fd1038dedcb0957ebf9dd0a4442b",
+  "membership_sha256": "1a801f5c6d9d98ebda950b3cf8d43676e091a7d335346495938d8f9548095b80",
+  "shard_position_range": [
+    26,
+    50
+  ],
+  "shard_ranks": [
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    151,
+    152,
+    153,
+    154,
+    155,
+    156,
+    157,
+    159,
+    160,
+    161,
+    162,
+    164,
+    165,
+    166,
+    168,
+    169,
+    170,
+    171,
+    172
+  ],
+  "execution": {
+    "run_id": 34016765888,
+    "job_id": 101441778893,
+    "conclusion": "success",
+    "acquisition_canonical_sha256": "2e04e19df3a3a1ecb6d66bb1349d101e4c2b43ae251ad2ac5a3aeb54b430d555",
+    "exact_route_attempts": 76,
+    "evidence_cards": 63,
+    "success_captured": 63,
+    "not_found_for_endpoint": 11,
+    "access_incomplete_after_retries": 2,
+    "evidence_class_order_violations": 0,
+    "duplicate_routes": 0
+  },
+  "exact_runner_r2": {
+    "runner_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+    "replay_canonical_sha256": "f1381125c7ddd9a5066865dde0c0380ea2f0fa162d5748fe68147338226401ee",
+    "rows": 25,
+    "auto_accept_p1": 5,
+    "auto_defer": 20,
+    "human_gate": 0,
+    "validation_errors": 0,
+    "final_project_entity_ids_minted": 0
+  },
+  "accepted_p1": [
+    {
+      "rank": 146,
+      "repo": "src-openeuler/python-xvfbwrapper",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/cgoldberg/xvfbwrapper"
+    },
+    {
+      "rank": 147,
+      "repo": "src-openeuler/perl-Alien-Packages",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "MetaCPAN:Alien-Packages"
+    },
+    {
+      "rank": 154,
+      "repo": "src-openeuler/python-mkdocs-get-deps",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/mkdocs/get-deps"
+    },
+    {
+      "rank": 166,
+      "repo": "src-openeuler/xmlenc",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/znerd/xmlenc"
+    },
+    {
+      "rank": 170,
+      "repo": "src-openeuler/python-sortedcontainers",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/grantjenks/python-sortedcontainers"
+    }
+  ],
+  "seals": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "search_used": false,
+    "name_similarity_inference_used": false,
+    "paid_resources_used": false
+  },
+  "free_only_postflight": {
+    "public_repository": true,
+    "standard_runner": "ubuntu-latest",
+    "workflow_artifacts": 0,
+    "actions_cache": false,
+    "artifact_upload": false,
+    "direct_cost": "0"
+  },
+  "drive_artifacts": {
+    "acquisition_ledger_id": "1qFPaPLW8gaGBVVleaoqPEQ_kUKmhXhXYbitsFcuyYrQ",
+    "runner_replay_bundle_id": "1k12DqymOBcbmd-vaKNCx_b9UReNp3oukzXX2aVS_XG8",
+    "exact_runner_replay_id": "1TOh4REhDkGSyXmjmHw3x_twU9rDrspdop8OZ3VjuMzM"
+  },
+  "authorization": {
+    "shard2_complete": true,
+    "shard3_may_proceed_after_free_only_preflight": true,
+    "remaining_shards": [
+      3,
+      4
+    ],
+    "full_frame_execution_authorized": false
+  }
+}
