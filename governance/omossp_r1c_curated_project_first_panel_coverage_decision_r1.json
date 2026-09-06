@@ -1,0 +1,80 @@
+{
+  "protocol": "OMOSSP_R1C_CURATED_PROJECT_FIRST_CANDIDATE_PANEL_COVERAGE_DECISION_R1",
+  "date": "2026-09-06",
+  "status": "COMPLETE__GITEE_ONLY_INSUFFICIENT__GITHUB_PROJECT_FIRST_COVERAGE_AUDIT_REQUIRED",
+  "source": {
+    "candidate_source": "OSS Compass Gitee single-repository snapshot",
+    "exact_case_unique": 535,
+    "canonical_casefold_unique": 534,
+    "duplicate_note": "motion-code/madong and motion-code/MaDong collapse to one canonical path"
+  },
+  "execution": {
+    "workflow": "OMOSSP R1C Project-First Panel Coverage Audit",
+    "run_id": 34048282372,
+    "job_id": 101527175295,
+    "event": "push",
+    "head_sha": "4f5cbc33f36e608f5c8eee3ac87c8c23da0b47af",
+    "conclusion": "success",
+    "free_only": true,
+    "artifacts": 0,
+    "output_commit": "fab29cc42d9f3220731f9b6439811d4085a2aa90",
+    "summary_blob": "148780fbca8028015b4a6cb8a0f943d7d92717b1",
+    "coverage_blob": "d09834c04b1884118b35c1326e1eca69da31e143"
+  },
+  "results": {
+    "opendigger_exported": 118,
+    "opendigger_not_exported": 416,
+    "full_observable_envelope_24m": 47,
+    "full_observable_envelope_36m": 38,
+    "project_month_NT_24m": 1128,
+    "project_month_NT_36m": 1368,
+    "primary_duration_coverage_full24": {
+      "issue_resolution_ge6_months": 37,
+      "issue_resolution_ge12_months": 32,
+      "pr_resolution_ge6_months": 39,
+      "pr_resolution_ge12_months": 33,
+      "either_resolution_family_ge6_months": 44,
+      "either_resolution_family_ge12_months": 40,
+      "both_resolution_families_ge6_months": 32,
+      "both_resolution_families_ge12_months": 25
+    }
+  },
+  "data_quality": {
+    "candidate_state": "PROVISIONAL_CURATED_SINGLE_REPOSITORY_CANDIDATES__NOT_FINAL_VALIDATED_PROJECT_ENTITIES",
+    "count_missing_inside_verified_envelope": "STRUCTURAL_ZERO_ALLOWED",
+    "duration_missing_month": "NO_ESTIMABLE_EVENT_POPULATION__NOT_ZERO",
+    "metric_values_used_for_selection": false,
+    "metric_values_persisted": false,
+    "performance_ranking_performed": false
+  },
+  "decision": {
+    "current_data_sufficient": false,
+    "gitee_only_project_first_frame_sufficient": false,
+    "cleaning_alone_sufficient": false,
+    "structured_bulk_supplement_required": true,
+    "resume_old_identity_crawler": false,
+    "generic_crawler_authorized": false,
+    "targeted_api_authorized_now": false
+  },
+  "rationale": [
+    "Only 118/534 canonical Gitee project-first candidates are currently exported by OpenDigger.",
+    "Only 47 have a full observable envelope across the 24-month 2024-2025 window, before final project-entity validation.",
+    "Final project-boundary curation can only reduce the usable N further.",
+    "Therefore the Gitee-only project-first path is not sufficient for the intended higher-quality Stata panel study."
+  ],
+  "next_stage": {
+    "id": "R1D",
+    "title": "OSS Compass GitHub Single-Repository Project-First Panel Coverage Audit",
+    "candidate_count": 1769,
+    "purpose": "Determine whether the larger curated GitHub single-repository frame can supply an adequate 24/36-month project-month panel using the same metric-presence-only, FREE-ONLY audit before any crawler/API supplementation.",
+    "rule": "Do not combine Gitee and GitHub into one formal panel until cross-platform metric comparability is separately audited."
+  },
+  "prohibitions": [
+    "C26 Batch3 Shard4",
+    "old 18,827-row identity production",
+    "generic crawler engineering",
+    "targeted API collection before a construct-critical gap is frozen",
+    "formal Stata regression",
+    "manuscript drafting"
+  ]
+}
