@@ -1,0 +1,92 @@
+{
+  "protocol": "OMOSSP_C22_BATCH3_SHARD2_CONTINUATION_AUTHORIZATION_R1",
+  "status": "AUTHORIZED_NOT_EXECUTED",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "batch3_membership_sha256": "74c1b9ca2f362ea5cb755b50cadcf3a5820ab59891445bd79fc325da2f28ccdd",
+  "batch3_selection_freeze_sha256": "8ca3a8bb179992c9fbb2ecc00fbba9be7ed2a3857bb4f8f072ba00b9c0f91ebc",
+  "c21_qualified_worker_sha256": "7decd7442e311e75c0d35ea41e1fee112138c44cdf1dd0001ef9c73035b65506",
+  "c22_production_worker": {
+    "path": "omossp_c22_production_worker.py",
+    "sha256": "a0d6fb1018e7901622916d0318f9926e909b5c408279a2b47da998d33897fbe7",
+    "git_blob_sha": "d13a553cdd49bc6d2f0071a78dc79408fff5f203",
+    "promotion_commit": "f2d2d0ad9d7e37a3627b8b3ed5ae2d05773826e1",
+    "scientific_core_byte_equivalent_after_namespace_normalization": true,
+    "authorized_shard_only": 2
+  },
+  "production_workflow": {
+    "path": ".github/workflows/omossp-c22-batch3-shard2.yml",
+    "sha256": "3b090170767060a089c49591c70b9830c11f24a58b091ff091faf636e605a66b",
+    "git_blob_sha": "9c734aecc55b834179980b4c080be2735dcda954",
+    "promotion_commit": "9ab7db3f3fe036cab9f8e579ab753110ff294463",
+    "trigger": "workflow_dispatch",
+    "automatic_pr_trigger": false,
+    "runner": "ubuntu-latest",
+    "artifact_upload": false,
+    "actions_cache": false
+  },
+  "regression_test": {
+    "path": "production_regression/test_omossp_c22_productionization.py",
+    "sha256": "9c544efcd7e7b755a88bfe8fcb8764a507df23cd8950bccc61c8d8924d9062c8",
+    "git_blob_sha": "69d3cea7e867c158af1f6d0c7e3b439959608bcf",
+    "promotion_commit": "fe28bbe801c48f7dc107ba259e4035678f86780d"
+  },
+  "qualification": {
+    "pr": 26,
+    "pr_merged": false,
+    "run_id": 34021566703,
+    "job_id": 101454996630,
+    "conclusion": "success",
+    "free_only_gate": "PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE",
+    "c21_locator_role_regression": "PASS",
+    "c22_productionization_preflight": "PASS",
+    "batch3_membership_sha": "PASS",
+    "batch3_selection_sha": "PASS",
+    "production_workflow": "MANUAL_ONLY",
+    "performance_sealed": true,
+    "final_project_entity_id_minted": false
+  },
+  "exact_runner_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+  "shard2": {
+    "index": 2,
+    "position_range": [
+      26,
+      50
+    ],
+    "row_count": 25,
+    "source_scale_ranks": [
+      "260",
+      "261",
+      "262",
+      "263",
+      "264",
+      "265",
+      "266",
+      "267",
+      "268",
+      "269",
+      "270",
+      "271",
+      "272",
+      "273",
+      "274",
+      "275",
+      "276",
+      "277",
+      "278",
+      "279",
+      "280",
+      "281",
+      "282",
+      "283",
+      "284"
+    ]
+  },
+  "c21_rank242_corrective_addendum_preserved": true,
+  "performance_outcomes_accessed": false,
+  "final_project_entity_id_minted": false,
+  "batch3_membership_changed": false,
+  "batch3_shard2_authorized": true,
+  "batch3_shard2_executed": false,
+  "batch3_shard3_authorized": false,
+  "full_frame_authorized": false
+}
