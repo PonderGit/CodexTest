@@ -1,0 +1,1 @@
+Trigger OMOSSP C9 Batch-1 Shard-2 only. Frozen membership; no other shard.
