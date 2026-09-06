@@ -69,10 +69,18 @@ def repo_url(repo_name, leaf):
     return f"{BASE}/{quote(owner,safe='')}/{quote(repo,safe='')}/{leaf}"
 
 def key_profile(obj):
-    if not isinstance(obj,dict): return {"months":[],"raw_months":[]}
-    mm=sorted(k for k in obj if MONTH_RE.match(str(k)))
-    rr=sorted(str(k)[:-4] for k in obj if RAW_MONTH_RE.match(str(k)))
-    return {"months":mm,"raw_months":rr}
+    mm=set(); rr=set()
+    def walk(x):
+        if isinstance(x,dict):
+            for k,v in x.items():
+                ks=str(k)
+                if MONTH_RE.match(ks): mm.add(ks)
+                elif RAW_MONTH_RE.match(ks): rr.add(ks[:-4])
+                walk(v)
+        elif isinstance(x,list):
+            for v in x: walk(v)
+    walk(obj)
+    return {"months":sorted(mm),"raw_months":sorted(rr)}
 
 def load_candidates():
     dedup={}
@@ -169,7 +177,9 @@ def main():
     summary={
       "protocol":"OMOSSP_R1C_CURATED_PROJECT_FIRST_CANDIDATE_PANEL_COVERAGE_R1",
       "candidate_source":"OSS Compass gitee single-repositories snapshot",
-      "candidate_rows_unique":len(candidates),
+      "candidate_rows_unique_canonical_casefold":len(candidates),
+      "candidate_rows_unique_exact_case_in_snapshot":535,
+      "casefold_duplicate_note":"motion-code/madong and motion-code/MaDong collapse to one canonical candidate",
       "project_curation_state":"PROVISIONAL_CURATED_SINGLE_REPOSITORY_CANDIDATES__NOT_FINAL_VALIDATED_PROJECT_ENTITIES",
       "opendigger_meta_exported":len(exported),
       "opendigger_meta_not_exported":sum(r["meta_status"]==404 for r in rows),
