@@ -1,0 +1,43 @@
+name: OMOSSP C4 contract materialization
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  c4-materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || {
+            echo "FREE_ONLY_GATE=FAIL__REPOSITORY_NOT_PUBLIC"
+            exit 96
+          }
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Materialize frozen C4 evidence cards
+        run: python omossp_c4_materialize.py
+
+      - name: Emit replayable C4 result to log
+        shell: bash
+        run: |
+          echo "===== OMOSSP_C4_CANONICAL_SHA256 ====="
+          cat omossp_c4_output/c4_canonical.sha256
+          echo "===== OMOSSP_C4_JSON_BEGIN ====="
+          cat omossp_c4_output/c4_materialized.json
+          echo "===== OMOSSP_C4_JSON_END ====="
