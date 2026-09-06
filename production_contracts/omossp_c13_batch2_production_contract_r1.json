@@ -1,0 +1,69 @@
+{
+  "protocol": "OMOSSP_PHASE_C13_BATCH2_PRODUCTION_CONTRACT_R1",
+  "date": "2026-09-06",
+  "authority": {
+    "file": "POST_AUTO6_R4B_AUTO2_SOURCE_DISCOVERY_CUMULATIVE_R0001_R18827.csv",
+    "drive_id": "18RsEdDWz81WiWo_EcyYcKRd2HlbVNXsl",
+    "sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+    "rows": 18827
+  },
+  "batch2": {
+    "file": "production_batches/omossp_c13_batch2.json",
+    "file_sha256": "7f8a35eedb519f5d3202d40eae2aa4718a1450db55357ffb210a44c276591acb",
+    "membership_sha256": "1a801f5c6d9d98ebda950b3cf8d43676e091a7d335346495938d8f9548095b80",
+    "selection_freeze_sha256": "7836029c70a7ce55e5efcf5af6fbb06ea7f7fd1038dedcb0957ebf9dd0a4442b",
+    "prior_batch1_membership_sha256": "3ab635da2d7e94b010c7d9030df8d4806c980c74b0190f9189f83b148b63c93f",
+    "rows": 100,
+    "min_rank": 113,
+    "max_rank": 233,
+    "shard_size": 25,
+    "shard_count": 4,
+    "status": "AUTHORIZED_NOT_EXECUTED"
+  },
+  "corrected_worker": {
+    "path": "omossp_c13_production_worker.py",
+    "sha256": "fd6d7ef2b2e771125b53fa4d2649a8107397dd9ee2add5171fb1880154bb82de",
+    "corrected_parent_path": "omossp_c12_production_worker.py",
+    "corrected_parent_sha256": "e7f9c3e9d75a24edb509b38013003a4f6e220fef700b5045f2559fb54849ac4f",
+    "scientific_core_byte_identical": true
+  },
+  "production_workflow": {
+    "path": ".github/workflows/omossp-c13-production.yml",
+    "sha256": "4e29722ed2df7e8b21df220c9ccab9cc92a482812a1f52121664f2bf6b72bcef",
+    "trigger": "workflow_dispatch only",
+    "runner": "ubuntu-latest",
+    "artifact_upload": false,
+    "actions_cache": false
+  },
+  "exact_runner_r2": {
+    "drive_id": "1hcT7G-H9Y5fuP4APqjUIKivMK7im9lEx",
+    "sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119"
+  },
+  "free_only": {
+    "guard_drive_id": "1Go_u6zCbXE_Hom6dAj7UMx1Xy_p3Rk5eRAJ_CdIODsc",
+    "required_gate": "PASS__VERIFIED_ZERO_DIRECT_COST",
+    "public_repository_only": true,
+    "standard_runner_only": true,
+    "paid_resources_allowed": false
+  },
+  "scientific_seals": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "name_similarity_inference_allowed": false,
+    "search_engine_allowed": false,
+    "evidence_class_order": "EC01->EC02->EC03->EC04->EC05->EC06->EC07->EC08"
+  },
+  "preflight": {
+    "hash_run_id": 34016312123,
+    "hash_job_id": 101440585303,
+    "production_run_id": 34016384125,
+    "production_job_id": 101440773220,
+    "result": "PASS",
+    "artifacts_created": 0
+  },
+  "authorization": {
+    "batch2_authorized": true,
+    "full_frame_execution_authorized": false,
+    "next_action": "Execute Batch-2 Shard-1 under AUTO-CONTINUE; checkpoint before Shard-2."
+  }
+}
