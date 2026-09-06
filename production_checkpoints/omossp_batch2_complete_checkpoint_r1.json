@@ -1,0 +1,107 @@
+{
+  "protocol": "OMOSSP_PHASE_C14_C17_BATCH2_COMPLETE_CHECKPOINT_R1",
+  "date": "2026-09-06",
+  "batch": "B002",
+  "checkpoint_state": "BATCH_CHECKPOINT_COMMITTED",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "selection_freeze_sha256": "7836029c70a7ce55e5efcf5af6fbb06ea7f7fd1038dedcb0957ebf9dd0a4442b",
+  "membership_sha256": "1a801f5c6d9d98ebda950b3cf8d43676e091a7d335346495938d8f9548095b80",
+  "rows": 100,
+  "shards": [
+    {
+      "shard": 1,
+      "run_id": 34016503790,
+      "job_id": 101441085975,
+      "acquisition_sha256": "99b60680c4e589244e8d9ef54720c9303ac95126055d7356eb029b8aedc1d8af",
+      "runner_replay_sha256": "28a0e796a165a1e18c9e97e4a306e0b380ef044139e11d55020d3acf48d367c5",
+      "attempts": 68,
+      "cards": 59,
+      "success_captured": 59,
+      "not_found": 9,
+      "access_incomplete": 0,
+      "auto_accept_p1": 5,
+      "auto_defer": 20,
+      "human_gate": 0,
+      "validation_errors": 0
+    },
+    {
+      "shard": 2,
+      "run_id": 34016765888,
+      "job_id": 101441778893,
+      "acquisition_sha256": "2e04e19df3a3a1ecb6d66bb1349d101e4c2b43ae251ad2ac5a3aeb54b430d555",
+      "runner_replay_sha256": "f1381125c7ddd9a5066865dde0c0380ea2f0fa162d5748fe68147338226401ee",
+      "attempts": 76,
+      "cards": 63,
+      "success_captured": 63,
+      "not_found": 11,
+      "access_incomplete": 2,
+      "auto_accept_p1": 5,
+      "auto_defer": 20,
+      "human_gate": 0,
+      "validation_errors": 0
+    },
+    {
+      "shard": 3,
+      "run_id": 34017027820,
+      "job_id": 101442498123,
+      "acquisition_sha256": "a26235e2fa742332bf92ed6df009f019b55a2a13d0c8a4eca7f8304c920f9bb1",
+      "runner_replay_sha256": "c537723e162fd0495c575a50d10b65b24194c1bb74d641a711d68010ef9c9d74",
+      "attempts": 76,
+      "cards": 68,
+      "success_captured": 68,
+      "not_found": 7,
+      "access_incomplete": 1,
+      "auto_accept_p1": 4,
+      "auto_defer": 21,
+      "human_gate": 0,
+      "validation_errors": 0
+    },
+    {
+      "shard": 4,
+      "run_id": 34017287091,
+      "job_id": 101443199247,
+      "acquisition_sha256": "0c1cbd92c6f722cef122860cdec4c9d37872be1b0a09b6c56149afa58478d260",
+      "runner_replay_sha256": "34ac67d72a1c804adbd7fc2ace3c4fad898ec23c3e4f2f2052965260e6e7ad22",
+      "attempts": 76,
+      "cards": 65,
+      "success_captured": 65,
+      "not_found": 11,
+      "access_incomplete": 0,
+      "auto_accept_p1": 3,
+      "auto_defer": 22,
+      "human_gate": 0,
+      "validation_errors": 0
+    }
+  ],
+  "aggregate": {
+    "rows": 100,
+    "exact_route_attempts": 296,
+    "evidence_cards": 255,
+    "success_captured": 255,
+    "not_found_for_endpoint": 38,
+    "access_incomplete_after_retries": 3,
+    "evidence_class_order_violations": 0,
+    "duplicate_routes": 0,
+    "auto_accept_p1": 17,
+    "auto_defer": 83,
+    "human_gate": 0,
+    "runner_validation_errors": 0
+  },
+  "seals": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "search_used": false,
+    "name_similarity_inference_used": false,
+    "paid_resources_used": false
+  },
+  "interpretation": {
+    "p1_count_is_yield_estimate": false,
+    "full_frame_generalization_prohibited": true
+  },
+  "authorization": {
+    "batch2_complete": true,
+    "batch3_authorized": false,
+    "full_frame_execution_authorized": false,
+    "next_stage": "C18 — Deterministic Batch-3 Freeze + Corrected Worker Production Authorization Gate"
+  }
+}
