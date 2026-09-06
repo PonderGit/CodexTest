@@ -1,0 +1,684 @@
+{
+  "protocol": "OMOSSP_C21_LOCATOR_ROLE_REGRESSION_FIXTURES_R1",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "batch3_membership_sha256": "74c1b9ca2f362ea5cb755b50cadcf3a5820ab59891445bd79fc325da2f28ccdd",
+  "performance_outcomes_accessed": false,
+  "final_project_entity_id_minted": false,
+  "accepted_p1_inventory_count": 41,
+  "accepted_p1_inventory": [
+    {
+      "rank": "2",
+      "repo": "src-openeuler/kf5-kplotting",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://invent.kde.org/frameworks/kplotting",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://invent.kde.org/frameworks/kplotting"
+        }
+      ],
+      "source_job_id": 101433461763
+    },
+    {
+      "rank": "3",
+      "repo": "src-openeuler/perl-Data-Compare",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:Data-Compare",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/Data-Compare"
+        }
+      ],
+      "source_job_id": 101433461763
+    },
+    {
+      "rank": "5",
+      "repo": "src-anolis-os/sos",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/sosreport/sos",
+      "locators": [
+        {
+          "field": "Url",
+          "url": "https://github.com/sosreport/sos"
+        }
+      ],
+      "source_job_id": 101433461763
+    },
+    {
+      "rank": "6",
+      "repo": "src-openeuler/python-pyrad",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/pyradius/pyrad",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/pyradius/pyrad"
+        },
+        {
+          "field": "Source0",
+          "url": "https://files.pythonhosted.org/packages/fc/04/0fe33dca20685b3ced8359f487638bdf03f2776652f7f6812a639cce1b70/pyrad-2.4.tar.gz"
+        }
+      ],
+      "source_job_id": 101433461763
+    },
+    {
+      "rank": "10",
+      "repo": "src-openeuler/ghc-regex-posix",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "Hackage:regex-posix",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://hackage.haskell.org/package/regex-posix"
+        }
+      ],
+      "source_job_id": null,
+      "corrective_authority": "C12"
+    },
+    {
+      "rank": "15",
+      "repo": "src-openeuler/python-click-man",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/click-contrib/click-man",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/click-contrib/click-man"
+        }
+      ],
+      "source_job_id": 101433461763
+    },
+    {
+      "rank": "18",
+      "repo": "src-openeuler/python-pylast",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/pylast/pylast",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/pylast/pylast"
+        },
+        {
+          "field": "Source0",
+          "url": "https://files.pythonhosted.org/packages/e5/63/18c2c08bbbf30bf331f965f842016d8426b3a4c26033e76be9f953c62848/pylast-7.0.0.tar.gz"
+        }
+      ],
+      "source_job_id": 101433461763
+    },
+    {
+      "rank": "30",
+      "repo": "src-openeuler/can-utils",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/linux-can/can-utils",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/linux-can/can-utils"
+        }
+      ],
+      "source_job_id": 101433461763
+    },
+    {
+      "rank": "47",
+      "repo": "src-openeuler/perl-Log-Any",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:Log-Any",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/Log-Any"
+        }
+      ],
+      "source_job_id": 101435376962
+    },
+    {
+      "rank": "50",
+      "repo": "src-openeuler/perl-Module-Install-AuthorRequires",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:Module-Install-AuthorRequires",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/Module-Install-AuthorRequires"
+        }
+      ],
+      "source_job_id": 101435376962
+    },
+    {
+      "rank": "59",
+      "repo": "src-openeuler/perl-Class-C3-XS",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:Class-C3-XS",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/Class-C3-XS"
+        },
+        {
+          "field": "Source0",
+          "url": "https://cpan.metacpan.org/modules/by-module/Class/Class-C3-XS-0.15.tar.gz"
+        }
+      ],
+      "source_job_id": 101435911380
+    },
+    {
+      "rank": "65",
+      "repo": "src-openeuler/kf6-kuserfeedback",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://invent.kde.org/frameworks/kuserfeedback",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://invent.kde.org/frameworks/kuserfeedback"
+        }
+      ],
+      "source_job_id": 101435911380
+    },
+    {
+      "rank": "75",
+      "repo": "src-openeuler/perl-Test-Dir",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:Test-Dir",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/Test-Dir"
+        }
+      ],
+      "source_job_id": 101435911380
+    },
+    {
+      "rank": "80",
+      "repo": "src-openeuler/perl-XML-LibXML",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:XML-LibXML",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/XML-LibXML"
+        }
+      ],
+      "source_job_id": 101435911380
+    },
+    {
+      "rank": "86",
+      "repo": "src-openeuler/ppc64-diag",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/power-ras/ppc64-diag",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/power-ras/ppc64-diag"
+        }
+      ],
+      "source_job_id": 101436433883
+    },
+    {
+      "rank": "87",
+      "repo": "src-openeuler/obs-service-set_version",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/openSUSE/obs-service-set_version",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/openSUSE/obs-service-set_version"
+        }
+      ],
+      "source_job_id": 101436433883
+    },
+    {
+      "rank": "92",
+      "repo": "src-openeuler/rubygem-sd_notify",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/agis/ruby-sdnotify",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/agis/ruby-sdnotify"
+        }
+      ],
+      "source_job_id": 101436433883
+    },
+    {
+      "rank": "97",
+      "repo": "src-openeuler/python-django-cache-url",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/epicserve/django-cache-url",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/epicserve/django-cache-url"
+        },
+        {
+          "field": "Source0",
+          "url": "https://files.pythonhosted.org/packages/20/28/d420aaa89028d2ec0cf17c1510d06ff6a8ed0bf1abfb7f33c999e1c5befa/django-cache-url-3.4.5.tar.gz"
+        }
+      ],
+      "source_job_id": 101436433883
+    },
+    {
+      "rank": "103",
+      "repo": "src-openeuler/kf6-kdav",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://invent.kde.org/frameworks/kdav",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://invent.kde.org/frameworks/kdav"
+        }
+      ],
+      "source_job_id": 101436433883
+    },
+    {
+      "rank": "104",
+      "repo": "src-openeuler/perl-Clone-Choose",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:Clone-Choose",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/Clone-Choose"
+        }
+      ],
+      "source_job_id": 101436433883
+    },
+    {
+      "rank": "108",
+      "repo": "src-openeuler/ghc-hslua-list",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "Hackage:hslua-list",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://hackage.haskell.org/package/hslua-list"
+        }
+      ],
+      "source_job_id": null,
+      "corrective_authority": "C12"
+    },
+    {
+      "rank": "113",
+      "repo": "src-openeuler/python-jose",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/Demonware/jose",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/Demonware/jose"
+        },
+        {
+          "field": "Source0",
+          "url": "https://files.pythonhosted.org/packages/c6/77/3a1c9039db7124eb039772b935f2244fbb73fc8ee65b9acf2375da1c07bf/python_jose-3.5.0.tar.gz"
+        }
+      ],
+      "source_job_id": 101441085975
+    },
+    {
+      "rank": "116",
+      "repo": "src-openeuler/perl-Sort-Versions",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:Sort-Versions",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/Sort-Versions"
+        }
+      ],
+      "source_job_id": 101441085975
+    },
+    {
+      "rank": "118",
+      "repo": "src-openeuler/perl-XML-Simple",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:XML-Simple",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/XML-Simple"
+        }
+      ],
+      "source_job_id": 101441085975
+    },
+    {
+      "rank": "132",
+      "repo": "src-openeuler/perl-FFI-CheckLib",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:FFI-CheckLib",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/FFI-CheckLib"
+        }
+      ],
+      "source_job_id": 101441085975
+    },
+    {
+      "rank": "133",
+      "repo": "src-openeuler/ghc-mono-traversable",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "Hackage:mono-traversable",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://hackage.haskell.org/package/mono-traversable"
+        }
+      ],
+      "source_job_id": 101441085975
+    },
+    {
+      "rank": "146",
+      "repo": "src-openeuler/python-xvfbwrapper",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/cgoldberg/xvfbwrapper",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/cgoldberg/xvfbwrapper"
+        },
+        {
+          "field": "Source0",
+          "url": "https://files.pythonhosted.org/packages/f7/4f/830b1e7324facdb8d3e05008174c6b487f79b22b6869a4c58e351a4c55e0/xvfbwrapper-0.2.15.tar.gz"
+        }
+      ],
+      "source_job_id": 101441778893
+    },
+    {
+      "rank": "147",
+      "repo": "src-openeuler/perl-Alien-Packages",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:Alien-Packages",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/Alien-Packages"
+        }
+      ],
+      "source_job_id": 101441778893
+    },
+    {
+      "rank": "154",
+      "repo": "src-openeuler/python-mkdocs-get-deps",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/mkdocs/get-deps",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/mkdocs/get-deps"
+        }
+      ],
+      "source_job_id": 101441778893
+    },
+    {
+      "rank": "166",
+      "repo": "src-openeuler/xmlenc",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/znerd/xmlenc",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/znerd/xmlenc/"
+        }
+      ],
+      "source_job_id": 101441778893
+    },
+    {
+      "rank": "170",
+      "repo": "src-openeuler/python-sortedcontainers",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/grantjenks/python-sortedcontainers",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/grantjenks/python-sortedcontainers"
+        }
+      ],
+      "source_job_id": 101441778893
+    },
+    {
+      "rank": "173",
+      "repo": "src-openeuler/perl-FileHandle-Unget",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "MetaCPAN:FileHandle-Unget",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://metacpan.org/release/FileHandle-Unget"
+        }
+      ],
+      "source_job_id": 101442498123
+    },
+    {
+      "rank": "178",
+      "repo": "src-anolis-os/fwupd",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/fwupd/fwupd",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/fwupd/fwupd"
+        },
+        {
+          "field": "Source1",
+          "url": "http://people.freedesktop.org/~hughsient/releases/libjcat-0.1.9.tar.xz"
+        },
+        {
+          "field": "Source2",
+          "url": "http://people.freedesktop.org/~hughsient/releases/fwupd-efi-1.3.tar.xz"
+        },
+        {
+          "field": "Source10",
+          "url": "http://people.redhat.com/rhughes/dbx/DBXUpdate-20100307-x64.cab"
+        },
+        {
+          "field": "Source11",
+          "url": "http://people.redhat.com/rhughes/dbx/DBXUpdate-20140413-x64.cab"
+        },
+        {
+          "field": "Source12",
+          "url": "http://people.redhat.com/rhughes/dbx/DBXUpdate-20160809-x64.cab"
+        },
+        {
+          "field": "Source13",
+          "url": "http://people.redhat.com/rhughes/dbx/DBXUpdate-20200729-aa64.cab"
+        },
+        {
+          "field": "Source14",
+          "url": "http://people.redhat.com/rhughes/dbx/DBXUpdate-20200729-ia32.cab"
+        },
+        {
+          "field": "Source15",
+          "url": "http://people.redhat.com/rhughes/dbx/DBXUpdate-20200729-x64.cab"
+        }
+      ],
+      "source_job_id": 101442498123
+    },
+    {
+      "rank": "186",
+      "repo": "src-openeuler/python-pudb",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/inducer/pudb",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/inducer/pudb"
+        },
+        {
+          "field": "Source0",
+          "url": "https://files.pythonhosted.org/packages/c7/69/813e93519fc28744457ff68fa2eaac3b4ea30dda1e6994e969fe9d3008d9/pudb-2021.1.tar.gz"
+        }
+      ],
+      "source_job_id": 101442498123
+    },
+    {
+      "rank": "193",
+      "repo": "src-openeuler/selinux-policy",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/fedora-selinux/selinux-policy",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/fedora-selinux/selinux-policy/"
+        },
+        {
+          "field": "Source0",
+          "url": "https://github.com/fedora-selinux/selinux-policy/archive/refs/tags/v40.7.tar.gz"
+        }
+      ],
+      "source_job_id": 101442498123
+    },
+    {
+      "rank": "207",
+      "repo": "src-openeuler/lcdf-typetools",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/kohler/lcdf-typetools",
+      "locators": [
+        {
+          "field": "Url",
+          "url": "https://github.com/kohler/lcdf-typetools"
+        },
+        {
+          "field": "Source",
+          "url": "https://github.com/kohler/lcdf-typetools/archive/v2.108.tar.gz"
+        }
+      ],
+      "source_job_id": 101443199247
+    },
+    {
+      "rank": "217",
+      "repo": "src-openeuler/google-api-core",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/googleapis/python-api-core",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/googleapis/python-api-core"
+        }
+      ],
+      "source_job_id": 101443199247
+    },
+    {
+      "rank": "219",
+      "repo": "src-openeuler/ghc-asn1-parse",
+      "decision": "T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR",
+      "basis": "Hackage:asn1-parse",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://hackage.haskell.org/package/asn1-parse"
+        }
+      ],
+      "source_job_id": 101443199247
+    },
+    {
+      "rank": "239",
+      "repo": "src-openeuler/python-slugify",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/un33k/python-slugify",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/un33k/python-slugify"
+        },
+        {
+          "field": "Source0",
+          "url": "https://files.pythonhosted.org/packages/87/c7/5e1547c44e31da50a460df93af11a535ace568ef89d7a811069ead340c4a/python-slugify-8.0.4.tar.gz"
+        }
+      ],
+      "source_job_id": 101448832215
+    },
+    {
+      "rank": "240",
+      "repo": "src-openeuler/python-towncrier",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/twisted/towncrier",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/twisted/towncrier"
+        }
+      ],
+      "source_job_id": 101448832215
+    },
+    {
+      "rank": "253",
+      "repo": "src-openeuler/python-productmd",
+      "decision": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "basis": "https://github.com/release-engineering/productmd",
+      "locators": [
+        {
+          "field": "URL",
+          "url": "https://github.com/release-engineering/productmd"
+        }
+      ],
+      "source_job_id": 101448832215
+    }
+  ],
+  "hg02_rank242": {
+    "rank": "242",
+    "repo": "src-openeuler/slirp4netns",
+    "locators": [
+      {
+        "field": "URL",
+        "url": "https://github.com/rootless-containers/slirp4netns"
+      },
+      {
+        "field": "Source0",
+        "url": "https://github.com/rootless-containers/slirp4netns/archive/v1.3.1.tar.gz"
+      },
+      {
+        "field": "Source1",
+        "url": "https://github.com/cpuguy83/go-md2man/archive/refs/tags/v2.0.3.tar.gz"
+      }
+    ],
+    "expected_identity_candidates": [
+      "https://github.com/rootless-containers/slirp4netns"
+    ]
+  },
+  "synthetic_controls": {
+    "source_only": [
+      {
+        "field": "Source1",
+        "url": "https://github.com/example/helper/archive/v1.tar.gz"
+      }
+    ],
+    "same_root_url_source": [
+      {
+        "field": "URL",
+        "url": "https://github.com/example/main"
+      },
+      {
+        "field": "Source0",
+        "url": "https://github.com/example/main/archive/v1.tar.gz"
+      }
+    ],
+    "conflicting_url_vcs": [
+      {
+        "field": "URL",
+        "url": "https://github.com/example/main"
+      },
+      {
+        "field": "VCS",
+        "url": "https://github.com/example/other"
+      }
+    ],
+    "non_identity_metadata": [
+      {
+        "field": "Homepage",
+        "url": "https://example.org/home"
+      },
+      {
+        "field": "SCM",
+        "url": "https://github.com/example/scm"
+      },
+      {
+        "field": "Upstream",
+        "url": "https://github.com/example/upstream"
+      },
+      {
+        "field": "ProjectURL",
+        "url": "https://github.com/example/projecturl"
+      }
+    ]
+  }
+}
