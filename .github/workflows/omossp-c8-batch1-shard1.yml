@@ -1,8 +1,7 @@
 name: OMOSSP C8 Batch1 Shard1 execution
 
 on:
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
