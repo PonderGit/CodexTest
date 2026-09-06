@@ -1,0 +1,95 @@
+{
+  "coverage_only_transport_note": "OpenDigger JSON is transported only to inspect field/month-key structure; numerical magnitudes are not persisted, ranked, or used for curation.",
+  "curation_reason_counts": {
+    "ARCHIVED_CURRENT_STATE": 6,
+    "CANONICAL_REDIRECT_OR_TRANSFER": 15,
+    "GITHUB_MIRROR_URL": 1,
+    "GITHUB_TEMPLATE": 3,
+    "META_UNAVAILABLE": 1,
+    "NONSOFTWARE_NAME_SIGNAL": 4,
+    "NONSOFTWARE_TEXT_SIGNAL": 20,
+    "NO_DOMINANT_LANGUAGE": 8,
+    "PASS_PROSPECTIVE_METADATA_RULES": 882
+  },
+  "curation_states": {
+    "AUTO_EXCLUDE": 4,
+    "AUTO_INCLUDE": 882,
+    "MANUAL_REVIEW": 49
+  },
+  "decision_rule": {
+    "quantity_pass": "AUTO_INCLUDE projects with >=2 usable months in primary Model A >=500",
+    "robustness_health_check": "Report AUTO_INCLUDE projects with >=12 usable months; do not use this threshold to select the primary sample unless separately justified.",
+    "supplement_reopen": "Only if primary Model A AUTO_INCLUDE N<500 or later construct-critical coverage falls below 500."
+  },
+  "frozen_variable_file_status": {
+    "all_context_files_200": 930,
+    "code_change_lines_sum_200": 935,
+    "contributors_200": 934,
+    "issue_age_200": 928,
+    "issue_resolution_200": 927,
+    "issues_new_200": 930
+  },
+  "hard_auto_exclusions": [
+    "GitHub fork flag",
+    "GitHub mirror_url",
+    "GitHub template flag",
+    "repository name exactly .github"
+  ],
+  "input_full24_candidates": 935,
+  "manual_review_signals": [
+    "current archived/disabled state",
+    "no dominant language",
+    "canonical redirect/transfer",
+    "strong docs/data/tutorial/course/demo/example/benchmark naming or text signals",
+    "mirror text signal"
+  ],
+  "metric_magnitudes_persisted": false,
+  "modelB_note": "Model B count coverage is deliberately conservative: only months with explicit issue_age levels are counted. Potential zero-backlog structural months are not imputed in R3.",
+  "model_coverage": {
+    "A": {
+      "AUTO_INCLUDE_plus_MANUAL_projects_ge12_months": 632,
+      "AUTO_INCLUDE_plus_MANUAL_projects_ge2_months": 849,
+      "AUTO_INCLUDE_project_month_NT": 13808,
+      "AUTO_INCLUDE_projects_ge12_months": 600,
+      "AUTO_INCLUDE_projects_ge18_months": 465,
+      "AUTO_INCLUDE_projects_ge2_months": 805,
+      "AUTO_INCLUDE_projects_ge6_months": 717
+    },
+    "B_conservative": {
+      "AUTO_INCLUDE_plus_MANUAL_projects_ge12_months": 632,
+      "AUTO_INCLUDE_plus_MANUAL_projects_ge2_months": 849,
+      "AUTO_INCLUDE_project_month_NT": 13808,
+      "AUTO_INCLUDE_projects_ge12_months": 600,
+      "AUTO_INCLUDE_projects_ge18_months": 465,
+      "AUTO_INCLUDE_projects_ge2_months": 805,
+      "AUTO_INCLUDE_projects_ge6_months": 717
+    },
+    "C": {
+      "AUTO_INCLUDE_plus_MANUAL_projects_ge12_months": 633,
+      "AUTO_INCLUDE_plus_MANUAL_projects_ge2_months": 849,
+      "AUTO_INCLUDE_project_month_NT": 13825,
+      "AUTO_INCLUDE_projects_ge12_months": 601,
+      "AUTO_INCLUDE_projects_ge18_months": 466,
+      "AUTO_INCLUDE_projects_ge2_months": 805,
+      "AUTO_INCLUDE_projects_ge6_months": 718
+    },
+    "D": {
+      "AUTO_INCLUDE_plus_MANUAL_projects_ge12_months": 919,
+      "AUTO_INCLUDE_plus_MANUAL_projects_ge2_months": 920,
+      "AUTO_INCLUDE_project_month_NT": 20852,
+      "AUTO_INCLUDE_projects_ge12_months": 870,
+      "AUTO_INCLUDE_projects_ge18_months": 869,
+      "AUTO_INCLUDE_projects_ge2_months": 871,
+      "AUTO_INCLUDE_projects_ge6_months": 871
+    }
+  },
+  "performance_values_used_for_curation": false,
+  "preferred_projects": 750,
+  "protocol": "OMOSSP_R3_OUTCOME_BLIND_PROJECT_CURATION_EXACT_VARIABLE_COVERAGE_R1",
+  "sample_floor_projects": 500,
+  "selection_integrity": {
+    "outcome_magnitude_inspected_by_script": false,
+    "performance_ranking": false,
+    "sample_selection_uses_only_metadata_and_field_presence": true
+  }
+}
