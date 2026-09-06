@@ -1,0 +1,106 @@
+{
+  "protocol": "OMOSSP_PHASE_C8_C11_BATCH1_COMPLETE_CHECKPOINT_R1",
+  "date": "2026-09-06",
+  "batch": "B001",
+  "checkpoint_state": "BATCH_CHECKPOINT_COMMITTED",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "selection_freeze_sha256": "6c1dcae51c3be074cf0ddc825f0c8d7fdc455c0b8bf19cebc23c0b4d2915c243",
+  "membership_sha256": "3ab635da2d7e94b010c7d9030df8d4806c980c74b0190f9189f83b148b63c93f",
+  "rows": 100,
+  "shards": [
+    {
+      "shard": 1,
+      "run_id": 34013588304,
+      "job_id": 101433461763,
+      "acquisition_sha256": "135c2be2548658cce0a4c8c3870e918098f29bd7eab756192475343d1401930e",
+      "runner_replay_sha256": "3e1f4ccedfa0aefcce15ffe611bcac74a9de2f44103a595a687cd2d62c6aa00d",
+      "attempts": 77,
+      "cards": 68,
+      "success_captured": 68,
+      "not_found": 8,
+      "access_incomplete": 1,
+      "auto_accept_p1": 7,
+      "auto_defer": 18,
+      "human_gate": 0,
+      "validation_errors": 0
+    },
+    {
+      "shard": 2,
+      "run_id": 34014322491,
+      "job_id": 101435376962,
+      "acquisition_sha256": "91782090609df414cdac04290995e28ad850a76b089d2201bd7342904150aacb",
+      "runner_replay_sha256": "0b40aa707e2aed5fe2d1ddee551d3e88e9735d2599ae102cb9ced69ef6c135f3",
+      "attempts": 66,
+      "cards": 57,
+      "success_captured": 57,
+      "not_found": 9,
+      "access_incomplete": 0,
+      "auto_accept_p1": 2,
+      "auto_defer": 23,
+      "human_gate": 0,
+      "validation_errors": 0
+    },
+    {
+      "shard": 3,
+      "run_id": 34014528018,
+      "job_id": 101435911380,
+      "acquisition_sha256": "ec413a8767eb3007a7e04ee8abaf57d64b70e1dfee80375a08872a3e84481811",
+      "runner_replay_sha256": "3842e9657e3273ae9492b436423afe104cbe32ea2c1980dc5b3a9b410e2dbfab",
+      "attempts": 68,
+      "cards": 64,
+      "success_captured": 64,
+      "not_found": 4,
+      "access_incomplete": 0,
+      "auto_accept_p1": 4,
+      "auto_defer": 21,
+      "human_gate": 0,
+      "validation_errors": 0
+    },
+    {
+      "shard": 4,
+      "run_id": 34014727738,
+      "job_id": 101436433883,
+      "acquisition_sha256": "f51babaf664d3c06fe7e122c8f879d955ddb668dc4e271df0fe60bc5f1a65b7a",
+      "runner_replay_sha256": "b31a6f448d46782bd417e3f839e91725d2a28a47923ca3a38bcfd05ffceb0285",
+      "attempts": 78,
+      "cards": 71,
+      "success_captured": 71,
+      "not_found": 6,
+      "access_incomplete": 1,
+      "auto_accept_p1": 6,
+      "auto_defer": 19,
+      "human_gate": 0,
+      "validation_errors": 0
+    }
+  ],
+  "aggregate": {
+    "rows": 100,
+    "exact_route_attempts": 289,
+    "evidence_cards": 260,
+    "success_captured": 260,
+    "not_found_for_endpoint": 27,
+    "access_incomplete_after_retries": 2,
+    "evidence_class_order_violations": 0,
+    "duplicate_routes": 0,
+    "auto_accept_p1": 19,
+    "auto_defer": 81,
+    "human_gate": 0,
+    "runner_validation_errors": 0
+  },
+  "seals": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "search_used": false,
+    "name_similarity_inference_used": false,
+    "paid_resources_used": false
+  },
+  "interpretation": {
+    "p1_count_is_yield_estimate": false,
+    "full_frame_generalization_prohibited": true
+  },
+  "authorization": {
+    "batch1_complete": true,
+    "full_frame_execution_authorized": false,
+    "next_stage": "Batch-1 closeout review and deterministic Batch-2 authorization gate"
+  }
+}
