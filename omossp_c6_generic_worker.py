@@ -160,146 +160,179 @@ def relevant_json_extract(body:bytes,kind:str)->str:
     return bounded(json.dumps(o,ensure_ascii=False,indent=2))
 
 def acquire(row):
-    cards=[]; attempts=[]; locators=[]
+    cards=[]; attempts=[]; locators=[]; skipped_routes=[]
     repo=row["source_repo_name"]
     repo_url=f"https://gitee.com/{repo}"
-    rec,body=fetch(repo_url); attempts.append({"class_id":"EC01","url":repo_url,"transport":rec})
-    repo_text=""
-    default_branch="master"
+
+    # EC01
+    rec,body=fetch(repo_url)
+    attempts.append({"class_id":"EC01","url":repo_url,"transport":rec})
+    repo_text=""; default_branch="master"
     if rec["terminal"]=="SUCCESS_CAPTURED":
         ctype=rec["attempts"][-1].get("content_type")
         repo_text=decode(body,ctype)
         if ctype and "text/html" in ctype.lower(): repo_text=html_text(repo_text)
         default_branch=parse_default_branch(repo_text)
-        ex=bounded(repo_text)
-        cards.append(make_card(row,"EC01","exact source repository README/project docs","EXACT_SOURCE_REPOSITORY_PAGE",repo_url,rec,body,ex,f"EC01 exact source repository page; default_branch={default_branch}."))
+        cards.append(make_card(row,"EC01","exact source repository README/project docs","EXACT_SOURCE_REPOSITORY_PAGE",repo_url,rec,body,bounded(repo_text),f"EC01 exact source repository page; default_branch={default_branch}."))
         locators.extend(parse_repo_explicit_links(repo_text))
     if row.get("upstream_or_project_locator_raw"):
         locators.append({"origin":"FROZEN_AUTHORITY_LOCATOR","url":row["upstream_or_project_locator_raw"]})
 
+    # EC02
     is_package=(row["source_container_class"] in PACKAGE_CLASSES or repo.startswith("src-openeuler/") or repo.startswith("src-anolis-"))
     if is_package:
         base=repo.rsplit("/",1)[-1]
         spec_url=f"https://gitee.com/{repo}/raw/{default_branch}/{base}.spec"
-        rec2,b2=fetch(spec_url); attempts.append({"class_id":"EC02","url":spec_url,"transport":rec2})
+        rec2,b2=fetch(spec_url)
+        attempts.append({"class_id":"EC02","url":spec_url,"transport":rec2})
         if rec2["terminal"]=="SUCCESS_CAPTURED":
             spec=decode(b2,rec2["attempts"][-1].get("content_type"))
-            lines=[ln for ln in spec.splitlines() if re.match(r"^(Name|Version|URL|Homepage|HomePage|Source\d*|VCS|SCM|Upstream|ProjectURL)\s*:",ln.strip(),re.I)]
-            extract="\n".join(lines[:60])+"\n\n"+bounded(spec,900)
-            card=make_card(row,"EC02","exact package spec/source/homepage/VCS metadata","EXACT_PACKAGE_SPEC_METADATA",spec_url,rec2,b2,extract,"EC02 deterministic package spec capture; locators parsed only from explicit source-controlled fields.")
-            cards.append(card)
+            lines=[ln for ln in spec.splitlines() if re.match(r"^(Name|Version|URL|Homepage|HomePage|Source\\d*|VCS|SCM|Upstream|ProjectURL)\\s*:",ln.strip(),re.I)]
+            extract="\\n".join(lines[:60])+"\\n\\n"+bounded(spec,900)
+            spec_card=make_card(row,"EC02","exact package spec/source/homepage/VCS metadata","EXACT_PACKAGE_SPEC_METADATA",spec_url,rec2,b2,extract,"EC02 deterministic package spec capture; locators parsed only from explicit source-controlled fields.")
+            cards.append(spec_card)
             for x in parse_macros_and_locators(spec):
-                x["origin_card_id"]=card["evidence_id"]; locators.append(x)
+                x["origin_card_id"]=spec_card["evidence_id"]
+                locators.append(x)
 
-    # Explicit migration links from EC01.
-    for loc in list(locators):
-        u=loc["url"]
+    # Deduplicate explicit locators before any follow.
+    seen=set(); dedup=[]
+    for loc in locators:
+        key=(loc.get("origin",""),loc.get("field",""),loc.get("url",""))
+        if key not in seen:
+            seen.add(key); dedup.append(loc)
+    locators=dedup
+
+    migrations={}
+    githubs={}
+    registries={}
+    gitlabs={}
+    project_sites={}
+
+    for loc in locators:
+        u=loc.get("url","").strip()
+        if not u: continue
+        p=urlparse(u)
+        if p.scheme.lower()!="https":
+            skipped_routes.append({"url":u,"origin":loc.get("origin",""),"reason":"UNQUALIFIED_NON_HTTPS_LOCATOR__NO_FETCH__NONTERMINAL"})
+            continue
         if "atomgit.com/" in u:
-            recx,bx=fetch(u); attempts.append({"class_id":"EC07","url":u,"transport":recx})
-            if recx["terminal"]=="SUCCESS_CAPTURED":
-                tx=decode(bx,recx["attempts"][-1].get("content_type"))
-                if recx["attempts"][-1].get("content_type") and "text/html" in recx["attempts"][-1].get("content_type").lower(): tx=html_text(tx)
-                cards.append(make_card(row,"EC07","official migration/mirror/deprecation notice","SOURCE_CONTAINER_MIGRATION_NOTICE",u,recx,bx,bounded(tx),"EC07 explicit migration target followed from source-controlled evidence."))
-
-    # Provider/registry dispatch from explicit locators only.
-    dispatched=set()
-    proposals=[]
-    for loc in list(locators):
-        u=loc["url"]; origin=loc.get("origin","")
+            migrations[u]=loc
+            continue
         gh=github_root(u)
         if gh:
             root,owner,name=gh
-            if root in dispatched: continue
-            dispatched.add(root)
-            api=f"https://api.github.com/repos/{owner}/{name}"
-            reca,ba=fetch(api); attempts.append({"class_id":"EC03","url":api,"transport":reca})
-            meta_card=None
-            if reca["terminal"]=="SUCCESS_CAPTURED":
-                ex=relevant_json_extract(ba,"github_meta")
-                meta_card=make_card(row,"EC03","provider-native upstream metadata","GITHUB_PROVIDER_NATIVE_REPOSITORY_METADATA",api,reca,ba,ex,f"EC03 GitHub provider-native metadata derived from explicit locator {root}.")
-                cards.append(meta_card)
-            readme=f"https://api.github.com/repos/{owner}/{name}/readme"
-            recr,br=fetch(readme); attempts.append({"class_id":"EC06","url":readme,"transport":recr})
-            readme_card=None
-            if recr["terminal"]=="SUCCESS_CAPTURED":
-                try:
-                    o=json.loads(br.decode()); txt=base64.b64decode(o.get("content","")).decode("utf-8",errors="replace") if o.get("encoding")=="base64" else decode(br,recr["attempts"][-1].get("content_type"))
-                except Exception: txt=decode(br,recr["attempts"][-1].get("content_type"))
-                readme_card=make_card(row,"EC06","official canonical repository README/project docs","GITHUB_PROVIDER_NATIVE_README",readme,recr,br,bounded(txt),f"EC06 project-controlled README from explicit GitHub locator {root}.")
-                cards.append(readme_card)
-            if origin=="EC02_SPEC_FIELD" and meta_card and readme_card:
-                try: meta=json.loads(ba.decode())
-                except Exception: meta={}
-                if meta.get("fork") is False and meta.get("html_url","").rstrip("/")==root.rstrip("/"):
-                    readme_card["evidence_grade"]="P1"
-                    proposals.append({
-                      "template":"T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
-                      "basis_type":"OFFICIAL_CANONICAL_REPOSITORY_SET","basis_value":root,
-                      "p1_card_id":readme_card["evidence_id"]
-                    })
+            d=githubs.setdefault(root,{"owner":owner,"name":name,"origins":[]})
+            d["origins"].append(loc)
             continue
-
         reg=registry_kind(u)
         if reg:
-            kind,ident=reg; key=f"{kind}:{ident}"
-            if key in dispatched: continue
-            dispatched.add(key)
-            if kind=="Hackage":
-                ru=f"https://hackage.haskell.org/package/{ident}"
-                rr,bb=fetch(ru); attempts.append({"class_id":"EC05","url":ru,"transport":rr})
-                if rr["terminal"]=="SUCCESS_CAPTURED":
-                    tx=decode(bb,rr["attempts"][-1].get("content_type"))
-                    if rr["attempts"][-1].get("content_type") and "text/html" in rr["attempts"][-1].get("content_type").lower(): tx=html_text(tx)
-                    challenge=("Client Challenge" in tx or "JavaScript is disabled" in tx)
-                    card=make_card(row,"EC05","official project/distribution registry","HACKAGE_OFFICIAL_REGISTRY",ru,rr,bb,bounded(tx),f"EC05 Hackage registry route derived from explicit locator; challenge={challenge}.")
-                    cards.append(card)
-                    if origin=="EC02_SPEC_FIELD" and not challenge and re.search(r"(?mi)^\s*"+re.escape(ident)+r"\s*$",tx):
-                        card["evidence_grade"]="P1"
-                        proposals.append({"template":"T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR","basis_type":"OFFICIAL_PROJECT_REGISTRY_ID","basis_value":f"Hackage:{ident}","p1_card_id":card["evidence_id"]})
-            elif kind=="MetaCPAN":
-                ru=f"https://fastapi.metacpan.org/v1/release/{ident}"
-                rr,bb=fetch(ru); attempts.append({"class_id":"EC05","url":ru,"transport":rr})
-                if rr["terminal"]=="SUCCESS_CAPTURED":
-                    ex=relevant_json_extract(bb,"metacpan")
-                    card=make_card(row,"EC05","official project/distribution registry","METACPAN_PROVIDER_NATIVE_REGISTRY",ru,rr,bb,ex,"EC05 MetaCPAN provider-native registry route derived from explicit release locator.")
-                    cards.append(card)
-                    try:o=json.loads(bb.decode())
-                    except Exception:o={}
-                    if origin=="EC02_SPEC_FIELD" and o.get("distribution")==ident:
-                        card["evidence_grade"]="P1"
-                        proposals.append({"template":"T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR","basis_type":"OFFICIAL_PROJECT_REGISTRY_ID","basis_value":f"MetaCPAN:{ident}","p1_card_id":card["evidence_id"]})
-            elif kind=="PyPI":
-                ru=f"https://pypi.org/pypi/{ident}/json"
-                rr,bb=fetch(ru); attempts.append({"class_id":"EC05","url":ru,"transport":rr})
-                if rr["terminal"]=="SUCCESS_CAPTURED":
-                    ex=relevant_json_extract(bb,"pypi")
-                    card=make_card(row,"EC05","official project/distribution registry","PYPI_PROVIDER_NATIVE_REGISTRY",ru,rr,bb,ex,"EC05 PyPI provider-native registry route derived from explicit project locator.")
-                    cards.append(card)
-                    try:o=json.loads(bb.decode())
-                    except Exception:o={}
-                    if origin=="EC02_SPEC_FIELD" and str(o.get("info",{}).get("name","")).casefold()==ident.casefold():
-                        card["evidence_grade"]="P1"
-                        proposals.append({"template":"T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR","basis_type":"OFFICIAL_PROJECT_REGISTRY_ID","basis_value":f"PyPI:{o['info']['name']}","p1_card_id":card["evidence_id"]})
+            kind,ident=reg
+            registries[(kind,ident)]={"kind":kind,"ident":ident,"origins":registries.get((kind,ident),{}).get("origins",[])+[loc]}
             continue
-
-        p=urlparse(u)
         host=p.netloc.lower()
         if host in {"invent.kde.org","gitlab.com"} or "gitlab" in host:
-            root=u.rstrip("/")
-            if root in dispatched: continue
-            dispatched.add(root)
-            rr,bb=fetch(root); attempts.append({"class_id":"EC06","url":root,"transport":rr})
+            gitlabs.setdefault(u.rstrip("/"),{"origins":[]})["origins"].append(loc)
+            continue
+        # Do not re-follow the same source repository as a project-site route.
+        if u.rstrip("/")==repo_url.rstrip("/"):
+            continue
+        project_sites.setdefault(u,{"origins":[]})["origins"].append(loc)
+
+    # EC03 provider-native upstream metadata
+    gh_state={}
+    for root in sorted(githubs):
+        d=githubs[root]
+        api=f"https://api.github.com/repos/{d['owner']}/{d['name']}"
+        rr,bb=fetch(api); attempts.append({"class_id":"EC03","url":api,"transport":rr})
+        meta_card=None; meta={}
+        if rr["terminal"]=="SUCCESS_CAPTURED":
+            ex=relevant_json_extract(bb,"github_meta")
+            meta_card=make_card(row,"EC03","provider-native upstream metadata","GITHUB_PROVIDER_NATIVE_REPOSITORY_METADATA",api,rr,bb,ex,f"EC03 GitHub provider-native metadata derived from explicit locator {root}.")
+            cards.append(meta_card)
+            try: meta=json.loads(bb.decode())
+            except Exception: meta={}
+        gh_state[root]={"meta_card":meta_card,"meta":meta,"readme_card":None}
+
+    # EC04 explicit project-site/docs candidates; HTTPS only.
+    for u in sorted(project_sites):
+        rr,bb=fetch(u); attempts.append({"class_id":"EC04","url":u,"transport":rr})
+        if rr["terminal"]=="SUCCESS_CAPTURED":
+            tx=decode(bb,rr["attempts"][-1].get("content_type"))
+            if rr["attempts"][-1].get("content_type") and "text/html" in rr["attempts"][-1].get("content_type").lower(): tx=html_text(tx)
+            cards.append(make_card(row,"EC04","official project site/docs","EXPLICIT_PROJECT_SITE_CANDIDATE",u,rr,bb,bounded(tx),f"EC04 exact HTTPS site route followed only from explicit source-controlled locator {u}; no P1 assigned from site access alone."))
+
+    # EC05 official registry routes
+    registry_state={}
+    for kind,ident in sorted(registries):
+        origins=registries[(kind,ident)]["origins"]
+        card=None; valid=False
+        if kind=="Hackage":
+            ru=f"https://hackage.haskell.org/package/{ident}"
+            rr,bb=fetch(ru); attempts.append({"class_id":"EC05","url":ru,"transport":rr})
             if rr["terminal"]=="SUCCESS_CAPTURED":
                 tx=decode(bb,rr["attempts"][-1].get("content_type"))
                 if rr["attempts"][-1].get("content_type") and "text/html" in rr["attempts"][-1].get("content_type").lower(): tx=html_text(tx)
-                card=make_card(row,"EC06","official canonical repository README/project docs","EXPLICIT_GITLAB_PROJECT_PAGE",root,rr,bb,bounded(tx),f"EC06 exact GitLab-family project page from explicit locator {root}.")
+                challenge=("Client Challenge" in tx or "JavaScript is disabled" in tx)
+                card=make_card(row,"EC05","official project/distribution registry","HACKAGE_OFFICIAL_REGISTRY",ru,rr,bb,bounded(tx),f"EC05 Hackage registry route derived from explicit locator; challenge={challenge}.")
                 cards.append(card)
-                if origin=="EC02_SPEC_FIELD":
-                    card["evidence_grade"]="P1"
-                    proposals.append({"template":"T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1","basis_type":"OFFICIAL_CANONICAL_REPOSITORY_SET","basis_value":root,"p1_card_id":card["evidence_id"]})
-            continue
+                valid=(not challenge and re.search(r"(?mi)^\\s*"+re.escape(ident)+r"\\s*$",tx) is not None)
+        elif kind=="MetaCPAN":
+            ru=f"https://fastapi.metacpan.org/v1/release/{ident}"
+            rr,bb=fetch(ru); attempts.append({"class_id":"EC05","url":ru,"transport":rr})
+            if rr["terminal"]=="SUCCESS_CAPTURED":
+                ex=relevant_json_extract(bb,"metacpan")
+                card=make_card(row,"EC05","official project/distribution registry","METACPAN_PROVIDER_NATIVE_REGISTRY",ru,rr,bb,ex,"EC05 MetaCPAN provider-native registry route derived from explicit release locator.")
+                cards.append(card)
+                try:o=json.loads(bb.decode())
+                except Exception:o={}
+                valid=(o.get("distribution")==ident)
+        elif kind=="PyPI":
+            ru=f"https://pypi.org/pypi/{ident}/json"
+            rr,bb=fetch(ru); attempts.append({"class_id":"EC05","url":ru,"transport":rr})
+            if rr["terminal"]=="SUCCESS_CAPTURED":
+                ex=relevant_json_extract(bb,"pypi")
+                card=make_card(row,"EC05","official project/distribution registry","PYPI_PROVIDER_NATIVE_REGISTRY",ru,rr,bb,ex,"EC05 PyPI provider-native registry route derived from explicit project locator.")
+                cards.append(card)
+                try:o=json.loads(bb.decode())
+                except Exception:o={}
+                valid=(str(o.get("info",{}).get("name","")).casefold()==ident.casefold())
+        registry_state[(kind,ident)]={"card":card,"valid":valid,"origins":origins}
 
-    # OpenHarmony official manifest is a frozen EC08 governance route, never automatic P1.
+    # EC06 canonical repository docs/pages
+    for root in sorted(githubs):
+        d=githubs[root]
+        readme=f"https://api.github.com/repos/{d['owner']}/{d['name']}/readme"
+        rr,bb=fetch(readme); attempts.append({"class_id":"EC06","url":readme,"transport":rr})
+        if rr["terminal"]=="SUCCESS_CAPTURED":
+            try:
+                o=json.loads(bb.decode())
+                tx=base64.b64decode(o.get("content","")).decode("utf-8",errors="replace") if o.get("encoding")=="base64" else decode(bb,rr["attempts"][-1].get("content_type"))
+            except Exception:
+                tx=decode(bb,rr["attempts"][-1].get("content_type"))
+            c=make_card(row,"EC06","official canonical repository README/project docs","GITHUB_PROVIDER_NATIVE_README",readme,rr,bb,bounded(tx),f"EC06 project-controlled README from explicit GitHub locator {root}.")
+            cards.append(c); gh_state[root]["readme_card"]=c
+
+    gitlab_state={}
+    for root in sorted(gitlabs):
+        rr,bb=fetch(root); attempts.append({"class_id":"EC06","url":root,"transport":rr})
+        c=None
+        if rr["terminal"]=="SUCCESS_CAPTURED":
+            tx=decode(bb,rr["attempts"][-1].get("content_type"))
+            if rr["attempts"][-1].get("content_type") and "text/html" in rr["attempts"][-1].get("content_type").lower(): tx=html_text(tx)
+            c=make_card(row,"EC06","official canonical repository README/project docs","EXPLICIT_GITLAB_PROJECT_PAGE",root,rr,bb,bounded(tx),f"EC06 exact GitLab-family project page from explicit locator {root}.")
+            cards.append(c)
+        gitlab_state[root]={"card":c,"origins":gitlabs[root]["origins"]}
+
+    # EC07 migration/mirror/deprecation only after EC03-EC06
+    for u in sorted(migrations):
+        rr,bb=fetch(u); attempts.append({"class_id":"EC07","url":u,"transport":rr})
+        if rr["terminal"]=="SUCCESS_CAPTURED":
+            tx=decode(bb,rr["attempts"][-1].get("content_type"))
+            if rr["attempts"][-1].get("content_type") and "text/html" in rr["attempts"][-1].get("content_type").lower(): tx=html_text(tx)
+            cards.append(make_card(row,"EC07","official migration/mirror/deprecation notice","SOURCE_CONTAINER_MIGRATION_NOTICE",u,rr,bb,bounded(tx),"EC07 deduplicated explicit migration target followed from source-controlled evidence."))
+
+    # EC08 governance/manifest last.
     if repo.startswith("openharmony/"):
         manifest="https://gitee.com/openharmony/manifest/raw/master/ohos/ohos.xml"
         rr,bb=fetch(manifest); attempts.append({"class_id":"EC08","url":manifest,"transport":rr})
@@ -307,10 +340,34 @@ def acquire(row):
             tx=decode(bb,rr["attempts"][-1].get("content_type"))
             base=repo.split("/",1)[1]
             lines=[ln.strip() for ln in tx.splitlines() if base in ln or "<remote " in ln]
-            ex="\n".join(lines[:30])
-            cards.append(make_card(row,"EC08","official governance/manifest/release-note evidence","OPENHARMONY_OFFICIAL_MANIFEST",manifest,rr,bb,ex,"EC08 official OpenHarmony manifest exact-name membership check; repository/component evidence only, never automatic theoretical project identity."))
+            cards.append(make_card(row,"EC08","official governance/manifest/release-note evidence","OPENHARMONY_OFFICIAL_MANIFEST",manifest,rr,bb,"\\n".join(lines[:30]),"EC08 official OpenHarmony manifest exact-name membership check; repository/component evidence only, never automatic theoretical project identity."))
 
-    # Deduplicate proposals conservatively.
+    # Verify frozen class order among attempted routes.
+    priority={"EC01":1,"EC02":2,"EC03":3,"EC04":4,"EC05":5,"EC06":6,"EC07":7,"EC08":8}
+    seq=[priority[a["class_id"]] for a in attempts]
+    if seq!=sorted(seq):
+        raise RuntimeError(f"FROZEN_EVIDENCE_CLASS_ORDER_VIOLATION rank={row['source_scale_rank']} seq={seq}")
+
+    proposals=[]
+    for root,d in githubs.items():
+        origins=d["origins"]; state=gh_state.get(root,{})
+        meta=state.get("meta") or {}; readme_card=state.get("readme_card")
+        if any(o.get("origin")=="EC02_SPEC_FIELD" for o in origins) and state.get("meta_card") and readme_card:
+            if meta.get("fork") is False and str(meta.get("html_url","")).rstrip("/")==root.rstrip("/"):
+                readme_card["evidence_grade"]="P1"
+                proposals.append({"template":"T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1","basis_type":"OFFICIAL_CANONICAL_REPOSITORY_SET","basis_value":root,"p1_card_id":readme_card["evidence_id"]})
+
+    for (kind,ident),state in registry_state.items():
+        if state["card"] and state["valid"] and any(o.get("origin")=="EC02_SPEC_FIELD" for o in state["origins"]):
+            state["card"]["evidence_grade"]="P1"
+            basis=f"{kind}:{ident}" if kind!="PyPI" else f"PyPI:{ident}"
+            proposals.append({"template":"T5_OFFICIAL_PROJECT_REGISTRY_IDENTITY_WITH_EXACT_SOURCE_ROW_LOCATOR","basis_type":"OFFICIAL_PROJECT_REGISTRY_ID","basis_value":basis,"p1_card_id":state["card"]["evidence_id"]})
+
+    for root,state in gitlab_state.items():
+        if state["card"] and any(o.get("origin")=="EC02_SPEC_FIELD" for o in state["origins"]):
+            state["card"]["evidence_grade"]="P1"
+            proposals.append({"template":"T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1","basis_type":"OFFICIAL_CANONICAL_REPOSITORY_SET","basis_value":root,"p1_card_id":state["card"]["evidence_id"]})
+
     uniq={}
     for p in proposals: uniq[(p["basis_type"],p["basis_value"])]=p
     vals=list(uniq.values())
@@ -330,6 +387,7 @@ def acquire(row):
       "cards":cards,
       "attempts":attempts,
       "explicit_locators":locators,
+      "skipped_routes":skipped_routes,
       "decision_template":decision_template,
       "proposed":proposed,
       "evidence_exhaustion_eligible":False
