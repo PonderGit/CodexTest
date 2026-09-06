@@ -1,0 +1,64 @@
+{
+  "protocol": "OMOSSP_C21_RANK242_CORRECTIVE_ADDENDUM_R1",
+  "status": "QUALIFIED__HG02_RANK242_RESOLVED__BATCH3_SHARD2_NOT_AUTHORIZED",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "batch3_membership_sha256": "74c1b9ca2f362ea5cb755b50cadcf3a5820ab59891445bd79fc325da2f28ccdd",
+  "batch3_selection_freeze_sha256": "8ca3a8bb179992c9fbb2ecc00fbba9be7ed2a3857bb4f8f072ba00b9c0f91ebc",
+  "historical_c18_worker_sha256": "cfc3145818e4ed86dff774d08a19aaf17bf04673fba92f39b2e948db77195297",
+  "c21_worker": {
+    "path": "omossp_c21_production_worker.py",
+    "sha256": "7decd7442e311e75c0d35ea41e1fee112138c44cdf1dd0001ef9c73035b65506",
+    "git_blob_sha": "f5c0c890a5369f80e8569924d39887a87d829c68",
+    "promotion_commit": "8a57a1c1a7f6d4554c37989cbac25ed1462bac67"
+  },
+  "regression_fixture": {
+    "path": "production_regression/omossp_c21_locator_role_fixtures.json",
+    "sha256": "cb031f18cf20e2ef013118f767c78cf0363b264600a0c9e8db958cc8c7bcda26",
+    "git_blob_sha": "f27b75b47c1b82fe9ed474faf7cb0bf93a1a9c32",
+    "accepted_p1_inventory_count": 41
+  },
+  "regression_test": {
+    "path": "production_regression/test_omossp_c21_locator_role.py",
+    "sha256": "1fbf021d6f85b3951048a875caf403b58107190beab947d1602ff45fc0399da0",
+    "git_blob_sha": "075828535bc352b1e418b63ffded4f60db1cf532"
+  },
+  "qualification": {
+    "pr": 25,
+    "pr_merged": false,
+    "run_id": 34021092036,
+    "job_id": 101453699822,
+    "conclusion": "success",
+    "free_only_gate": "PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE",
+    "locator_role_regression": "PASS",
+    "accepted_p1_replay": "41_OF_41_STABLE",
+    "rank242_hg02_role_resolution": "PASS",
+    "source_only_auto_p1": "BLOCKED",
+    "url_vcs_conflict_hg02_semantics": "PRESERVED"
+  },
+  "exact_runner": {
+    "file": "POST_AUTO6_R4B_HG07_R5_AUTONOMOUS_EXECUTION_RUNNER_R2.py",
+    "sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119"
+  },
+  "corrective_bundle": {
+    "drive_id": "1ygVhvyoOgdjU-I1R5KYh2QXlvjaJ57ObtgE9nogHTXo",
+    "canonical_sha256": "5c249290f1f1e5b1eba89a075450ddcdaf1d883b710c7d2edefaa85069b71c36",
+    "network_reacquisition": false
+  },
+  "corrective_replay": {
+    "drive_id": "1_gW6G5o2jdGu6OC_kz4OuVZuBoaexb7171O7NFU2f1k",
+    "canonical_sha256": "c38b047120c1a08286210eb0121ca6949a2cba43020b0a96a73108b0c82a74f0",
+    "source_scale_rank": "242",
+    "source_repo_name": "src-openeuler/slirp4netns",
+    "route": "AUTO_ACCEPT_P1",
+    "entity_identity_basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+    "entity_identity_basis_value": "https://github.com/rootless-containers/slirp4netns",
+    "final_project_entity_id": "",
+    "final_id_deferred": true
+  },
+  "performance_outcomes_accessed": false,
+  "final_project_entity_id_minted": false,
+  "batch3_membership_changed": false,
+  "original_c19_outputs_overwritten": false,
+  "batch3_shard2_authorized": false,
+  "full_frame_authorized": false
+}
