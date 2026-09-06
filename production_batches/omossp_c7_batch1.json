@@ -1,7 +1,6 @@
 {
   "protocol": "OMOSSP_PHASE_C7_PRODUCTION_BATCH1_FREEZE_R1",
   "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
-  "batch_sha256": "6c1dcae51c3be074cf0ddc825f0c8d7fdc455c0b8bf19cebc23c0b4d2915c243",
   "selection_rule": {
     "eligibility": "performance_outcomes_accessed=false AND entity_validation_state_operational NOT IN {EXACT_ENTITY_VALIDATED, NON_SOFTWARE}",
     "ordering": "source_scale_rank ascending",
@@ -1016,5 +1015,7 @@
       "entity_validation_state_operational": "NOT_ADJUDICATED__P1_REQUIRED",
       "discovery_state": "SOURCE_EVIDENCE_ACQUISITION_PENDING"
     }
-  ]
+  ],
+  "selection_freeze_sha256": "6c1dcae51c3be074cf0ddc825f0c8d7fdc455c0b8bf19cebc23c0b4d2915c243",
+  "membership_sha256": "3ab635da2d7e94b010c7d9030df8d4806c980c74b0190f9189f83b148b63c93f"
 }
