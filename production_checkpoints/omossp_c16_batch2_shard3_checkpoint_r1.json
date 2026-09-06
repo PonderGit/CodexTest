@@ -1,0 +1,118 @@
+{
+  "protocol": "OMOSSP_PHASE_C16_BATCH2_SHARD3_CHECKPOINT_R1",
+  "date": "2026-09-06",
+  "batch": "B002",
+  "shard": 3,
+  "checkpoint_state": "CHECKPOINT_COMMITTED",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "selection_freeze_sha256": "7836029c70a7ce55e5efcf5af6fbb06ea7f7fd1038dedcb0957ebf9dd0a4442b",
+  "membership_sha256": "1a801f5c6d9d98ebda950b3cf8d43676e091a7d335346495938d8f9548095b80",
+  "shard_position_range": [
+    51,
+    75
+  ],
+  "shard_ranks": [
+    173,
+    174,
+    175,
+    176,
+    177,
+    178,
+    179,
+    180,
+    182,
+    183,
+    186,
+    187,
+    188,
+    189,
+    190,
+    191,
+    192,
+    193,
+    194,
+    195,
+    197,
+    198,
+    199,
+    201,
+    202
+  ],
+  "execution": {
+    "run_id": 34017027820,
+    "job_id": 101442498123,
+    "conclusion": "success",
+    "acquisition_canonical_sha256": "a26235e2fa742332bf92ed6df009f019b55a2a13d0c8a4eca7f8304c920f9bb1",
+    "exact_route_attempts": 76,
+    "evidence_cards": 68,
+    "success_captured": 68,
+    "not_found_for_endpoint": 7,
+    "access_incomplete_after_retries": 1,
+    "evidence_class_order_violations": 0,
+    "duplicate_routes": 0
+  },
+  "exact_runner_r2": {
+    "runner_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+    "replay_canonical_sha256": "c537723e162fd0495c575a50d10b65b24194c1bb74d641a711d68010ef9c9d74",
+    "rows": 25,
+    "auto_accept_p1": 4,
+    "auto_defer": 21,
+    "human_gate": 0,
+    "validation_errors": 0,
+    "final_project_entity_ids_minted": 0
+  },
+  "accepted_p1": [
+    {
+      "rank": 173,
+      "repo": "src-openeuler/perl-FileHandle-Unget",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "MetaCPAN:FileHandle-Unget"
+    },
+    {
+      "rank": 178,
+      "repo": "src-anolis-os/fwupd",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/fwupd/fwupd"
+    },
+    {
+      "rank": 186,
+      "repo": "src-openeuler/python-pudb",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/inducer/pudb"
+    },
+    {
+      "rank": 193,
+      "repo": "src-openeuler/selinux-policy",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/fedora-selinux/selinux-policy"
+    }
+  ],
+  "seals": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "search_used": false,
+    "name_similarity_inference_used": false,
+    "paid_resources_used": false
+  },
+  "free_only_postflight": {
+    "public_repository": true,
+    "standard_runner": "ubuntu-latest",
+    "workflow_artifacts": 0,
+    "actions_cache": false,
+    "artifact_upload": false,
+    "direct_cost": "0"
+  },
+  "drive_artifacts": {
+    "acquisition_ledger_id": "1J7MNLXiMTIQjxwbi0s77Te2sINGCt72_PtM25GapbIs",
+    "runner_replay_bundle_id": "1kFXlOPWHPpC-5Q0X2RXuDkZTRkgRhkdSbfIjihp1BOo",
+    "exact_runner_replay_id": "1L0SOvEqwBEANpG1ISOseNMZrpnRj0LF_rUbKOQ0yOYw"
+  },
+  "authorization": {
+    "shard3_complete": true,
+    "shard4_may_proceed_after_free_only_preflight": true,
+    "remaining_shards": [
+      4
+    ],
+    "full_frame_execution_authorized": false
+  }
+}
