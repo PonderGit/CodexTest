@@ -1,0 +1,1 @@
+Trigger the prospectively frozen 24-row OMOSSP C6 generic-worker pilot.
