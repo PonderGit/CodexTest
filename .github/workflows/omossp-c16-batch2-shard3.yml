@@ -1,8 +1,7 @@
 name: OMOSSP C16 Batch2 Shard3 execution
 
 on:
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
