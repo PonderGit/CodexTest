@@ -1,0 +1,102 @@
+{
+  "protocol": "OMOSSP_PHASE_C19_BATCH3_SHARD1_HUMAN_GATE_CHECKPOINT_R1",
+  "date": "2026-09-06",
+  "batch": "B003",
+  "shard": 1,
+  "checkpoint_state": "RUNNER_VERIFIED__HUMAN_GATE_OPEN",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "selection_freeze_sha256": "8ca3a8bb179992c9fbb2ecc00fbba9be7ed2a3857bb4f8f072ba00b9c0f91ebc",
+  "membership_sha256": "74c1b9ca2f362ea5cb755b50cadcf3a5820ab59891445bd79fc325da2f28ccdd",
+  "shard_position_range": [
+    1,
+    25
+  ],
+  "execution": {
+    "run_id": 34019315982,
+    "job_id": 101448832215,
+    "conclusion": "success",
+    "acquisition_canonical_sha256": "d5662b0bb4ef6588f6d9e6533c3a40cd31079092f91d5fa642df8a292e6d854d",
+    "exact_route_attempts": 86,
+    "evidence_cards": 76,
+    "success_captured": 76,
+    "not_found_for_endpoint": 10,
+    "access_incomplete_after_retries": 0,
+    "evidence_class_order_violations": 0,
+    "duplicate_routes": 0
+  },
+  "exact_runner_r2": {
+    "runner_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+    "replay_canonical_sha256": "da4e4b62e0b308c275cad6c755b176010b445214f4217ecb54db316fcb0bcc38",
+    "rows": 25,
+    "auto_accept_p1": 3,
+    "auto_defer": 21,
+    "human_gate": 1,
+    "validation_errors": 0,
+    "final_project_entity_ids_minted": 0
+  },
+  "human_gate": {
+    "rank": 242,
+    "repo": "src-openeuler/slirp4netns",
+    "code": "HG02_CONFLICTING_DECISION_GRADE_P1_EVIDENCE",
+    "conflict": [
+      {
+        "field": "URL",
+        "locator": "https://github.com/rootless-containers/slirp4netns",
+        "p1_repo": "rootless-containers/slirp4netns"
+      },
+      {
+        "field": "Source1",
+        "locator": "https://github.com/cpuguy83/go-md2man/archive/refs/tags/v2.0.3.tar.gz",
+        "p1_repo": "cpuguy83/go-md2man"
+      }
+    ],
+    "interpretation": "Two independent project-controlled repositories were promoted to P1 from distinct spec fields; current frozen worker has no source-role rule to distinguish package identity URL from auxiliary SourceN build-tool source."
+  },
+  "accepted_p1": [
+    {
+      "rank": 239,
+      "repo": "src-openeuler/python-slugify",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/un33k/python-slugify"
+    },
+    {
+      "rank": 240,
+      "repo": "src-openeuler/python-towncrier",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/twisted/towncrier"
+    },
+    {
+      "rank": 253,
+      "repo": "src-openeuler/python-productmd",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://github.com/release-engineering/productmd"
+    }
+  ],
+  "seals": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "search_used": false,
+    "name_similarity_inference_used": false,
+    "paid_resources_used": false
+  },
+  "free_only_postflight": {
+    "public_repository": true,
+    "standard_runner": "ubuntu-latest",
+    "workflow_artifacts": 0,
+    "actions_cache": false,
+    "artifact_upload": false,
+    "direct_cost": "0"
+  },
+  "drive_artifacts": {
+    "acquisition_ledger_id": "1PwXizF3y1iH2mGdmJvvilGg0F5lJwMNRqsEW0Xzv5EI",
+    "runner_replay_bundle_id": "1AivDeSp9h7oP6YN4QxzkeEJMxZCaZV3h8VhYSySXT2s",
+    "exact_runner_replay_id": "1DwN-skoSUPNmlPWhF2jlvz0lqxRD9NGERGtNSQ-wQrw"
+  },
+  "authorization": {
+    "shard1_complete": false,
+    "human_gate_open": true,
+    "shard2_authorized": false,
+    "batch3_auto_continue_halted": true,
+    "full_frame_execution_authorized": false
+  }
+}
