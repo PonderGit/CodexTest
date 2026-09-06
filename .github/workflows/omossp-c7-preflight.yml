@@ -1,0 +1,63 @@
+name: OMOSSP C7 production preflight
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  c7-production-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || {
+            echo "FREE_ONLY_GATE=FAIL__REPOSITORY_NOT_PUBLIC"
+            exit 96
+          }
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate frozen production pack offline
+        shell: bash
+        run: |
+          python -m py_compile omossp_c7_production_worker.py
+          python - <<'PY'
+          import hashlib, json, pathlib, re
+          batch_path=pathlib.Path("production_batches/omossp_c7_batch1.json")
+          worker_path=pathlib.Path("omossp_c7_production_worker.py")
+          prod_wf=pathlib.Path(".github/workflows/omossp-c7-production.yml")
+          batch=json.loads(batch_path.read_text(encoding="utf-8"))
+          rows=batch["rows"]
+          assert batch["protocol"]=="OMOSSP_PHASE_C7_PRODUCTION_BATCH1_FREEZE_R1"
+          assert batch["authority_sha256"]=="22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8"
+          assert len(rows)==100
+          assert len({int(r["source_scale_rank"]) for r in rows})==100
+          assert not any(any("performance" in k.lower() for k in r) for r in rows)
+          rows_sha=hashlib.sha256(json.dumps(rows,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+          assert rows_sha==batch["membership_sha256"]
+          worker=worker_path.read_text(encoding="utf-8")
+          workflow=prod_wf.read_text(encoding="utf-8")
+          assert "upload-artifact" not in workflow
+          assert "actions/cache" not in workflow
+          assert "runs-on: ubuntu-latest" in workflow
+          assert "pull_request:" not in workflow
+          assert not re.search(r"IFCT|F_success|F_competing|P_open",worker)
+          assert not re.search(r"google|bing|duckduckgo|search_query",worker,re.I)
+          print("C7_PRECHECK=PASS__100_ROWS__4X25_SHARDS__NO_PERFORMANCE_FIELDS__NO_SEARCH__NO_PAID_STORAGE")
+          print("BATCH_FILE_SHA256="+hashlib.sha256(batch_path.read_bytes()).hexdigest())
+          print("BATCH_MEMBERSHIP_SHA256="+rows_sha)
+          print("WORKER_SHA256="+hashlib.sha256(worker_path.read_bytes()).hexdigest())
+          print("PRODUCTION_WORKFLOW_SHA256="+hashlib.sha256(prod_wf.read_bytes()).hexdigest())
+          PY
