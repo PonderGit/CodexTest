@@ -1,0 +1,55 @@
+name: OMOSSP R3 Outcome-Blind Curation + Coverage Gate
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "analysis/r3_outcome_blind_project_curation_coverage.py"
+      - ".github/workflows/omossp-r3-curation-coverage.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  r3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: FREE-ONLY gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ github.repository_visibility }}" = "public"
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__UBUNTU_LATEST__NO_ARTIFACTS__NO_CACHE__NO_PAID_API"
+
+      - name: Run R3 outcome-blind audit
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python analysis/r3_outcome_blind_project_curation_coverage.py
+
+      - name: Commit R3 outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add governance/r3_outcome_blind_project_curation_variable_coverage_summary.json
+          git add governance/r3_outcome_blind_project_curation_variable_coverage_by_repo.csv
+          if git diff --cached --quiet; then
+            echo "R3_OUTPUT_COMMIT=NO_CHANGES"
+          else
+            git commit -m "R3 preserve outcome-blind curation and coverage outputs"
+            git push
+            echo "R3_OUTPUT_COMMIT=PASS"
+          fi
