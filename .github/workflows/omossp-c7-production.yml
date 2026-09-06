@@ -1,0 +1,56 @@
+name: OMOSSP C7 production shard
+
+on:
+  workflow_dispatch:
+    inputs:
+      shard:
+        description: "Frozen Batch-1 shard (1..4)"
+        required: true
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+
+permissions:
+  contents: read
+
+jobs:
+  c7-production-shard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || {
+            echo "FREE_ONLY_GATE=FAIL__REPOSITORY_NOT_PUBLIC"
+            exit 96
+          }
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run frozen C7 production shard
+        env:
+          OMOSSP_BATCH_FILE: production_batches/omossp_c7_batch1.json
+          OMOSSP_SHARD: ${{ inputs.shard }}
+        run: python omossp_c7_production_worker.py
+
+      - name: Emit replayable shard result to log
+        shell: bash
+        env:
+          SHARD: ${{ inputs.shard }}
+        run: |
+          echo "===== OMOSSP_C7_CANONICAL_SHA256 ====="
+          cat "omossp_c7_output/c7_batch1_shard${SHARD}.sha256"
+          echo "===== OMOSSP_C7_JSON_BEGIN ====="
+          cat "omossp_c7_output/c7_batch1_shard${SHARD}.json"
+          echo "===== OMOSSP_C7_JSON_END ====="
