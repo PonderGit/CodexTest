@@ -1,0 +1,229 @@
+{
+  "protocol": "OMOSSP_PROJECT_RECOVERY_EXECUTION_STATE_R1",
+  "date": "2026-09-06",
+  "mode": "RECOVERY",
+  "manuscript_writing": "PAUSED",
+  "north_star": {
+    "objective": "Build a literature-grounded, construct-valid, reproducible project-month panel dataset and a Stata-ready econometric analysis package for objective measures of OSS project performance using only free public data.",
+    "completion_condition": "ANALYSIS_READY__STATA_READY__EVIDENCE_CHAIN_AUDITED",
+    "prohibited_proxy_progress": [
+      "number of GitHub workflows completed",
+      "number of crawler shards executed",
+      "number of audit documents created",
+      "number of raw URLs fetched without direct model relevance"
+    ]
+  },
+  "current_position": {
+    "elapsed_calendar_period": "2026-08-16_to_2026-09-06",
+    "evidence_readiness_level": "ERL2__FEASIBILITY_AND_PILOT",
+    "expected_by_elapsed_time": "ERL4_OR_HIGHER__ANALYSIS_READY_DATA",
+    "schedule_maturity_gap": "MATERIAL",
+    "diagnosis": [
+      "paper-goal alignment was not checked before each technical stage",
+      "identity-validation engineering became a dominant workstream before panel-data requirements were frozen",
+      "minimum analyzable sample and project-period target were not locked early",
+      "progress metrics rewarded technical completion rather than analysis readiness",
+      "too many micro-stages and handoffs increased coordination cost",
+      "no explicit timebox/stop-loss existed for low-yield acquisition paths"
+    ],
+    "preserved_assets": {
+      "final_source_frame_rows": 18827,
+      "formal_identity_rows_executed": 275,
+      "validated_p1_rows": 50,
+      "identity_validation_role": "METHOD_PILOT_ONLY",
+      "c25_checkpoint_blob": "e1e26ef610d8cdf2a13bf724a30f922195dc1980",
+      "c25_status": "CHECKPOINT_COMMITTED__NO_HUMAN_GATE"
+    }
+  },
+  "evidence_readiness_levels": {
+    "ERL0": "Undefined",
+    "ERL1": "Literature/scoping grounded",
+    "ERL2": "Feasibility/pilot validated",
+    "ERL3": "Production design frozen and qualified",
+    "ERL4": "Analysis-ready panel data validated",
+    "ERL5": "Stata model estimates and diagnostics locked",
+    "ERL6": "Robustness/inference package locked",
+    "ERL7": "Manuscript-ready evidence package"
+  },
+  "management_rules": {
+    "WIP_limit": 1,
+    "mandatory_gate_before_any_execution": "PAPER_GOAL_ALIGNMENT_GATE",
+    "stage_timebox_rule": "If a stage exceeds its control timebox without satisfying its exit criteria, stop and redesign; do not extend by default.",
+    "task_value_rule": "Every task must reduce a named research uncertainty or produce a required analysis artifact.",
+    "data_rule": "Bulk public structured data first; targeted crawler/API only for construct-critical gaps.",
+    "model_rule": "Panel-data econometric regression in Stata; no SEM/PLS-SEM/latent-variable modeling unless user later explicitly changes direction.",
+    "change_control": "No metric/sample/model change for result-seeking after formal freeze; exploratory changes must be labeled and audited.",
+    "stop_loss": [
+      "No full-frame 18,827 identity validation unless sample-design audit proves necessity.",
+      "No additional crawler engineering solely for completeness.",
+      "No new micro-stage unless it maps to one recovery-stage deliverable.",
+      "No manuscript drafting before ERL6 unless user explicitly requests otherwise."
+    ]
+  },
+  "recovery_stages": [
+    {
+      "id": "R0",
+      "name": "Recovery Freeze + Authority Consolidation",
+      "target_work_time": "0.5-1 focused workday",
+      "status": "COMPLETE",
+      "exit_criteria": [
+        "C25 preserved",
+        "Shard-4 stopped",
+        "Paper-goal gate active",
+        "Recovery state frozen"
+      ]
+    },
+    {
+      "id": "R1",
+      "name": "Literature Re-Anchor + Sample-Size Decision",
+      "target_work_time": "1-2 focused workdays",
+      "status": "NEXT",
+      "outputs": [
+        "core full-text evidence table",
+        "unit/time-window/model benchmark table",
+        "minimum analyzable project count decision",
+        "minimum months decision",
+        "attrition-adjusted crawl target",
+        "SAMPLE_SIZE_DECISION_LOCK"
+      ],
+      "exit_criteria": [
+        "sample target justified from literature + panel inference needs",
+        "working unit fixed as OSS project-month",
+        "no crawler resumes before PASS"
+      ]
+    },
+    {
+      "id": "R2",
+      "name": "Research Design + Indicator Contract Freeze",
+      "target_work_time": "1-2 focused workdays",
+      "status": "BLOCKED_BY_R1",
+      "outputs": [
+        "narrow RQ",
+        "dependent-variable candidates",
+        "focal objective indicators",
+        "controls",
+        "raw-trace-to-indicator map",
+        "panel schema",
+        "Stata baseline model specification",
+        "DESIGN_CONTRACT_R1"
+      ],
+      "exit_criteria": [
+        "every variable has construct meaning, formula, source, time aggregation and alternative explanations",
+        "no convenience metric accepted as performance",
+        "model is estimable from public data"
+      ]
+    },
+    {
+      "id": "R3",
+      "name": "Bulk Panel Acquisition",
+      "target_work_time": "3-5 focused workdays",
+      "status": "BLOCKED_BY_R2",
+      "strategy": "OpenDigger/OSS Compass structured bulk data first; targeted Gitee/GitHub API only for R2-defined gaps",
+      "outputs": [
+        "raw panel source files",
+        "sample ledger",
+        "coverage/missingness report",
+        "crawler/API gap log"
+      ],
+      "exit_criteria": [
+        "required project count reached after attrition",
+        "required month coverage reached",
+        "no unexplained missingness pattern",
+        "zero paid data dependence"
+      ]
+    },
+    {
+      "id": "R4",
+      "name": "Panel Construction + Data Quality Validation",
+      "target_work_time": "2-3 focused workdays",
+      "status": "BLOCKED_BY_R3",
+      "outputs": [
+        "project-month analytic panel",
+        "data dictionary",
+        "bot/automation handling rules",
+        "zero-vs-missing rules",
+        "outlier rules",
+        "panel balance report",
+        "Stata .dta-ready export"
+      ],
+      "exit_criteria": [
+        "unique project-month keys",
+        "traceable raw-to-analytic transformations",
+        "coverage thresholds satisfied",
+        "reproducible rebuild passes"
+      ]
+    },
+    {
+      "id": "R5",
+      "name": "Stata Baseline Panel Analysis",
+      "target_work_time": "2-3 focused workdays",
+      "status": "BLOCKED_BY_R4",
+      "outputs": [
+        "xtset/reghdfe baseline models",
+        "project fixed effects",
+        "time fixed effects",
+        "project-clustered standard errors",
+        "diagnostics",
+        "model-output lock"
+      ],
+      "exit_criteria": [
+        "specification follows R2 design contract",
+        "no post-hoc metric redefinition for significance",
+        "diagnostics and assumptions documented"
+      ]
+    },
+    {
+      "id": "R6",
+      "name": "Robustness + Evidence Sufficiency Lock",
+      "target_work_time": "2-3 focused workdays",
+      "status": "BLOCKED_BY_R5",
+      "outputs": [
+        "alternative windows",
+        "alternative reasonable indicator definitions",
+        "sample sensitivity",
+        "count/duration model alternatives where data-generating process requires",
+        "inference boundary statement",
+        "ANALYSIS_READY_EVIDENCE_PACKAGE"
+      ],
+      "exit_criteria": [
+        "core findings stable or instability explicitly bounded",
+        "all manuscript claims traceable to data/code/output",
+        "ERL6 reached"
+      ]
+    }
+  ],
+  "monitoring_dashboard": {
+    "primary_KPIs": [
+      "ANALYSIS_READY_PROJECTS",
+      "ANALYSIS_READY_PROJECT_MONTHS",
+      "PANEL_MONTH_COVERAGE",
+      "VARIABLE_COVERAGE_RATE",
+      "RAW_TO_ANALYTIC_TRACEABILITY_RATE",
+      "STATA_MODEL_LOCK_STATUS",
+      "OPEN_BLOCKERS_COUNT"
+    ],
+    "secondary_KPIs": [
+      "API success rate",
+      "missing-vs-zero resolution rate",
+      "duplicate project rate",
+      "bot/automation contamination rate"
+    ],
+    "forbidden_KPI_as_success_metric": [
+      "number of audit files",
+      "number of commits",
+      "number of workflow runs",
+      "number of URLs fetched"
+    ]
+  },
+  "immediate_authorization": {
+    "allowed": "R1__LITERATURE_REANCHOR_AND_SAMPLE_SIZE_DECISION_ONLY",
+    "prohibited": [
+      "Batch3 Shard4 execution",
+      "Batch4 authorization",
+      "full-frame identity validation",
+      "new crawler implementation",
+      "formal manuscript writing",
+      "formal Stata estimation before R2/R4 gates"
+    ]
+  }
+}
