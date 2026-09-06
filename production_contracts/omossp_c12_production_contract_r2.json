@@ -1,0 +1,21 @@
+{
+  "protocol": "OMOSSP_PHASE_C12_PRODUCTION_CONTRACT_R2",
+  "date": "2026-09-06",
+  "supersedes_for_future_batches": "production_contracts/omossp_c7_production_contract_r1.json",
+  "preserves_batch1_historical_authority": true,
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "batch1_membership_sha256": "3ab635da2d7e94b010c7d9030df8d4806c980c74b0190f9189f83b148b63c93f",
+  "corrected_worker": {
+    "path": "omossp_c12_production_worker.py",
+    "sha256": "e7f9c3e9d75a24edb509b38013003a4f6e220fef700b5045f2559fb54849ac4f",
+    "parent_worker_path": "omossp_c7_production_worker.py",
+    "parent_worker_sha256": "f93599074fea90c114d3ccd5990f7d66b1dae5ef75bef460c09cd9b4267fb46c",
+    "diff_lines": 2,
+    "scientific_logic_change": false
+  },
+  "exact_runner_r2_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+  "free_only_required": true,
+  "performance_seal_required": true,
+  "final_project_entity_id_minting_allowed": false,
+  "batch2_authorized": false
+}
