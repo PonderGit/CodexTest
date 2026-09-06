@@ -1,0 +1,199 @@
+{
+  "protocol": "OMOSSP_PHASE_C6_DETERMINISTIC_PILOT_FREEZE_R1",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "pilot_sha256": "9b7c49ba8cdf12db7aac4e7518fd0e0576aa519e794fc167937deb836e3f559c",
+  "rows": [
+    {
+      "source_scale_rank": 12,
+      "frame_id": "6960304",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/sg3_utils",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 13,
+      "frame_id": "29080405",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/warehouse_ros",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 14,
+      "frame_id": "10143284",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/thunarx-python",
+      "source_container_class": "PACKAGE_CONTAINER",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 19,
+      "frame_id": "10092895",
+      "platform": "gitee",
+      "source_repo_name": "openeuler/syscontainer-tools",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": "https://gitee.com/openeuler/syscontainer-tools"
+    },
+    {
+      "source_scale_rank": 23,
+      "frame_id": "22428832",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/fam",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 25,
+      "frame_id": "23528976",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/serd",
+      "source_container_class": "UNKNOWN",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 33,
+      "frame_id": "29888946",
+      "platform": "gitee",
+      "source_repo_name": "openkylin/wine-assistant",
+      "source_container_class": "DIRECT_PROJECT_CANDIDATE",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 36,
+      "frame_id": "29801641",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/applications_clock",
+      "source_container_class": "DIRECT_PROJECT_CANDIDATE",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 74,
+      "frame_id": "38515405",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/fluttertpc_flutter_statusbarcolor_ns",
+      "source_container_class": "THIRD_PARTY_COMPONENT_CONTAINER",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 76,
+      "frame_id": "38141490",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/fluttertpc_flutter_pdfview",
+      "source_container_class": "THIRD_PARTY_COMPONENT_CONTAINER",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 114,
+      "frame_id": "13725630",
+      "platform": "gitee",
+      "source_repo_name": "ascend/ascend-for-volcano",
+      "source_container_class": "MIRROR_MIGRATION_CONTAINER",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 121,
+      "frame_id": "38514711",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/fluttertpc_mobile_device_identifier",
+      "source_container_class": "THIRD_PARTY_COMPONENT_CONTAINER",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 251,
+      "frame_id": "9940251",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/perl-CGI-Application-Plugin-Stream",
+      "source_container_class": "UNRESOLVED_SOURCE_CONTAINER",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 252,
+      "frame_id": "6960212",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/python-cffi",
+      "source_container_class": "UNRESOLVED_SOURCE_CONTAINER",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 253,
+      "frame_id": "7216253",
+      "platform": "gitee",
+      "source_repo_name": "src-openeuler/python-productmd",
+      "source_container_class": "UNRESOLVED_SOURCE_CONTAINER",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 1755,
+      "frame_id": "24707093",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/device_board_rpi",
+      "source_container_class": "OPENHARMONY_SIG_COMPONENT_OR_PROJECT_CANDIDATE",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 1769,
+      "frame_id": "39783025",
+      "platform": "gitee",
+      "source_repo_name": "openeuler/SoftBR",
+      "source_container_class": "DIRECT_REPOSITORY_SCOPE_UNRESOLVED",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 1784,
+      "frame_id": "14557175",
+      "platform": "gitee",
+      "source_repo_name": "openharmony/communication_wifi_aware",
+      "source_container_class": "OPENHARMONY_COMPONENT_OR_PROJECT_CANDIDATE",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 1797,
+      "frame_id": "26610230",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/device_soc_asrmicro",
+      "source_container_class": "OPENHARMONY_SIG_COMPONENT_OR_PROJECT_CANDIDATE",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 1799,
+      "frame_id": "36609386",
+      "platform": "gitee",
+      "source_repo_name": "openharmony-sig/vendor_hardmony",
+      "source_container_class": "OPENHARMONY_SIG_COMPONENT_OR_PROJECT_CANDIDATE",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 1800,
+      "frame_id": "13119718",
+      "platform": "gitee",
+      "source_repo_name": "openeuler/libcareplus",
+      "source_container_class": "DIRECT_REPOSITORY_SCOPE_UNRESOLVED",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 1819,
+      "frame_id": "17348803",
+      "platform": "gitee",
+      "source_repo_name": "openharmony/vendor_bearpi",
+      "source_container_class": "OPENHARMONY_COMPONENT_OR_PROJECT_CANDIDATE",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 1846,
+      "frame_id": "22279421",
+      "platform": "gitee",
+      "source_repo_name": "openeuler/kiran-control-panel",
+      "source_container_class": "DIRECT_REPOSITORY_SCOPE_UNRESOLVED",
+      "upstream_or_project_locator_raw": ""
+    },
+    {
+      "source_scale_rank": 1867,
+      "frame_id": "19862149",
+      "platform": "gitee",
+      "source_repo_name": "openharmony/security_access_token",
+      "source_container_class": "OPENHARMONY_COMPONENT_OR_PROJECT_CANDIDATE",
+      "upstream_or_project_locator_raw": ""
+    }
+  ]
+}
