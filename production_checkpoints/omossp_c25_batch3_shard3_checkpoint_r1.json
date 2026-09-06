@@ -1,0 +1,150 @@
+{
+  "protocol": "OMOSSP_C25_BATCH3_SHARD3_PRODUCTION_CHECKPOINT_R1",
+  "status": "CHECKPOINT_COMMITTED__NO_HUMAN_GATE",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "batch3_membership_sha256": "74c1b9ca2f362ea5cb755b50cadcf3a5820ab59891445bd79fc325da2f28ccdd",
+  "batch3_selection_freeze_sha256": "8ca3a8bb179992c9fbb2ecc00fbba9be7ed2a3857bb4f8f072ba00b9c0f91ebc",
+  "c24_production_worker_sha256": "3f08127d9e565756e175102141c1f408f06347b22be8124ad6f02618e4107e25",
+  "exact_runner_r2_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+  "workflow": {
+    "run_id": 34042128397,
+    "job_id": 101510680152,
+    "event": "workflow_dispatch",
+    "head_branch": "main",
+    "head_sha": "23be804de9ad5dc8151cab0f6869b293320e9a1c",
+    "conclusion": "success",
+    "started_at": "2026-09-06T15:22:59Z",
+    "completed_at": "2026-09-06T15:25:48Z"
+  },
+  "shard": {
+    "batch": "B003",
+    "index": 3,
+    "position_range": [
+      51,
+      75
+    ],
+    "row_count": 25,
+    "source_scale_rank_range": [
+      285,
+      309
+    ]
+  },
+  "acquisition": {
+    "canonical_sha256": "1a837af7a2795dfa531b169c8dbc9a9ba78ffd3eadc070c9caa1698d1a6d32ca",
+    "canonical_repository_path": "production_acquisition/omossp_c25_batch3_shard3_acquisition_canonical_r1.json",
+    "git_blob_sha": "cf11e36fbc0775a290e73e2ca2514a31acddb4a6",
+    "git_commit": "bf5d0aaabee1b24dda862b7cbf88b4bf91cac3cf",
+    "drive_ledger_id": "1KMhzU-7KB1EvrWzJT4uV1m0taXkr1yXtVQSf7TCSRs0",
+    "exact_route_attempts": 81,
+    "terminal_counts": {
+      "SUCCESS_CAPTURED": 63,
+      "NOT_FOUND_FOR_THIS_ENDPOINT": 13,
+      "ACCESS_INCOMPLETE_AFTER_RETRIES": 5
+    },
+    "evidence_cards": 63,
+    "evidence_class_order_violations": 0,
+    "duplicate_exact_routes": 0,
+    "access_incomplete": [
+      {
+        "source_scale_rank": "285",
+        "source_repo_name": "openharmony/vendor_beken",
+        "class_id": "EC01",
+        "url": "https://gitee.com/openharmony/vendor_beken"
+      },
+      {
+        "source_scale_rank": "289",
+        "source_repo_name": "src-openeuler/metainf-services",
+        "class_id": "EC03",
+        "url": "https://api.github.com/repos/kohsuke/metainf-services"
+      },
+      {
+        "source_scale_rank": "289",
+        "source_repo_name": "src-openeuler/metainf-services",
+        "class_id": "EC06",
+        "url": "https://api.github.com/repos/kohsuke/metainf-services/readme"
+      },
+      {
+        "source_scale_rank": "290",
+        "source_repo_name": "src-openeuler/python-zdaemon",
+        "class_id": "EC03",
+        "url": "https://api.github.com/repos/zopefoundation/zdaemon"
+      },
+      {
+        "source_scale_rank": "290",
+        "source_repo_name": "src-openeuler/python-zdaemon",
+        "class_id": "EC06",
+        "url": "https://api.github.com/repos/zopefoundation/zdaemon/readme"
+      }
+    ]
+  },
+  "runner_replay_bundle": {
+    "canonical_sha256": "dd623b514ca2adac71d09adbe9eaeabda2e1dc3da2bc3a78c6d24d3b49369e10",
+    "canonical_repository_path": "production_replays/omossp_c25_batch3_shard3_runner_replay_bundle_canonical_r1.json",
+    "git_blob_sha": "c4c358a9d285bb2c0be882880800ec38c9de4ef3",
+    "git_commit": "e62addfbac180d593a812b28fab3c34723ea9b02",
+    "drive_bundle_id": "1P5p8Df1cYVUaAhf6CgUgR4Ktt-7BsvwKylLL1GtFnNw"
+  },
+  "exact_runner_replay": {
+    "canonical_sha256": "8496b1428c0ae86ab67f5b2cc3561a4cf4cc67ad4df85e02f0b5acb38109b935",
+    "canonical_repository_path": "production_replays/omossp_c25_batch3_shard3_exact_runner_r2_replay_canonical_r1.json",
+    "git_blob_sha": "d4bda66e07e0485d2e711d50cbbbfcebccf02616",
+    "git_commit": "b31d43035b24f433aa668f95597f91d32115f20b",
+    "drive_replay_id": "1aE_oWYcWHR9sAOitLal32ifn-fwu9S9fNCJK2nIviYE",
+    "AUTO_ACCEPT_P1": 4,
+    "AUTO_DEFER": 21,
+    "HUMAN_GATE": 0,
+    "validation_errors": 0,
+    "accepted_ranks": [
+      "293",
+      "301",
+      "302",
+      "309"
+    ],
+    "accepted": [
+      {
+        "source_scale_rank": "293",
+        "source_repo_name": "src-openeuler/perl-PPIx-Utils",
+        "entity_identity_basis_value": "MetaCPAN:PPIx-Utils"
+      },
+      {
+        "source_scale_rank": "301",
+        "source_repo_name": "src-anolis-ai/pytorch",
+        "entity_identity_basis_value": "https://github.com/pytorch/pytorch"
+      },
+      {
+        "source_scale_rank": "302",
+        "source_repo_name": "src-openeuler/python-statsd",
+        "entity_identity_basis_value": "https://github.com/jsocol/pystatsd"
+      },
+      {
+        "source_scale_rank": "309",
+        "source_repo_name": "src-openeuler/python-shortuuid",
+        "entity_identity_basis_value": "https://github.com/skorokithakis/shortuuid"
+      }
+    ]
+  },
+  "free_only": {
+    "repository_public": true,
+    "runner": "ubuntu-latest",
+    "workflow_artifacts": 0,
+    "artifact_upload": false,
+    "actions_cache": false,
+    "paid_apis": false,
+    "paid_storage": false,
+    "direct_cost": 0,
+    "status": "PASS__VERIFIED_ZERO_DIRECT_COST"
+  },
+  "canonicality_note": {
+    "canonical_byte_authority": "GitHub canonical JSON files above",
+    "drive_google_docs_role": "human-readable archival representation"
+  },
+  "search_used": false,
+  "name_similarity_inference_used": false,
+  "performance_outcomes_accessed": false,
+  "final_project_entity_id_minted": false,
+  "evidence_exhaustion_claimed": false,
+  "batch3_shard3_executed": true,
+  "batch3_shard3_runner_verified": true,
+  "batch3_shard4_authorized": false,
+  "full_frame_authorized": false
+}
