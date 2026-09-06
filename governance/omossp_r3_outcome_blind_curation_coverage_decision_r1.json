@@ -1,0 +1,157 @@
+{
+  "protocol": "OMOSSP_R3_OUTCOME_BLIND_PROJECT_CURATION_EXACT_VARIABLE_COVERAGE_DECISION_R1",
+  "date": "2026-09-06",
+  "status": "PASS__FORMAL_OPERATIONAL_PROJECT_FRAME_FROZEN__NO_SUPPLEMENT_REQUIRED__R4_PANEL_CONSTRUCTION_AUTHORIZED",
+  "paper_goal_alignment": {
+    "gate": "PASS__DIRECTLY_SUPPORTS_PAPER",
+    "result": "The GitHub-only structured frame survives outcome-blind project curation and exact frozen-variable coverage with sufficient independent project clusters for the planned Stata panel design."
+  },
+  "execution": {
+    "workflow": "OMOSSP R3 Outcome-Blind Curation + Coverage Gate",
+    "run_id": 34051340901,
+    "job_id": 101535406439,
+    "conclusion": "success",
+    "free_only": true,
+    "workflow_head_sha": "2e7ca88496e899320648ffb8d3d7379f37664bbd",
+    "output_commit": "b2c4009d9b402150990dc87cef3eba6aab801078",
+    "summary_blob": "bbef8c9774fd60c2822505ec89661d532fe12a2b",
+    "coverage_blob": "ba431ff85b3ad236dcdbc7e1cbf0f01afba521be",
+    "formal_frame_commit": "434aa95eeb23bda891077b58b5e9030ba40594b3",
+    "formal_frame_blob": "368b1aab779dec5a7de27f9b48bf4ccb29e49866"
+  },
+  "operational_project_definition": {
+    "target_population": "Public GitHub OSS software projects represented by one canonical repository in the frozen OSS Compass single-repository candidate frame and passing the prospective R3 metadata curation rules.",
+    "inferential_boundary": [
+      "This operationalization does not imply repository=project universally.",
+      "It excludes ambiguous multi-repository/project-boundary cases from the primary frame rather than aggregating them opportunistically.",
+      "It does not support software-team or human-only performance inference."
+    ]
+  },
+  "curation_results": {
+    "input_full24_candidates": 935,
+    "auto_include": 882,
+    "manual_review_holdout": 49,
+    "auto_exclude": 4,
+    "auto_include_rate": 0.9433,
+    "hard_auto_exclusion_basis": [
+      "GitHub fork flag",
+      "GitHub mirror_url",
+      "GitHub template flag",
+      "repository name exactly .github"
+    ],
+    "manual_review_basis": [
+      "current archived/disabled state",
+      "no dominant language",
+      "canonical redirect/transfer",
+      "strong docs/data/tutorial/course/demo/example/benchmark signals",
+      "mirror text signal",
+      "metadata unavailable"
+    ],
+    "primary_frame_policy": "Only AUTO_INCLUDE enters formal frame R1. MANUAL_REVIEW cases are held out and are not needed to meet the sample-size requirement."
+  },
+  "formal_frame": {
+    "path": "governance/r3_formal_github_project_frame_r1.csv",
+    "projects": 882,
+    "sample_status": "FROZEN_OPERATIONAL_FRAME_R1",
+    "outcome_values_used": false,
+    "performance_ranking_used": false
+  },
+  "exact_variable_coverage": {
+    "file_200_within_935": {
+      "issue_resolution_duration": 927,
+      "issue_age": 928,
+      "issues_new": 930,
+      "contributors": 934,
+      "code_change_lines_sum": 935,
+      "all_context_files": 930
+    },
+    "primary_model_A_auto_include": {
+      "projects_ge2_usable_months": 805,
+      "projects_ge6_usable_months": 717,
+      "projects_ge12_usable_months": 600,
+      "projects_ge18_usable_months": 465,
+      "usable_project_months": 13808
+    },
+    "model_B_conservative_auto_include": {
+      "projects_ge2_usable_months": 805,
+      "projects_ge6_usable_months": 717,
+      "projects_ge12_usable_months": 600,
+      "projects_ge18_usable_months": 465,
+      "usable_project_months": 13808,
+      "note": "Conservative field-presence calculation; structural zero-backlog months were not added in R3."
+    },
+    "model_C_auto_include": {
+      "projects_ge2_usable_months": 805,
+      "projects_ge12_usable_months": 601,
+      "usable_project_months": 13825
+    },
+    "model_D_auto_include": {
+      "projects_ge2_usable_months": 871,
+      "projects_ge12_usable_months": 870,
+      "usable_project_months": 20852
+    }
+  },
+  "source_version_lock": {
+    "opendigger_repo": "X-lab2017/open-digger",
+    "master_head": "63e4b89ecd525221be95fe2a48a714ebb3c722ec",
+    "chaoss_ts_blob": "b7a9293434a081d713406eac5f7fc889d35de97f",
+    "basic_ts_blob": "741591d9916ae068c0c5b46d6fe7e24b025a43bc",
+    "quantile_semantics": "timeDurationConstants.quantileArray=[0,1,2,3,4] and the duration implementation computes quantile(q/4); therefore quantile_2 is the 0.50 quantile/median.",
+    "issue_resolution_semantics": "latest/final close among issue lifecycles whose last action is closed",
+    "issue_age_semantics": "age distribution of issues open at the evaluation time"
+  },
+  "sample_size_gate": {
+    "R1E_min_projects": 500,
+    "R1E_preferred_projects": 750,
+    "formal_frame_projects": 882,
+    "primary_model_A_identifiable_projects_ge2": 805,
+    "primary_model_A_projects_ge12_health_check": 600,
+    "decision": "PASS",
+    "interpretation": "Even the conservative AUTO_INCLUDE-only frame exceeds the preferred cluster target for the primary model; no additional data acquisition is justified for quantity."
+  },
+  "acquisition_lock": {
+    "new_data_source_needed": false,
+    "old_identity_crawler": "STOP",
+    "generic_crawler": "STOP",
+    "gitee_pooling": "STOP",
+    "targeted_api": "NOT_AUTHORIZED",
+    "manual_review_expansion_for_quantity": "NOT_NEEDED",
+    "supplementation_reopen_only_if": [
+      "R4 value-level integrity/semantic checks reduce primary Model A project clusters below 500",
+      "a frozen R2 construct-critical field proves semantically unusable at scale",
+      "formal reproducibility checks reveal systematic source failure"
+    ]
+  },
+  "authorized_next_stage": {
+    "id": "R4",
+    "title": "Formal Panel Construction + Data Quality Validation",
+    "authorization": "AUTHORIZED",
+    "scope": [
+      "Use only the 882-project formal frame R1.",
+      "Retrieve/process only R2-frozen variables for 2024-01 through 2025-12.",
+      "Build the project-month analytic panel with explicit zero/missing rules.",
+      "Preserve raw/static source version and retrieval provenance.",
+      "Compute transformations defined in R2.",
+      "Produce missingness, panel-balance, range, and data-integrity diagnostics.",
+      "Do not estimate formal regressions yet.",
+      "Do not add variables after seeing outcome magnitudes."
+    ],
+    "required_outputs": [
+      "raw-to-analytic variable dictionary",
+      "882-project frame manifest",
+      "project-month panel",
+      "model-specific eligibility flags",
+      "missingness/zero audit",
+      "data-integrity and reproducible-rebuild report",
+      "Stata-ready export"
+    ]
+  },
+  "prohibitions": [
+    "formal Stata regression in R3",
+    "manuscript drafting",
+    "performance-value-based exclusion",
+    "new crawler",
+    "cross-platform pooling",
+    "post-hoc indicator expansion"
+  ]
+}
