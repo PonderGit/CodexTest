@@ -1,0 +1,219 @@
+{
+  "protocol": "OMOSSP_R2_RESEARCH_DESIGN_INDICATOR_CONTRACT_R1",
+  "date": "2026-09-06",
+  "status": "PASS__NARROW_MEASUREMENT_DESIGN_FROZEN__NO_OUTCOME_VALUES_RETRIEVED",
+  "paper_goal_alignment": {
+    "gate": "PASS__DIRECTLY_SUPPORTS_PAPER",
+    "reason": "The design tests whether a widely available objective closed-issue duration metric can support bounded inference about OSS maintenance timeliness when unresolved backlog evidence and observable project context are retained.",
+    "manuscript_writing_paused": true
+  },
+  "research_scope": {
+    "formal_entity": "OSS software project represented by a prospectively curated canonical GitHub repository",
+    "statistical_unit": "project-month",
+    "platform": "GitHub only",
+    "primary_window": "2024-01 through 2025-12 (24 months)",
+    "robustness_window": "2023-01 through 2025-12 (36 months) only if post-curation and variable coverage remain adequate",
+    "target_construct": "maintenance / issue-response timeliness",
+    "construct_boundary": "bounded operational-performance subdomain only; not overall OSS project performance, productivity, resource efficiency, broad effectiveness, software quality, popularity, community health, or human-only team performance"
+  },
+  "narrow_research_question": {
+    "RQ": "To what extent does a closed-issue resolution-duration metric provide consistent project-month evidence about OSS maintenance timeliness when unresolved backlog age and backlog burden are retained, and how sensitive are these measures to observable workload and participation/change context?",
+    "causal_claim_authorized": false
+  },
+  "source_semantics_lock": {
+    "issue_resolution_duration": {
+      "source": "OpenDigger / CHAOSS-derived metric",
+      "implementation_repo": "X-lab2017/open-digger",
+      "implementation_path": "src/metrics/chaoss.ts",
+      "implementation_semantics": [
+        "Issue lifecycle grouped by issue number.",
+        "last_action is derived from opened/closed/reopened actions.",
+        "closed_at is the latest close event.",
+        "resolution_duration = dateDiff(opened_at, closed_at).",
+        "only issues whose last_action is closed enter the duration distribution.",
+        "metric exposes average, quantiles, and threshold-level counts."
+      ],
+      "validity_consequence": "Closed-only duration is conditional on completion and omits unresolved issues. It is therefore a candidate timeliness indicator under test, not a complete project-level timeliness measure."
+    },
+    "issue_age": {
+      "source": "OpenDigger / CHAOSS-derived metric",
+      "semantics": "Age of issues remaining open at the considered time; reopened issues are treated as open since initial opening under the documented metric semantics.",
+      "implementation_semantics": "For each evaluation time, computes duration from opened_at for issues open at that time and exposes average, quantiles, and age-level counts.",
+      "validity_role": "Complementary risk-set/backlog evidence required to avoid interpreting closed-only duration in isolation."
+    },
+    "issue_response_time": {
+      "core_status": "EXCLUDE_FROM_CORE",
+      "reason": [
+        "It is primarily community/process responsiveness rather than core project performance.",
+        "OpenDigger implementation substitutes first response with opened_at + 15 days when no qualifying response is observed, which changes the raw event semantics."
+      ]
+    },
+    "change_request_resolution_duration": {
+      "core_status": "EXCLUDE_FROM_PRIMARY_R2",
+      "reason": "OpenDigger implementation closes PullRequestEvent lifecycles without a primary distinction between merged success and closed-unmerged non-integration in the generic resolution-duration metric; it is not authorized as successful integration timeliness."
+    }
+  },
+  "indicator_contract": {
+    "primary_candidate_under_test": {
+      "id": "M1_CLOSED_ISSUE_RESOLUTION_MEDIAN",
+      "raw_data": "OpenDigger issue_resolution_duration monthly JSON",
+      "field": "quantile_2 (0.50 quantile) where source version confirms current quantile ordering",
+      "transformation": "ln(1 + median_days)",
+      "meaning": "typical elapsed platform-recorded time from issue opening to latest/final close among issues included in the closed-only monthly metric",
+      "direction": "lower is faster closed-item timeliness",
+      "performance_status": "CANDIDATE_UNDER_VALIDATION__NOT_STANDALONE_PERFORMANCE",
+      "key_failure_mode": "conditioning on completed items can hide unresolved backlog"
+    },
+    "complementary_unresolved_evidence": [
+      {
+        "id": "M2_OPEN_ISSUE_AGE_MEDIAN",
+        "raw_data": "OpenDigger issue_age monthly JSON",
+        "field": "quantile_2 conditional on at least one open issue",
+        "transformation": "ln(1 + median_days)",
+        "meaning": "typical age of unresolved issues at month-end",
+        "direction": "lower indicates younger unresolved backlog",
+        "zero_rule": "If no open issues exist, age is undefined, not zero; backlog-presence/burden must carry that state."
+      },
+      {
+        "id": "M3_OPEN_ISSUE_BACKLOG_COUNT",
+        "raw_data": "OpenDigger issue_age levels array",
+        "derivation": "sum age-level counts at month-end, after source-version semantics are verified",
+        "transformation": "asinh(count)",
+        "meaning": "observable unresolved issue burden",
+        "direction": "not a performance score by itself; contextual/complementary evidence",
+        "zero_rule": "Observed zero open issues may be coded zero only when repository/source observability for that month is verified."
+      }
+    ],
+    "contextual_covariates": [
+      {
+        "id": "C1_ISSUES_NEW",
+        "source": "OpenDigger issues_new",
+        "transformation": "ln(1 + count)",
+        "meaning": "incoming observable issue volume / workload-context proxy",
+        "not_meaning": "not project demand in full and not performance"
+      },
+      {
+        "id": "C2_CONTRIBUTORS",
+        "source": "OpenDigger contributors",
+        "transformation": "ln(1 + count)",
+        "meaning": "observable participation-breadth context",
+        "not_meaning": "not formal team size, labor hours, effort, or productivity input"
+      },
+      {
+        "id": "C3_CODE_CHANGE_LINES",
+        "source": "OpenDigger code_change_lines_sum",
+        "transformation": "ln(1 + lines)",
+        "meaning": "observable code-change magnitude/activity context",
+        "not_meaning": "not productivity, effort, complexity, or quality"
+      }
+    ]
+  },
+  "excluded_from_core": {
+    "stars": "popularity/user interest, not core performance",
+    "forks": "reuse/interest/activity ambiguity",
+    "commits": "activity",
+    "pull_request_counts": "activity/throughput trace",
+    "accepted_pull_requests": "completed integration output/activity; not performance without additional argument",
+    "issue_closed_counts": "throughput trace, not performance by itself",
+    "response_time": "community/process responsiveness and source imputation semantics",
+    "productivity": "no comparable public labor-effort denominator",
+    "efficiency": "no comparable resource-input denominator",
+    "broad_effectiveness": "no complete requirements/goal baseline",
+    "technical_quality": "no currently frozen cross-project defect/quality semantics",
+    "composite_index": "not authorized"
+  },
+  "panel_models": {
+    "principle": "Associational measurement-validation regressions; no causal interpretation.",
+    "fixed_effects": [
+      "project fixed effects",
+      "calendar-month fixed effects"
+    ],
+    "standard_errors": "cluster at project level",
+    "primary_software": "Stata",
+    "model_A_concordance_age": {
+      "equation": "ln1p(open_issue_age_median_it) = beta1*ln1p(closed_issue_resolution_median_it) + beta2*ln1p(issues_new_it) + beta3*ln1p(contributors_it) + beta4*ln1p(code_change_lines_it) + project_FE + month_FE + error_it",
+      "sample": "project-months with at least one open issue and a defined closed-issue resolution median",
+      "estimand": "within-project association between completed-item timeliness and unresolved-backlog age after observable context controls",
+      "interpretation": "positive concordance is evidence that the two traces move consistently; weak/negative/context-sensitive association indicates an inferential boundary. It does not prove construct validity."
+    },
+    "model_B_concordance_burden": {
+      "equation": "asinh(open_issue_backlog_count_it) = beta1*ln1p(closed_issue_resolution_median_it) + beta2*ln1p(issues_new_it) + beta3*ln1p(contributors_it) + beta4*ln1p(code_change_lines_it) + project_FE + month_FE + error_it",
+      "sample": "observable project-months with defined closed-issue resolution median",
+      "estimand": "within-project association between closed-item duration and unresolved backlog burden",
+      "interpretation": "used to test whether apparently faster completed-item resolution coexists with accumulating unresolved work."
+    },
+    "model_C_context_sensitivity_closed_duration": {
+      "equation": "ln1p(closed_issue_resolution_median_it) = theta1*ln1p(issues_new_it) + theta2*ln1p(contributors_it) + theta3*ln1p(code_change_lines_it) + project_FE + month_FE + error_it",
+      "estimand": "context sensitivity of the candidate closed-only timeliness metric",
+      "interpretation": "coefficients describe association/context dependence, not causal effects."
+    },
+    "model_D_context_sensitivity_open_age": {
+      "equation": "ln1p(open_issue_age_median_it) = theta1*ln1p(issues_new_it) + theta2*ln1p(contributors_it) + theta3*ln1p(code_change_lines_it) + project_FE + month_FE + error_it",
+      "sample": "months with open backlog",
+      "estimand": "context sensitivity of unresolved-backlog age",
+      "interpretation": "compare pattern with Model C rather than treating either coefficient vector as causal."
+    },
+    "stata_baseline": [
+      "xtset project_id month_id",
+      "xtreg ln_age ln_resolution ln_issues_new ln_contributors ln_code_lines i.month_id, fe vce(cluster project_id)",
+      "xtreg asinh_backlog ln_resolution ln_issues_new ln_contributors ln_code_lines i.month_id, fe vce(cluster project_id)",
+      "xtreg ln_resolution ln_issues_new ln_contributors ln_code_lines i.month_id, fe vce(cluster project_id)"
+    ],
+    "robustness_not_yet_executed": [
+      "use OpenDigger avg instead of median only as a reasonable definition sensitivity check",
+      "36-month window if N remains >=500",
+      "lag context covariates by one month as a temporal-sensitivity check without causal relabeling",
+      "winsorization only if prospectively justified by data-error/outlier diagnostics; never for significance seeking",
+      "alternative project curation rules frozen before outcome inspection"
+    ]
+  },
+  "missingness_and_zero_rules": {
+    "count_sparse_key": "Within verified source observability, an omitted monthly count key may be structural zero under OpenDigger sparse-count semantics.",
+    "resolution_duration_missing": "No defined closed-item duration in a month is missing/not-estimable for that metric-month, never zero performance.",
+    "age_no_open_items": "Median age is undefined when backlog count is zero; preserve backlog_count=0 separately.",
+    "transport_or_export_failure": "missing, never zero",
+    "repository_not_yet_exposed_or_no_longer_observable": "outside exposure window / missing, never zero"
+  },
+  "sample_rules": {
+    "candidate_pool_from_R1D": 935,
+    "primary_min_projects": 500,
+    "preferred_projects": 750,
+    "primary_window_months": 24,
+    "formal_sample_status": "NOT_YET_FROZEN",
+    "next_sample_gate": "R3 must audit issue_age and exact field coverage and apply outcome-blind project curation before any metric values are analyzed."
+  },
+  "claims_authorized_after_R2": [
+    "Closed-only issue resolution duration is a candidate measure of completed-item timeliness with a known selection/incompleteness boundary.",
+    "Open-issue age and backlog burden provide complementary evidence about unresolved work.",
+    "Objective repository metrics should be interpreted jointly and conditionally rather than equated with overall project performance."
+  ],
+  "claims_not_authorized": [
+    "The metric is a validated measure of overall OSS project performance.",
+    "Faster issue closure causes higher project performance.",
+    "Contributor count measures team size or effort.",
+    "Code-change lines measure productivity or complexity.",
+    "No open issues or no closed issues imply zero performance.",
+    "Repository equals project without curation."
+  ],
+  "next_stage": {
+    "id": "R3",
+    "title": "Outcome-Blind Project Curation + Exact Variable Coverage Gate",
+    "tasks": [
+      "Apply prospective project/software/canonical-repository curation to the 935 full-24-month GitHub candidates without reading metric values.",
+      "Audit file/field/month coverage for issue_age plus the frozen R2 variables.",
+      "Verify OpenDigger static JSON field structure and source version for quantile_2 and levels.",
+      "Estimate post-curation N and complete-case/usable project-month NT under each R2 model without examining outcome magnitudes.",
+      "If N>=500 and coverage is adequate, freeze the formal analytic frame and authorize metric-value retrieval/processing.",
+      "If N<500 or a frozen construct-critical variable has coverage <500, reopen supplementation under the R1E lock."
+    ]
+  },
+  "prohibitions": [
+    "new generic crawler",
+    "old 18,827-row identity production",
+    "targeted API collection at R2",
+    "cross-platform pooling",
+    "formal Stata estimation",
+    "manuscript drafting",
+    "performance-value-based sample selection"
+  ]
+}
