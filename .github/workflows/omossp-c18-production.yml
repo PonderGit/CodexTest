@@ -1,0 +1,49 @@
+name: OMOSSP C18 Batch3 production shard
+
+on:
+  workflow_dispatch:
+    inputs:
+      shard:
+        description: "Frozen Batch-3 shard (1..4)"
+        required: true
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+
+permissions:
+  contents: read
+
+jobs:
+  c18-batch3-shard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || exit 96
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run frozen Batch3 shard
+        env:
+          OMOSSP_BATCH_FILE: production_batches/omossp_c18_batch3.json
+          OMOSSP_SHARD: ${{ inputs.shard }}
+        run: python omossp_c18_production_worker.py
+      - name: Emit replayable Batch3 shard result
+        shell: bash
+        env:
+          SHARD: ${{ inputs.shard }}
+        run: |
+          echo "===== OMOSSP_C18_CANONICAL_SHA256 ====="
+          cat "omossp_c18_output/c18_batch3_shard${SHARD}.sha256"
+          echo "===== OMOSSP_C18_JSON_BEGIN ====="
+          cat "omossp_c18_output/c18_batch3_shard${SHARD}.json"
+          echo "===== OMOSSP_C18_JSON_END ====="
