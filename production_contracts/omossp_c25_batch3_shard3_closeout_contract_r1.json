@@ -1,0 +1,24 @@
+{
+  "protocol": "OMOSSP_C25_BATCH3_SHARD3_CLOSEOUT_CONTRACT_R1",
+  "checkpoint_status": "CHECKPOINT_COMMITTED__NO_HUMAN_GATE",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "membership_sha256": "74c1b9ca2f362ea5cb755b50cadcf3a5820ab59891445bd79fc325da2f28ccdd",
+  "selection_freeze_sha256": "8ca3a8bb179992c9fbb2ecc00fbba9be7ed2a3857bb4f8f072ba00b9c0f91ebc",
+  "c24_worker_sha256": "3f08127d9e565756e175102141c1f408f06347b22be8124ad6f02618e4107e25",
+  "exact_runner_r2_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+  "acquisition_canonical_sha256": "1a837af7a2795dfa531b169c8dbc9a9ba78ffd3eadc070c9caa1698d1a6d32ca",
+  "replay_canonical_sha256": "8496b1428c0ae86ab67f5b2cc3561a4cf4cc67ad4df85e02f0b5acb38109b935",
+  "shard3_result": {
+    "rows": 25,
+    "AUTO_ACCEPT_P1": 4,
+    "AUTO_DEFER": 21,
+    "HUMAN_GATE": 0,
+    "validation_errors": 0
+  },
+  "batch3_shard3_status": "COMPLETE__RUNNER_VERIFIED__NO_HUMAN_GATE",
+  "batch3_shard4_status": "NOT_AUTHORIZED",
+  "full_frame_status": "NOT_AUTHORIZED",
+  "performance_outcomes_accessed": false,
+  "final_project_entity_id_minted": false,
+  "next_permissible_stage": "C26__BATCH3_SHARD4_PRODUCTIONIZATION_AND_AUTHORIZATION_GATE"
+}
