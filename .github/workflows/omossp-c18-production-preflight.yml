@@ -1,0 +1,93 @@
+name: OMOSSP C18 Batch3 production preflight
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  c18-production-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || exit 96
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Batch3 production pack offline
+        shell: bash
+        run: |
+          python -m py_compile omossp_c18_production_worker.py
+          python - <<'PY'
+          import hashlib, json, pathlib, re
+          b3=pathlib.Path("production_batches/omossp_c18_batch3.json")
+          b1=pathlib.Path("production_batches/omossp_c7_batch1.json")
+          b2=pathlib.Path("production_batches/omossp_c13_batch2.json")
+          c12=pathlib.Path("omossp_c12_production_worker.py")
+          c18=pathlib.Path("omossp_c18_production_worker.py")
+          pw=pathlib.Path(".github/workflows/omossp-c18-production.yml")
+
+          j3=json.loads(b3.read_text(encoding="utf-8"))
+          j1=json.loads(b1.read_text(encoding="utf-8"))
+          j2=json.loads(b2.read_text(encoding="utf-8"))
+          rows=j3["rows"]
+
+          assert j3["protocol"]=="OMOSSP_PHASE_C18_PRODUCTION_BATCH3_FREEZE_R1"
+          assert j3["authority_sha256"]=="22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8"
+          assert j3["prior_batch1_membership_sha256"]=="3ab635da2d7e94b010c7d9030df8d4806c980c74b0190f9189f83b148b63c93f"
+          assert j3["prior_batch2_membership_sha256"]=="1a801f5c6d9d98ebda950b3cf8d43676e091a7d335346495938d8f9548095b80"
+          assert len(rows)==100
+          assert len({int(r["source_scale_rank"]) for r in rows})==100
+          assert [int(r["source_scale_rank"]) for r in rows]==sorted(int(r["source_scale_rank"]) for r in rows)
+          assert not any(any("performance" in k.lower() for k in r.keys()) for r in rows)
+
+          prior={int(r["source_scale_rank"]) for r in j1["rows"]}|{int(r["source_scale_rank"]) for r in j2["rows"]}
+          now={int(r["source_scale_rank"]) for r in rows}
+          assert not (prior & now)
+
+          rows_sha=hashlib.sha256(json.dumps(rows,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+          sel_sha=hashlib.sha256(json.dumps(j3["selection_rule"],ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+          assert rows_sha=="74c1b9ca2f362ea5cb755b50cadcf3a5820ab59891445bd79fc325da2f28ccdd"
+          assert sel_sha=="8ca3a8bb179992c9fbb2ecc00fbba9be7ed2a3857bb4f8f072ba00b9c0f91ebc"
+          assert j3["membership_sha256"]==rows_sha
+          assert j3["selection_freeze_sha256"]==sel_sha
+
+          s12=c12.read_text(encoding="utf-8")
+          s18=c18.read_text(encoding="utf-8")
+          def core(s):
+              a=s.index("PACKAGE_CLASSES=")
+              z=s.index('batch=json.loads(BATCH.read_text(encoding="utf-8"))')
+              return s[a:z]
+          assert core(s12)==core(s18)
+
+          assert 're.search(r"(?mi)^\\s*"+re.escape(ident)+r"\\s*$",tx)' in s18
+          assert 're.search(r"(?mi)^\\\\s*"+re.escape(ident)+r"\\\\s*$",tx)' not in s18
+
+          workflow=pw.read_text(encoding="utf-8")
+          assert "runs-on: ubuntu-latest" in workflow
+          assert "workflow_dispatch:" in workflow
+          assert "pull_request:" not in workflow
+          assert ("upload-"+"artifact") not in workflow
+          assert ("actions/"+ "cache") not in workflow
+          assert not re.search(r"IFCT|F_success|F_competing|P_open",s18)
+          assert not re.search(r"google|bing|duckduckgo|search_query",s18,re.I)
+
+          print("C18_PRODUCTION_PREFLIGHT=PASS")
+          print("BATCH3_FILE_SHA256="+hashlib.sha256(b3.read_bytes()).hexdigest())
+          print("BATCH3_MEMBERSHIP_SHA256="+rows_sha)
+          print("BATCH3_SELECTION_FREEZE_SHA256="+sel_sha)
+          print("C18_WORKER_SHA256="+hashlib.sha256(c18.read_bytes()).hexdigest())
+          print("C12_WORKER_SHA256="+hashlib.sha256(c12.read_bytes()).hexdigest())
+          print("C18_PRODUCTION_WORKFLOW_SHA256="+hashlib.sha256(pw.read_bytes()).hexdigest())
+          print("BATCH3_MIN_RANK="+str(min(now)))
+          print("BATCH3_MAX_RANK="+str(max(now)))
+          PY
