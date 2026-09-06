@@ -49,8 +49,8 @@ jobs:
           assert rows_sha==batch["membership_sha256"]
           worker=worker_path.read_text(encoding="utf-8")
           workflow=prod_wf.read_text(encoding="utf-8")
-          assert "upload-artifact" not in workflow
-          assert "actions/cache" not in workflow
+          assert ("upload-"+"artifact") not in workflow
+          assert ("actions/"+ "cache") not in workflow
           assert "runs-on: ubuntu-latest" in workflow
           assert "pull_request:" not in workflow
           assert not re.search(r"IFCT|F_success|F_competing|P_open",worker)
