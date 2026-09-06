@@ -1,8 +1,7 @@
 name: OMOSSP C17 Batch2 Shard4 execution
 
 on:
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
