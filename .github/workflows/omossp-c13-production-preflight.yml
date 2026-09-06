@@ -1,0 +1,95 @@
+name: OMOSSP C13 Batch2 production preflight
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  c13-production-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || exit 96
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate Batch2 production pack offline
+        shell: bash
+        run: |
+          python -m py_compile omossp_c13_production_worker.py
+          python - <<'PY'
+          import hashlib, json, pathlib, re
+
+          batch_path=pathlib.Path("production_batches/omossp_c13_batch2.json")
+          b1_path=pathlib.Path("production_batches/omossp_c7_batch1.json")
+          c12_path=pathlib.Path("omossp_c12_production_worker.py")
+          c13_path=pathlib.Path("omossp_c13_production_worker.py")
+          prod_wf_path=pathlib.Path(".github/workflows/omossp-c13-production.yml")
+
+          b=json.loads(batch_path.read_text(encoding="utf-8"))
+          b1=json.loads(b1_path.read_text(encoding="utf-8"))
+          rows=b["rows"]
+
+          assert b["protocol"]=="OMOSSP_PHASE_C13_PRODUCTION_BATCH2_FREEZE_R1"
+          assert b["authority_sha256"]=="22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8"
+          assert b["prior_batch1_membership_sha256"]=="3ab635da2d7e94b010c7d9030df8d4806c980c74b0190f9189f83b148b63c93f"
+          assert len(rows)==100
+          assert len({int(r["source_scale_rank"]) for r in rows})==100
+          assert [int(r["source_scale_rank"]) for r in rows]==sorted(int(r["source_scale_rank"]) for r in rows)
+          assert not any(any("performance" in k.lower() for k in r.keys()) for r in rows)
+
+          b1_ranks={int(r["source_scale_rank"]) for r in b1["rows"]}
+          b2_ranks={int(r["source_scale_rank"]) for r in rows}
+          assert not (b1_ranks & b2_ranks)
+
+          rows_sha=hashlib.sha256(json.dumps(rows,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+          sel_sha=hashlib.sha256(json.dumps(b["selection_rule"],ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+          assert rows_sha=="1a801f5c6d9d98ebda950b3cf8d43676e091a7d335346495938d8f9548095b80"
+          assert sel_sha=="7836029c70a7ce55e5efcf5af6fbb06ea7f7fd1038dedcb0957ebf9dd0a4442b"
+          assert b["membership_sha256"]==rows_sha
+          assert b["selection_freeze_sha256"]==sel_sha
+
+          c12=c12_path.read_text(encoding="utf-8")
+          c13=c13_path.read_text(encoding="utf-8")
+          def core(s):
+              a=s.index("PACKAGE_CLASSES=")
+              z=s.index('batch=json.loads(BATCH.read_text(encoding="utf-8"))')
+              return s[a:z]
+          assert core(c12)==core(c13), "scientific core differs from C12 corrected worker"
+
+          assert 're.search(r"(?mi)^\\s*"+re.escape(ident)+r"\\s*$",tx)' in c13
+          assert 're.search(r"(?mi)^\\\\s*"+re.escape(ident)+r"\\\\s*$",tx)' not in c13
+          assert 'Source\\d*|VCS|SCM|Upstream|ProjectURL)\\s*:' in c13
+          assert 'Source\\\\d*|VCS|SCM|Upstream|ProjectURL)\\\\s*:' not in c13
+
+          workflow=prod_wf_path.read_text(encoding="utf-8")
+          assert "runs-on: ubuntu-latest" in workflow
+          assert "workflow_dispatch:" in workflow
+          assert "pull_request:" not in workflow
+          assert ("upload-"+"artifact") not in workflow
+          assert ("actions/"+ "cache") not in workflow
+          assert not re.search(r"IFCT|F_success|F_competing|P_open",c13)
+          assert not re.search(r"google|bing|duckduckgo|search_query",c13,re.I)
+
+          print("C13_PRODUCTION_PREFLIGHT=PASS")
+          print("BATCH2_FILE_SHA256="+hashlib.sha256(batch_path.read_bytes()).hexdigest())
+          print("BATCH2_MEMBERSHIP_SHA256="+rows_sha)
+          print("BATCH2_SELECTION_FREEZE_SHA256="+sel_sha)
+          print("C13_WORKER_SHA256="+hashlib.sha256(c13_path.read_bytes()).hexdigest())
+          print("C12_WORKER_SHA256="+hashlib.sha256(c12_path.read_bytes()).hexdigest())
+          print("C13_PRODUCTION_WORKFLOW_SHA256="+hashlib.sha256(prod_wf_path.read_bytes()).hexdigest())
+          print("BATCH2_MIN_RANK="+str(min(b2_ranks)))
+          print("BATCH2_MAX_RANK="+str(max(b2_ranks)))
+          PY
