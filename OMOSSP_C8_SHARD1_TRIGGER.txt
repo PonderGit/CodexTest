@@ -1,0 +1,1 @@
+Trigger OMOSSP C8 Batch-1 Shard-1 only. Frozen 25-row membership; no other shard.
