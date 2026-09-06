@@ -1,0 +1,91 @@
+{
+  "protocol": "OMOSSP_PHASE_C10_BATCH1_SHARD3_CHECKPOINT_R1",
+  "date": "2026-09-06",
+  "batch": "B001",
+  "shard": 3,
+  "checkpoint_state": "CHECKPOINT_COMMITTED",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "selection_freeze_sha256": "6c1dcae51c3be074cf0ddc825f0c8d7fdc455c0b8bf19cebc23c0b4d2915c243",
+  "membership_sha256": "3ab635da2d7e94b010c7d9030df8d4806c980c74b0190f9189f83b148b63c93f",
+  "shard_position_range": [
+    51,
+    75
+  ],
+  "execution": {
+    "run_id": 34014528018,
+    "job_id": 101435911380,
+    "conclusion": "success",
+    "acquisition_canonical_sha256": "ec413a8767eb3007a7e04ee8abaf57d64b70e1dfee80375a08872a3e84481811",
+    "exact_route_attempts": 68,
+    "evidence_cards": 64,
+    "success_captured": 64,
+    "not_found_for_endpoint": 4,
+    "access_incomplete_after_retries": 0,
+    "evidence_class_order_violations": 0,
+    "duplicate_routes": 0
+  },
+  "exact_runner_r2": {
+    "runner_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+    "replay_canonical_sha256": "3842e9657e3273ae9492b436423afe104cbe32ea2c1980dc5b3a9b410e2dbfab",
+    "rows": 25,
+    "auto_accept_p1": 4,
+    "auto_defer": 21,
+    "human_gate": 0,
+    "validation_errors": 0,
+    "final_project_entity_ids_minted": 0
+  },
+  "accepted_p1": [
+    {
+      "rank": 59,
+      "repo": "src-openeuler/perl-Class-C3-XS",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "MetaCPAN:Class-C3-XS"
+    },
+    {
+      "rank": 65,
+      "repo": "src-openeuler/kf6-kuserfeedback",
+      "basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+      "basis_value": "https://invent.kde.org/frameworks/kuserfeedback"
+    },
+    {
+      "rank": 75,
+      "repo": "src-openeuler/perl-Test-Dir",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "MetaCPAN:Test-Dir"
+    },
+    {
+      "rank": 80,
+      "repo": "src-openeuler/perl-XML-LibXML",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "MetaCPAN:XML-LibXML"
+    }
+  ],
+  "seals": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "search_used": false,
+    "name_similarity_inference_used": false,
+    "paid_resources_used": false
+  },
+  "free_only_postflight": {
+    "public_repository": true,
+    "standard_runner": "ubuntu-latest",
+    "workflow_artifacts": 0,
+    "actions_cache": false,
+    "artifact_upload": false,
+    "direct_cost": "0"
+  },
+  "drive_artifacts": {
+    "acquisition_bundle_id": "1mwPrckt26TWMUMF7cetJGtl0t_hyB_0lyZft47UqpNE",
+    "runner_replay_bundle_id": "1M16DPDxFLaqdsWBDOfU1qxajz-rCLDb5yQKjCUsC_os",
+    "exact_runner_replay_id": "1MgDXfxno8BJScvfKI91W_5XUtAPnG8i3RwzWHWBWljo"
+  },
+  "authorization": {
+    "shard3_complete": true,
+    "shard4_may_proceed_after_free_only_preflight": true,
+    "remaining_shards": [
+      4
+    ],
+    "full_frame_execution_authorized": false
+  }
+}
