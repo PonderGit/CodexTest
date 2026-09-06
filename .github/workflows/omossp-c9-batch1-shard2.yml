@@ -1,0 +1,57 @@
+name: OMOSSP C9 Batch1 Shard2 execution
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  c9-batch1-shard2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || {
+            echo "FREE_ONLY_GATE=FAIL__REPOSITORY_NOT_PUBLIC"
+            exit 96
+          }
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify frozen C7 production authority
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, json, pathlib
+          batch=pathlib.Path("production_batches/omossp_c7_batch1.json")
+          worker=pathlib.Path("omossp_c7_production_worker.py")
+          b=json.loads(batch.read_text(encoding="utf-8"))
+          assert b["authority_sha256"]=="22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8"
+          rows_sha=hashlib.sha256(json.dumps(b["rows"],ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+          assert len(b["rows"])==100
+          assert rows_sha=="3ab635da2d7e94b010c7d9030df8d4806c980c74b0190f9189f83b148b63c93f"
+          assert hashlib.sha256(batch.read_bytes()).hexdigest()=="00b853cf793c62ced37ae3cda7d6ec6e656e8d9793c98bce96a52474fe52664d"
+          assert hashlib.sha256(worker.read_bytes()).hexdigest()=="f93599074fea90c114d3ccd5990f7d66b1dae5ef75bef460c09cd9b4267fb46c"
+          print("C9_AUTHORITY_GATE=PASS__BATCH1_AND_WORKER_HASHES_MATCH")
+          PY
+      - name: Run frozen Batch1 Shard2 only
+        env:
+          OMOSSP_BATCH_FILE: production_batches/omossp_c7_batch1.json
+          OMOSSP_SHARD: "2"
+        run: python omossp_c7_production_worker.py
+      - name: Emit replayable Shard2 result
+        shell: bash
+        run: |
+          echo "===== OMOSSP_C9_SHARD2_CANONICAL_SHA256 ====="
+          cat omossp_c7_output/c7_batch1_shard2.sha256
+          echo "===== OMOSSP_C9_SHARD2_JSON_BEGIN ====="
+          cat omossp_c7_output/c7_batch1_shard2.json
+          echo "===== OMOSSP_C9_SHARD2_JSON_END ====="
