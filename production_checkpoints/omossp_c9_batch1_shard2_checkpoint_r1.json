@@ -1,0 +1,80 @@
+{
+  "protocol": "OMOSSP_PHASE_C9_BATCH1_SHARD2_CHECKPOINT_R1",
+  "date": "2026-09-06",
+  "batch": "B001",
+  "shard": 2,
+  "checkpoint_state": "CHECKPOINT_COMMITTED",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "selection_freeze_sha256": "6c1dcae51c3be074cf0ddc825f0c8d7fdc455c0b8bf19cebc23c0b4d2915c243",
+  "membership_sha256": "3ab635da2d7e94b010c7d9030df8d4806c980c74b0190f9189f83b148b63c93f",
+  "shard_position_range": [
+    26,
+    50
+  ],
+  "execution": {
+    "run_id": 34014322491,
+    "job_id": 101435376962,
+    "conclusion": "success",
+    "acquisition_canonical_sha256": "91782090609df414cdac04290995e28ad850a76b089d2201bd7342904150aacb",
+    "exact_route_attempts": 66,
+    "evidence_cards": 57,
+    "success_captured": 57,
+    "not_found_for_endpoint": 9,
+    "access_incomplete_after_retries": 0,
+    "evidence_class_order_violations": 0,
+    "duplicate_routes": 0
+  },
+  "exact_runner_r2": {
+    "runner_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+    "replay_canonical_sha256": "0b40aa707e2aed5fe2d1ddee551d3e88e9735d2599ae102cb9ced69ef6c135f3",
+    "rows": 25,
+    "auto_accept_p1": 2,
+    "auto_defer": 23,
+    "human_gate": 0,
+    "validation_errors": 0,
+    "final_project_entity_ids_minted": 0
+  },
+  "accepted_p1": [
+    {
+      "rank": 47,
+      "repo": "src-openeuler/perl-Log-Any",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "MetaCPAN:Log-Any"
+    },
+    {
+      "rank": 50,
+      "repo": "src-openeuler/perl-Module-Install-AuthorRequires",
+      "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+      "basis_value": "MetaCPAN:Module-Install-AuthorRequires"
+    }
+  ],
+  "seals": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "search_used": false,
+    "name_similarity_inference_used": false,
+    "paid_resources_used": false
+  },
+  "free_only_postflight": {
+    "public_repository": true,
+    "standard_runner": "ubuntu-latest",
+    "workflow_artifacts": 0,
+    "actions_cache": false,
+    "artifact_upload": false,
+    "direct_cost": "0"
+  },
+  "drive_artifacts": {
+    "acquisition_bundle_id": "1qwWBevJYcOXcYxfHJAmvwkJVRQ0Yh9ohi-0lKjzF3x8",
+    "runner_replay_bundle_id": "1Jl_g6o8EdndpO9OiTSu8TtWMJKkcydwdHCtL2bbHR0c",
+    "exact_runner_replay_id": "1BM9cHACOYJHelCoHgtmd2yvcIyhFH0binb4WCQZ4fJM"
+  },
+  "authorization": {
+    "shard2_complete": true,
+    "shard3_may_proceed_after_free_only_preflight": true,
+    "remaining_shards": [
+      3,
+      4
+    ],
+    "full_frame_execution_authorized": false
+  }
+}
