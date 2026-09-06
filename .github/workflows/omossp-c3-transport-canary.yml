@@ -1,8 +1,6 @@
 name: OMOSSP C3 transport canary
 
 on:
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 permissions:
