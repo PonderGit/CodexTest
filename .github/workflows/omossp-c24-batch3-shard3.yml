@@ -1,0 +1,36 @@
+name: OMOSSP C24 Batch3 Shard3 production
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  c24-batch3-shard3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        env:
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          test "$REPO_VISIBILITY" = "public" || exit 96
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run C24 authorized Batch3 Shard3
+        env:
+          OMOSSP_BATCH_FILE: production_batches/omossp_c18_batch3.json
+          OMOSSP_SHARD: "3"
+        run: python omossp_c24_production_worker.py
+      - name: Emit replayable Batch3 Shard3 result
+        shell: bash
+        run: |
+          echo "===== OMOSSP_C24_CANONICAL_SHA256 ====="
+          cat "omossp_c24_output/c24_batch3_shard3.sha256"
+          echo "===== OMOSSP_C24_JSON_BEGIN ====="
+          cat "omossp_c24_output/c24_batch3_shard3.json"
+          echo "===== OMOSSP_C24_JSON_END ====="
