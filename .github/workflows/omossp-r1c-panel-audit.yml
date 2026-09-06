@@ -1,0 +1,53 @@
+name: OMOSSP R1C Project-First Panel Coverage Audit
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "analysis/r1c_project_first_panel_audit.py"
+      - ".github/workflows/omossp-r1c-panel-audit.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  r1c:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: FREE-ONLY gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ github.repository_visibility }}" = "public"
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__UBUNTU_LATEST__NO_ARTIFACTS__NO_CACHE__NO_PAID_API"
+
+      - name: Run R1C coverage audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python analysis/r1c_project_first_panel_audit.py
+
+      - name: Commit R1C outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add governance/r1c_gitee_project_first_panel_coverage_summary.json
+          git add governance/r1c_gitee_project_first_panel_coverage_by_repo.csv
+          if git diff --cached --quiet; then
+            echo "R1C_OUTPUT_COMMIT=NO_CHANGES"
+          else
+            git commit -m "R1C preserve project-first panel coverage audit outputs"
+            git push
+            echo "R1C_OUTPUT_COMMIT=PASS"
+          fi
