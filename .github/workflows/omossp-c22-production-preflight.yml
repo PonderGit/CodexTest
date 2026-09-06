@@ -1,0 +1,29 @@
+name: OMOSSP C22 productionization preflight
+on:
+  pull_request:
+    branches: [ main ]
+permissions:
+  contents: read
+jobs:
+  c22-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: FREE-ONLY hard gate
+        shell: bash
+        run: |
+          test "${{ github.event.repository.private }}" = "false"
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_UBUNTU_RUNNER__NO_ARTIFACT_CACHE"
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Re-run C21 locator-role regression
+        shell: bash
+        run: python3 production_regression/test_omossp_c21_locator_role.py
+      - name: Run C22 productionization preflight
+        shell: bash
+        run: |
+          python3 production_regression/test_omossp_c22_productionization.py
+          sha256sum omossp_c21_production_worker.py
+          sha256sum omossp_c22_production_worker.py
+          sha256sum production_regression/test_omossp_c22_productionization.py
+          sha256sum .github/workflows/omossp-c22-batch3-shard2.yml
