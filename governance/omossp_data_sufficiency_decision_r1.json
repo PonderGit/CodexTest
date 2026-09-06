@@ -1,0 +1,140 @@
+{
+  "protocol": "OMOSSP_DATA_SUFFICIENCY_DECISION_R1",
+  "date": "2026-09-06",
+  "status": "LOCKED",
+  "headline": "CURRENT_DATA_INSUFFICIENT__SUPPLEMENT_REQUIRED__CURRENT_IDENTITY_CRAWLER_STOP__BULK_STRUCTURED_PANEL_DATA_FIRST__TARGETED_API_ONLY_IF_CONSTRUCT_CRITICAL",
+  "answers": {
+    "current_data_sufficient_for_formal_panel_paper": false,
+    "current_data_quality_sufficient_for_formal_panel_analysis": false,
+    "cleaning_alone_can_make_current_data_analysis_ready": false,
+    "additional_data_required": true,
+    "continue_current_general_identity_crawler": false,
+    "targeted_api_crawler_may_be_required_later": true
+  },
+  "audited_current_state": {
+    "source_frame": {
+      "rows": 18827,
+      "platform": "gitee",
+      "performance_outcomes_accessed_rows": 0,
+      "project_entity_id_minted_rows": 0,
+      "source_container_class_counts": {
+        "PACKAGE_CONTAINER": 13933,
+        "UNRESOLVED_SOURCE_CONTAINER": 4333,
+        "THIRD_PARTY_COMPONENT_CONTAINER": 286,
+        "DIRECT_REPOSITORY_SCOPE_UNRESOLVED": 99,
+        "OPENHARMONY_COMPONENT_OR_PROJECT_CANDIDATE": 66,
+        "OPENHARMONY_SIG_COMPONENT_OR_PROJECT_CANDIDATE": 61,
+        "UNKNOWN": 38,
+        "DIRECT_PROJECT_CANDIDATE": 7,
+        "DOCUMENTATION_NONSOFTWARE": 2,
+        "MIRROR_MIGRATION_CONTAINER": 2
+      },
+      "key_percentages": {
+        "PACKAGE_CONTAINER_pct": 74.01,
+        "UNRESOLVED_SOURCE_CONTAINER_pct": 23.01
+      },
+      "meaning": "candidate source/container frame, not an analysis-ready project panel"
+    },
+    "A3_denominator_screen": {
+      "frame_rows": 18827,
+      "year_2024": {
+        "issue_n_ge_40": 317,
+        "pr_n_ge_40": 628,
+        "either_family_n_ge_40": 713,
+        "both_families_n_ge_40": 232
+      },
+      "year_2025": {
+        "issue_n_ge_40": 337,
+        "pr_n_ge_40": 557,
+        "either_family_n_ge_40": 660,
+        "both_families_n_ge_40": 234
+      },
+      "missing_month_key_any_2024": {
+        "n": 18768,
+        "pct": 99.69
+      },
+      "missing_month_key_any_2025": {
+        "n": 18799,
+        "pct": 99.85
+      },
+      "stage2_metadata_candidates": 1466,
+      "project_label_multi_repo_flagged": 1268,
+      "project_label_multi_repo_flagged_pct": 86.49,
+      "raw_n_ge_40_not_already_multi_repo_flagged_2024": 135,
+      "raw_n_ge_40_not_already_multi_repo_flagged_2025": 106,
+      "interpretation": "denominator breadth exists, but repository-to-project boundary is a dominant unresolved issue; missing keys are not zeros"
+    },
+    "identity_production": {
+      "formal_rows_executed": 275,
+      "validated_p1_after_append_only_corrections": 50,
+      "role": "identity-validation / methods pilot",
+      "formal_panel_role": "not sufficient"
+    },
+    "formal_analysis_ready": {
+      "formal_project_frame_frozen": false,
+      "formal_sample_frozen": false,
+      "performance_outcomes_retrieved": false,
+      "formal_project_month_panel_built": false,
+      "analysis_ready_project_months": 0,
+      "stata_ready_dataset": false
+    }
+  },
+  "quality_assessment": {
+    "identity_provenance_quality": "HIGH_FOR_PILOT",
+    "source_frame_project_boundary_quality": "LOW_FOR_FORMAL_PROJECT_PANEL",
+    "performance_variable_quality": "NOT_YET_AUDITABLE__OUTCOMES_NOT_RETRIEVED",
+    "panel_temporal_quality": "NOT_YET_ESTABLISHED",
+    "zero_vs_missing_semantics": "UNRESOLVED_FOR_FORMAL_PANEL",
+    "overall_formal_analysis_quality": "INSUFFICIENT"
+  },
+  "cleaning_decision": {
+    "result": "CLEANING_ALONE_INSUFFICIENT",
+    "reason": [
+      "Cleaning cannot create performance variables that were never retrieved.",
+      "Cleaning cannot convert package containers into independent OSS projects without valid project-boundary mapping.",
+      "Cleaning cannot infer missing monthly keys as zero.",
+      "Cleaning cannot transform the 50 P1 identity cases into a sufficiently broad project-month panel."
+    ]
+  },
+  "supplementation_decision": {
+    "required": true,
+    "priority_order": [
+      "1. Create a project-first candidate frame rather than a package-container-first frame.",
+      "2. Acquire structured bulk project-month metrics from OpenDigger and/or other free public structured sources.",
+      "3. Build and audit the project-month panel before any large targeted crawling.",
+      "4. Use targeted Gitee/GitHub API collection only for variables that are construct-critical and unavailable/semantically insufficient in bulk sources."
+    ],
+    "do_not_use_as_primary_strategy": [
+      "continue validating the remaining 18,827 package/source rows one-by-one",
+      "general web crawling for completeness",
+      "full-frame project identity resolution before the regression variables are frozen"
+    ]
+  },
+  "crawler_decision": {
+    "current_identity_crawler": "STOP_AS_PRIMARY_DATA_PIPELINE",
+    "general_web_crawler": "NOT_AUTHORIZED",
+    "targeted_api_crawler": "CONDITIONAL_ONLY",
+    "targeted_api_gate": [
+      "A required model variable is frozen in the research design.",
+      "The variable cannot be obtained with adequate semantics/coverage from OpenDigger/OSS Compass/other structured free sources.",
+      "The missing variable materially affects construct validity or model identification.",
+      "A small API pilot shows acceptable coverage, stability, and zero direct cost."
+    ],
+    "examples_where_targeted_api_may_be_needed": [
+      "exact issue/PR lifecycle timestamps if monthly aggregates are insufficient",
+      "canonical issue-source history",
+      "bot/human actor validation",
+      "workflow automation adoption/configuration history if automation becomes a focal explanatory variable"
+    ]
+  },
+  "management_consequence": {
+    "recovery_plan_dependency_resolved": true,
+    "next_required_decision": "FORMAL_PANEL_FRAME_AND_VARIABLE_COVERAGE_AUDIT",
+    "prohibited_now": [
+      "C26 Batch3 Shard4",
+      "Batch4 identity production",
+      "full 18,827-row identity validation",
+      "new generic crawler engineering"
+    ]
+  }
+}
