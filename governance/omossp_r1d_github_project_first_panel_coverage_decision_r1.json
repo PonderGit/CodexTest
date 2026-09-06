@@ -1,0 +1,118 @@
+{
+  "protocol": "OMOSSP_R1D_GITHUB_PROJECT_FIRST_PANEL_COVERAGE_DECISION_R1",
+  "date": "2026-09-06",
+  "status": "COMPLETE__GITHUB_STRUCTURED_PANEL_QUANTITY_PROMISING__NO_NEW_CRAWLER_AUTHORIZED__R1E_SAMPLE_AND_CURATION_LOCK_NEXT",
+  "paper_goal_alignment": {
+    "question": "Can a curated GitHub project-first public structured-data frame plausibly supply enough project-month observations for the intended Stata panel regression without resuming the old crawler?",
+    "answer": "YES_IN_QUANTITY_PROMISE__FINAL_SUFFICIENCY_REQUIRES_PROJECT_CURATION_AND_LITERATURE_GROUNDED_SAMPLE_LOCK"
+  },
+  "source": {
+    "candidate_source": "OSS Compass GitHub single-repository snapshot",
+    "source_rows": 1769,
+    "exact_unique_repo_names": 1769,
+    "canonical_casefold_unique": 1767,
+    "case_duplicates": [
+      [
+        "nvidia/libcudacxx",
+        "NVIDIA/libcudacxx"
+      ],
+      [
+        "tencent/ncnn",
+        "Tencent/ncnn"
+      ]
+    ],
+    "source_semantics": "OSS Compass README describes single-repositories as user-submitted analysis requests for single repositories; this is a curated candidate source, not independent proof that repository=project."
+  },
+  "execution": {
+    "workflow": "OMOSSP R1D GitHub Project-First Panel Coverage Audit",
+    "run_id": 34048835336,
+    "job_id": 101528649907,
+    "event": "push",
+    "head_sha": "89b8edca4f4bb246e9e717852adc092e8adf29fe",
+    "conclusion": "success",
+    "free_only": true,
+    "artifacts": 0,
+    "output_commit": "1e0fe7a62a50f0879aea720a52400d5f67a1fbd4",
+    "summary_blob": "bd5931a2fd6520112295ebd7f26c406c4be4fcb9",
+    "coverage_blob": "354f7a2eddd63bd8f2dd7154601c97bc03fdc131"
+  },
+  "results": {
+    "opendigger_exported": 1483,
+    "opendigger_not_exported": 284,
+    "export_rate_of_canonical_candidates": 0.8393,
+    "full_observable_envelope_24m": 935,
+    "full24_rate_of_canonical_candidates": 0.5291,
+    "full24_rate_of_exported_candidates": 0.6305,
+    "project_month_NT_24m_upper_bound": 22440,
+    "full_observable_envelope_36m": 891,
+    "full36_rate_of_canonical_candidates": 0.5042,
+    "project_month_NT_36m_upper_bound": 32076,
+    "duration_coverage_among_full24": {
+      "issue_resolution_ge6_months": 759,
+      "issue_resolution_ge12_months": 634,
+      "pr_resolution_ge6_months": 792,
+      "pr_resolution_ge12_months": 675,
+      "either_resolution_family_ge6_months": 837,
+      "either_resolution_family_ge12_months": 739,
+      "both_resolution_families_ge6_months": 714,
+      "both_resolution_families_ge12_months": 570
+    }
+  },
+  "interpretation": {
+    "quantity": "MATERIALLY_SUFFICIENT_FOR_FORMAL_SAMPLE_ADEQUACY_TEST",
+    "final_analysis_readiness": "NOT_YET",
+    "reasons_final_not_locked": [
+      "OSS Compass single-repository status is a curated submission category, not independent validation of the theoretical project unit.",
+      "Final project/software/canonical-repository curation has not yet been applied.",
+      "The minimum acceptable N for the planned Stata panel design has not yet been literature-grounded and frozen.",
+      "Formal outcome/focal-indicator/control variables are not yet frozen."
+    ]
+  },
+  "acquisition_decision": {
+    "gitee_only_path": "STOP_AS_PRIMARY_FRAME__INSUFFICIENT",
+    "github_project_first_path": "PREFERRED_CANDIDATE_FRAME",
+    "pool_gitee_and_github_now": false,
+    "reason_not_pooling": "No need to add cross-platform comparability risk merely to increase N while GitHub alone already yields 935 full-24-month candidates.",
+    "resume_old_18827_identity_crawler": false,
+    "generic_web_crawler_authorized": false,
+    "targeted_api_authorized_now": false,
+    "additional_structured_bulk_acquisition_authorized_now": false
+  },
+  "current_data_sufficiency": {
+    "quantity_after_r1d": "PROMISING",
+    "quality_for_final_regression": "NOT_YET_SUFFICIENT",
+    "cleaning_and_curation_required": true,
+    "further_data_collection_required_now": false,
+    "crawler_required_now": false
+  },
+  "next_stage": {
+    "id": "R1E",
+    "title": "Literature-Grounded Minimum Sample + Project-Unit Curation Decision Lock",
+    "objectives": [
+      "Re-read the core full-text OSS/project-performance and panel-data studies.",
+      "Freeze the minimum and preferred project count for the Stata panel design, distinguishing clusters N from project-month NT.",
+      "Define prospective project/software/canonical-repository curation rules without using performance outcomes.",
+      "Apply attrition scenarios to the 935 full-24-month and 891 full-36-month GitHub candidate pools.",
+      "Decide whether GitHub-only remains sufficient after plausible curation loss.",
+      "Only if the lower-bound post-curation N falls below the literature-grounded minimum may additional structured sources or targeted API be reconsidered."
+    ],
+    "required_outputs": [
+      "N_min_projects",
+      "N_preferred_projects",
+      "T_min_months",
+      "post_curation_N_lower_bound",
+      "post_curation_N_expected",
+      "post_curation_project_month_NT",
+      "DATA_ACQUISITION_STOP_OR_SUPPLEMENT_LOCK"
+    ]
+  },
+  "prohibitions": [
+    "C26 Batch3 Shard4",
+    "old 18,827-row identity production",
+    "generic crawler engineering",
+    "targeted API collection",
+    "cross-platform pooling",
+    "formal Stata regression",
+    "manuscript drafting"
+  ]
+}
