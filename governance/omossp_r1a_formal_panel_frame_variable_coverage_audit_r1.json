@@ -1,0 +1,160 @@
+{
+  "protocol": "OMOSSP_R1A_FORMAL_PANEL_FRAME_VARIABLE_COVERAGE_POST_CLEANING_AUDIT_R1",
+  "date": "2026-09-06",
+  "status": "COMPLETE__DATA_INSUFFICIENT__SUPPLEMENT_REQUIRED",
+  "authority_inputs": {
+    "source_frame_rows": 18827,
+    "a3_campaign": "20260818T045720Z",
+    "a3_denominator_supported_union_n20_repositories": 1466,
+    "a4c_boundary_srs_n": 93,
+    "a4c_validated_boundary_assignments": 26,
+    "a4c_validated_boundary_yield": 0.2795698925,
+    "a4c_wilson95": [
+      0.1985033917,
+      0.378124217
+    ]
+  },
+  "source_frame_quality": {
+    "PACKAGE_CONTAINER": 13933,
+    "UNRESOLVED_SOURCE_CONTAINER": 4333,
+    "THIRD_PARTY_COMPONENT_CONTAINER": 286,
+    "DIRECT_REPOSITORY_SCOPE_UNRESOLVED": 99,
+    "OPENHARMONY_COMPONENT_OR_PROJECT_CANDIDATE": 66,
+    "OPENHARMONY_SIG_COMPONENT_OR_PROJECT_CANDIDATE": 61,
+    "UNKNOWN": 38,
+    "DIRECT_PROJECT_CANDIDATE": 7,
+    "DOCUMENTATION_NONSOFTWARE": 2,
+    "MIRROR_MIGRATION_CONTAINER": 2
+  },
+  "current_frame_wide_variables": {
+    "audited_bulk_metrics": [
+      "issues_new",
+      "change_requests"
+    ],
+    "years": [
+      2024,
+      2025
+    ],
+    "formal_frame_wide_performance_duration_metrics_stored": false,
+    "formal_frame_wide_contributor_controls_stored": false,
+    "formal_frame_wide_release_controls_stored": false,
+    "formal_project_month_panel_stored": false
+  },
+  "cleaning_scenarios": [
+    {
+      "scenario": "union_2024_2025_either_issue_or_pr_raw_n_ge_20",
+      "raw_repositories": 1466,
+      "after_clear_nonproject_class_exclusions_repositories": 884,
+      "known_labelled_repositories": 690,
+      "unlabeled_repositories": 194,
+      "distinct_known_project_labels": 11,
+      "optimistic_project_unit_upper_bound": 205,
+      "note": "Upper bound assumes every unlabeled repository is an independent project; this is not validated."
+    },
+    {
+      "scenario": "union_2024_2025_either_issue_or_pr_raw_n_ge_40",
+      "raw_repositories": 894,
+      "after_clear_nonproject_class_exclusions_repositories": 666,
+      "known_labelled_repositories": 521,
+      "unlabeled_repositories": 145,
+      "distinct_known_project_labels": 10,
+      "optimistic_project_unit_upper_bound": 155,
+      "note": "n>=40 is an old standalone-support threshold, not a panel inclusion rule."
+    },
+    {
+      "scenario": "at_least_one_explicit_issue_or_pr_event_in_both_2024_and_2025_after_clear_class_exclusions",
+      "repositories": 1593,
+      "unlabeled_repositories": 1006,
+      "distinct_known_project_labels": 11,
+      "optimistic_project_unit_upper_bound": 1017
+    },
+    {
+      "scenario": "guaranteed_at_least_6_months_with_issue_or_pr_key_in_each_year_after_clear_class_exclusions",
+      "repositories": 540,
+      "unlabeled_repositories": 176,
+      "distinct_known_project_labels": 9,
+      "optimistic_project_unit_upper_bound": 185
+    },
+    {
+      "scenario": "guaranteed_at_least_9_months_with_issue_or_pr_key_in_each_year_after_clear_class_exclusions",
+      "repositories": 341,
+      "unlabeled_repositories": 108,
+      "distinct_known_project_labels": 8,
+      "optimistic_project_unit_upper_bound": 116
+    },
+    {
+      "scenario": "both_issue_and_pr_have_at_least_6_explicit_month_keys_in_each_year",
+      "repositories": 256,
+      "unlabeled_repositories": 50,
+      "distinct_known_project_labels": 7,
+      "optimistic_project_unit_upper_bound": 57
+    },
+    {
+      "scenario": "both_issue_and_pr_have_at_least_9_explicit_month_keys_in_each_year",
+      "repositories": 106,
+      "unlabeled_repositories": 17,
+      "distinct_known_project_labels": 6,
+      "optimistic_project_unit_upper_bound": 23
+    }
+  ],
+  "month_key_coverage_within_cleaned_union_n20_repositories": {
+    "repository_count": 884,
+    "issues_new_24_month_explicit_key_median": 11,
+    "change_requests_24_month_explicit_key_median": 15,
+    "issues_new_all_24_keys_repositories": 27,
+    "change_requests_all_24_keys_repositories": 46,
+    "note": "Missing key is not authorized to be recoded as zero; these are explicit-key coverage counts, not final panel completeness."
+  },
+  "broad_recovery_potential": {
+    "after_clear_class_exclusions_total_repositories": 4604,
+    "repositories_with_any_explicit_issue_or_pr_event_in_either_2024_or_2025": 3133,
+    "optimistic_project_unit_upper_bound_if_all_unlabeled_are_projects": 2454,
+    "interpretation": "There is still substantial breadth in the structured frame, but it is not yet a validated independent-project frame."
+  },
+  "boundary_quality": {
+    "a4c_repository_level_validated_boundary_yield": 0.2795698925,
+    "a4c_wilson95": [
+      0.1985033917,
+      0.378124217
+    ],
+    "a4c_validated_project_entities_observed": 8,
+    "a4c_complete_membership_entities_authorized_for_aggregation": 4,
+    "implication": "Repository availability materially overstates analysis-ready project availability."
+  },
+  "current_analysis_readiness": {
+    "formal_project_frame_frozen": false,
+    "formal_project_month_panel": false,
+    "formal_regression_variable_set_frozen": false,
+    "formal_performance_outcomes_retrieved": false,
+    "analysis_ready_project_months": 0,
+    "stata_ready_dataset": false
+  },
+  "decisions": {
+    "current_data_sufficient_for_formal_panel_regression": false,
+    "current_data_quality_sufficient": false,
+    "cleaning_alone_sufficient": false,
+    "supplementation_required": true,
+    "current_identity_crawler_continue": false,
+    "generic_crawler_authorized": false,
+    "next_strategy": "PROJECT_FIRST_BULK_STRUCTURED_PANEL_COVERAGE_AND_ZERO_VS_MISSING_AUDIT",
+    "targeted_api_only_after_construct_critical_gap": true
+  },
+  "next_gate": {
+    "id": "R1B",
+    "title": "Project-First Bulk Panel Coverage + Missing-vs-Zero Semantics Audit",
+    "purpose": [
+      "construct a project-first candidate frame from structured public data",
+      "resolve missing monthly key semantics before panel filling",
+      "bulk-audit the actual monthly variables needed for Stata",
+      "estimate post-cleaning independent-project N and project-month NT",
+      "decide whether targeted API supplementation is actually necessary"
+    ],
+    "prohibited": [
+      "C26 shard4",
+      "full identity crawler",
+      "generic crawler engineering",
+      "formal Stata regression",
+      "manuscript writing"
+    ]
+  }
+}
