@@ -1,0 +1,1191 @@
+{
+  "protocol": "OMOSSP_PHASE_C6_EXACT_RUNNER_R2_REPLAY_BUNDLE_R1",
+  "source_protocol": "OMOSSP_PHASE_C6_GENERIC_EVIDENCE_PROGRESSION_PILOT_R1",
+  "pilot_sha256": "9b7c49ba8cdf12db7aac4e7518fd0e0576aa519e794fc167937deb836e3f559c",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "search_used": false,
+  "name_similarity_inference_used": false,
+  "performance_outcomes_accessed": false,
+  "final_project_entity_id_minted": false,
+  "rows": [
+    {
+      "source_row": {
+        "source_scale_rank": 12,
+        "frame_id": "6960304",
+        "platform": "gitee",
+        "source_repo_name": "src-openeuler/sg3_utils",
+        "source_container_class": "PACKAGE_CONTAINER",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_e8634dd166b59d947b2512f1",
+          "source_scale_rank": 12,
+          "source_repo_name": "src-openeuler/sg3_utils",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/src-openeuler/sg3_utils",
+          "retrieved_at_utc": "2026-09-06T04:31:53Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "8bfdbe1ebbb9874462fa9af84115ce6bc6e68c88b49be4f5c162e7d3a8bc33bc",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "8bfdbe1ebbb9874462fa9af84115ce6bc6e68c88b49be4f5c162e7d3a8bc33bc",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_648d0e09daf19363ab17ce32",
+          "source_scale_rank": 12,
+          "source_repo_name": "src-openeuler/sg3_utils",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_PACKAGE_SPEC_METADATA",
+          "source_url": "https://gitee.com/src-openeuler/sg3_utils/raw/master/sg3_utils.spec",
+          "retrieved_at_utc": "2026-09-06T04:32:00Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "32ccd8eb2d5c428c69e3ba694a831fb03f3d0f7692d5b1feeab53018c525ec4d",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "d11217041e456838d8d7f61a85894a5b80df22b6e46e79660c525fcfd6892e97",
+          "evidence_summary": "EC02 deterministic package spec capture; locators parsed only from explicit source-controlled fields.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_837feb602776abbc93fcd011",
+          "source_scale_rank": 12,
+          "source_repo_name": "src-openeuler/sg3_utils",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/sg3_utils",
+          "retrieved_at_utc": "2026-09-06T04:32:02Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "5fe081fd33d5a356bd3f81e7eafa6f0caf680fba14201acc8a3edf853568945c",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "8c6cfed9fe044722361fa7900bec05b92eb15a82f78626e5dfc9387e5fc8ceda",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_837feb602776abbc93fcd011",
+          "source_scale_rank": 12,
+          "source_repo_name": "src-openeuler/sg3_utils",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/sg3_utils",
+          "retrieved_at_utc": "2026-09-06T04:32:05Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "4404066ef5e1576e82bb72f4aedb23dd68db826fbf2b24da494dc097a140ff57",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "8c6cfed9fe044722361fa7900bec05b92eb15a82f78626e5dfc9387e5fc8ceda",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_837feb602776abbc93fcd011",
+          "source_scale_rank": 12,
+          "source_repo_name": "src-openeuler/sg3_utils",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/sg3_utils",
+          "retrieved_at_utc": "2026-09-06T04:32:07Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "94955999492107022afbe925c472e4e485868ff53320df348780a29fd72bee1c",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "8c6cfed9fe044722361fa7900bec05b92eb15a82f78626e5dfc9387e5fc8ceda",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 13,
+        "frame_id": "29080405",
+        "platform": "gitee",
+        "source_repo_name": "src-openeuler/warehouse_ros",
+        "source_container_class": "PACKAGE_CONTAINER",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_933aa521a67a1611c1d48cb9",
+          "source_scale_rank": 13,
+          "source_repo_name": "src-openeuler/warehouse_ros",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/src-openeuler/warehouse_ros",
+          "retrieved_at_utc": "2026-09-06T04:32:09Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "47ff245f5e495381eafbf945c5aed068ff4c32fbb9702605841c7ac04385ac69",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "47ff245f5e495381eafbf945c5aed068ff4c32fbb9702605841c7ac04385ac69",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_06a929ff70b2a7bbcebfdcac",
+          "source_scale_rank": 13,
+          "source_repo_name": "src-openeuler/warehouse_ros",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/warehouse_ros",
+          "retrieved_at_utc": "2026-09-06T04:32:14Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "907e25f1fbc928026aebf5a1fef52c897d8e8fc296b944bfc28c79e7436958e4",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "142adde14c407572636f1d39fdb36b03a8a7756fcb38c0e2adb1c0a2ee6390c7",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_06a929ff70b2a7bbcebfdcac",
+          "source_scale_rank": 13,
+          "source_repo_name": "src-openeuler/warehouse_ros",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/warehouse_ros",
+          "retrieved_at_utc": "2026-09-06T04:32:16Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "60765333dcd4badbd8c6dd405c76379c0bff4983fd89f18dbdef3f26b86fd554",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "142adde14c407572636f1d39fdb36b03a8a7756fcb38c0e2adb1c0a2ee6390c7",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_06a929ff70b2a7bbcebfdcac",
+          "source_scale_rank": 13,
+          "source_repo_name": "src-openeuler/warehouse_ros",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/warehouse_ros",
+          "retrieved_at_utc": "2026-09-06T04:32:18Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "2a44931f809d0abc522529fea676446bd539e75f0710a8734233c2e411f6f0b0",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "142adde14c407572636f1d39fdb36b03a8a7756fcb38c0e2adb1c0a2ee6390c7",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 14,
+        "frame_id": "10143284",
+        "platform": "gitee",
+        "source_repo_name": "src-openeuler/thunarx-python",
+        "source_container_class": "PACKAGE_CONTAINER",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_07697c55a96eee620d647dfa",
+          "source_scale_rank": 14,
+          "source_repo_name": "src-openeuler/thunarx-python",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/src-openeuler/thunarx-python",
+          "retrieved_at_utc": "2026-09-06T04:32:20Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "96b8adf3c36bc4b34f3bb6736954c405cdde35dae44b77b097cc54a70dc43357",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "96b8adf3c36bc4b34f3bb6736954c405cdde35dae44b77b097cc54a70dc43357",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_225e0a78668c0fedefb970d0",
+          "source_scale_rank": 14,
+          "source_repo_name": "src-openeuler/thunarx-python",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_PACKAGE_SPEC_METADATA",
+          "source_url": "https://gitee.com/src-openeuler/thunarx-python/raw/master/thunarx-python.spec",
+          "retrieved_at_utc": "2026-09-06T04:32:24Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "07e7924b5b9a582eb84d2f2fe458fdc5bcb2c62cc3a2756af9c10f181d89b8e0",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "0805b7d8498b09dbd7712f3b29af7a27ecf18d2894b4ed08d4ff3327c5ad9aa2",
+          "evidence_summary": "EC02 deterministic package spec capture; locators parsed only from explicit source-controlled fields.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_d4190cb722afd43e31acbcc4",
+          "source_scale_rank": 14,
+          "source_repo_name": "src-openeuler/thunarx-python",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/thunarx-python",
+          "retrieved_at_utc": "2026-09-06T04:32:27Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "e9fac040a59ecd429ae9f952e0a139ebe8780b8a8e320d243160af61a5696b8a",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "e0d5c314093e90d6b7874df806d929cac28c69c3a27447ae3ab224753ef19e62",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_d4190cb722afd43e31acbcc4",
+          "source_scale_rank": 14,
+          "source_repo_name": "src-openeuler/thunarx-python",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/thunarx-python",
+          "retrieved_at_utc": "2026-09-06T04:32:29Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "32543575cc710c323454c0bd044d01b097c59091dc0c878e9ad2254578e44805",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "e0d5c314093e90d6b7874df806d929cac28c69c3a27447ae3ab224753ef19e62",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_d4190cb722afd43e31acbcc4",
+          "source_scale_rank": 14,
+          "source_repo_name": "src-openeuler/thunarx-python",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/thunarx-python",
+          "retrieved_at_utc": "2026-09-06T04:32:31Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "a0af040a4692069fcb7fb2f1b73a86d9b9ac444fda9c637d3f4f56ace0d0c21c",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "e0d5c314093e90d6b7874df806d929cac28c69c3a27447ae3ab224753ef19e62",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 19,
+        "frame_id": "10092895",
+        "platform": "gitee",
+        "source_repo_name": "openeuler/syscontainer-tools",
+        "source_container_class": "UNKNOWN",
+        "upstream_or_project_locator_raw": "https://gitee.com/openeuler/syscontainer-tools"
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_87d1c2e55e5518f4ade36506",
+          "source_scale_rank": 19,
+          "source_repo_name": "openeuler/syscontainer-tools",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openeuler/syscontainer-tools",
+          "retrieved_at_utc": "2026-09-06T04:32:33Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "d80a3f14439c938636f0477fc38c4f6b50febf3cbb196b50b64ffc83a030a4bc",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "5b047340fbc3d11a0f97be3a33d57d85c3b6ebebd6580e33d824645b5e39884b",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_6c6d7e4cd09ba892a934a204",
+          "source_scale_rank": 19,
+          "source_repo_name": "openeuler/syscontainer-tools",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/syscontainer-tools",
+          "retrieved_at_utc": "2026-09-06T04:32:35Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "26a29b56e096798a3cdfa1a8774a0d3d6d59b767c3ee6a73fab7e9e0e42343c8",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "b6f71e866269df05ce5730119e07f3986aaa9d9d2244293dd29fa2797a6c7391",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_6c6d7e4cd09ba892a934a204",
+          "source_scale_rank": 19,
+          "source_repo_name": "openeuler/syscontainer-tools",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/syscontainer-tools",
+          "retrieved_at_utc": "2026-09-06T04:32:37Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "0b418c67368f2239701e04928001656396b5d6d90e2f8324dc80be82fe348e0f",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "b6f71e866269df05ce5730119e07f3986aaa9d9d2244293dd29fa2797a6c7391",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_6c6d7e4cd09ba892a934a204",
+          "source_scale_rank": 19,
+          "source_repo_name": "openeuler/syscontainer-tools",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/syscontainer-tools",
+          "retrieved_at_utc": "2026-09-06T04:32:40Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "57c65588eb4c9dbefe191225150c7b5a799e90ea70cbbe61967722a340ca23c8",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "b6f71e866269df05ce5730119e07f3986aaa9d9d2244293dd29fa2797a6c7391",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 23,
+        "frame_id": "22428832",
+        "platform": "gitee",
+        "source_repo_name": "openkylin/fam",
+        "source_container_class": "UNKNOWN",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_55360b2a52afdc928f86f60f",
+          "source_scale_rank": 23,
+          "source_repo_name": "openkylin/fam",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openkylin/fam",
+          "retrieved_at_utc": "2026-09-06T04:32:41Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "7c0d6cfc6a5f4d66aaa39ad91cb31d766cccca7ca3b7138ea1caaebb4e88e035",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "7c0d6cfc6a5f4d66aaa39ad91cb31d766cccca7ca3b7138ea1caaebb4e88e035",
+          "evidence_summary": "EC01 exact source repository page; default_branch=openkylin/yangtze.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 25,
+        "frame_id": "23528976",
+        "platform": "gitee",
+        "source_repo_name": "openkylin/serd",
+        "source_container_class": "UNKNOWN",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_6832b25eaaa27dde771cab24",
+          "source_scale_rank": 25,
+          "source_repo_name": "openkylin/serd",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openkylin/serd",
+          "retrieved_at_utc": "2026-09-06T04:32:42Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "edde4fb7668d4d1a825796c56a1194e00c55f1cd4d10b1157de895d0174b46cc",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "ce93abf35bd8703a4467629c415353113399a8146af406de5dfa108a4fd0f777",
+          "evidence_summary": "EC01 exact source repository page; default_branch=openkylin/yangtze.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 33,
+        "frame_id": "29888946",
+        "platform": "gitee",
+        "source_repo_name": "openkylin/wine-assistant",
+        "source_container_class": "DIRECT_PROJECT_CANDIDATE",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_3ba5f77a44350c29b0106f92",
+          "source_scale_rank": 33,
+          "source_repo_name": "openkylin/wine-assistant",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openkylin/wine-assistant",
+          "retrieved_at_utc": "2026-09-06T04:32:45Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "9bc6d2a72554cbc6b169c9689d61e8bd59b61744b8ff485e37b7b832886cadaa",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "13dadc4b85ca92c72fcc6ad3071ece3ff4555e70819073777641522859019082",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 36,
+        "frame_id": "29801641",
+        "platform": "gitee",
+        "source_repo_name": "openharmony-sig/applications_clock",
+        "source_container_class": "DIRECT_PROJECT_CANDIDATE",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_994d700f8fc5d97a81b5e3fd",
+          "source_scale_rank": 36,
+          "source_repo_name": "openharmony-sig/applications_clock",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openharmony-sig/applications_clock",
+          "retrieved_at_utc": "2026-09-06T04:32:47Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "c1785f4af0772da03d9fbe8a41bf9822faf49c6385d7fab34cdbff7f652ca3aa",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "720d0e49642ea10cd2c997bfdc452a9868c8d7547aeb6b3a300442a0b02628a5",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 74,
+        "frame_id": "38515405",
+        "platform": "gitee",
+        "source_repo_name": "openharmony-sig/fluttertpc_flutter_statusbarcolor_ns",
+        "source_container_class": "THIRD_PARTY_COMPONENT_CONTAINER",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_aaadc8d6ffe188647327bf0a",
+          "source_scale_rank": 74,
+          "source_repo_name": "openharmony-sig/fluttertpc_flutter_statusbarcolor_ns",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openharmony-sig/fluttertpc_flutter_statusbarcolor_ns",
+          "retrieved_at_utc": "2026-09-06T04:32:50Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "79dac495a0afe6e360bb7b9c6b2ce5c39dafb0bafd834043e3b2e67699c132c0",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "7921ad70859b80f56fb7d380e48ffed98905c09b17ef9f8a93f28699d73101f2",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 76,
+        "frame_id": "38141490",
+        "platform": "gitee",
+        "source_repo_name": "openharmony-sig/fluttertpc_flutter_pdfview",
+        "source_container_class": "THIRD_PARTY_COMPONENT_CONTAINER",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_fce133c0fedebdcc13ef10e0",
+          "source_scale_rank": 76,
+          "source_repo_name": "openharmony-sig/fluttertpc_flutter_pdfview",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openharmony-sig/fluttertpc_flutter_pdfview",
+          "retrieved_at_utc": "2026-09-06T04:32:52Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "c6c28326504c9197ff8de35e9b4b8158a7e331a69b3ecbaef219ab8aea9e881a",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "872bb0fb54d050a1a831c5d655b24eddd0e96fbc5ee99717f8b31af5bfeeea1c",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 114,
+        "frame_id": "13725630",
+        "platform": "gitee",
+        "source_repo_name": "ascend/ascend-for-volcano",
+        "source_container_class": "MIRROR_MIGRATION_CONTAINER",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_9c0b9dd6ae7ce1d17dbbeb37",
+          "source_scale_rank": 114,
+          "source_repo_name": "ascend/ascend-for-volcano",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/ascend/ascend-for-volcano",
+          "retrieved_at_utc": "2026-09-06T04:32:54Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "63651d6371cbf6510f5b1c7be6b8321577365a2fc3ad5b4704d337b6d6d01fe2",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "1efb31db11da5c95561611f88e7f67cd91b56821ccaf5cf4a25ab2ee2826acce",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 121,
+        "frame_id": "38514711",
+        "platform": "gitee",
+        "source_repo_name": "openharmony-sig/fluttertpc_mobile_device_identifier",
+        "source_container_class": "THIRD_PARTY_COMPONENT_CONTAINER",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_5220a372d0294ee245d72a2f",
+          "source_scale_rank": 121,
+          "source_repo_name": "openharmony-sig/fluttertpc_mobile_device_identifier",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openharmony-sig/fluttertpc_mobile_device_identifier",
+          "retrieved_at_utc": "2026-09-06T04:32:56Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "9b9ceb71cf10251037e056f5bb1f112e13ccafdcac4cdb0fa46e42ce61139484",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "13a63a3b1a02f113350dc3bdd4a1178385b9175a3d0723cc4e6a12734e7b2f03",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 251,
+        "frame_id": "9940251",
+        "platform": "gitee",
+        "source_repo_name": "src-openeuler/perl-CGI-Application-Plugin-Stream",
+        "source_container_class": "UNRESOLVED_SOURCE_CONTAINER",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 252,
+        "frame_id": "6960212",
+        "platform": "gitee",
+        "source_repo_name": "src-openeuler/python-cffi",
+        "source_container_class": "UNRESOLVED_SOURCE_CONTAINER",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_4f69388557af623462b3172b",
+          "source_scale_rank": 252,
+          "source_repo_name": "src-openeuler/python-cffi",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/src-openeuler/python-cffi",
+          "retrieved_at_utc": "2026-09-06T04:33:01Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "8d7df0c69021a736fc59cd4cd365b7ef23781ab21dfb2cac00320019a7f2423e",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "8d7df0c69021a736fc59cd4cd365b7ef23781ab21dfb2cac00320019a7f2423e",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_d47d7c0caad61eca79b6e80f",
+          "source_scale_rank": 252,
+          "source_repo_name": "src-openeuler/python-cffi",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_PACKAGE_SPEC_METADATA",
+          "source_url": "https://gitee.com/src-openeuler/python-cffi/raw/master/python-cffi.spec",
+          "retrieved_at_utc": "2026-09-06T04:33:04Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "21f3ef9b861fb329af03574a1f0134dc0fb14765c6b1933fdb73eaa7618bca71",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "1c0821ac9e3e8516f89abb80f1841cf534e4c5d650d5e5f2d4785315fb0e56a0",
+          "evidence_summary": "EC02 deterministic package spec capture; locators parsed only from explicit source-controlled fields.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_8b913a3e6c845444309aa7be",
+          "source_scale_rank": 252,
+          "source_repo_name": "src-openeuler/python-cffi",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/python-cffi",
+          "retrieved_at_utc": "2026-09-06T04:33:06Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "30479b3900028b156edc77bc19f1d518abd7b7df40870ffa9b48f4a4704a7471",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "cb4172b7804854c59481e070848ad1820990750c315e55da7efe361e6e2daaf7",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_8b913a3e6c845444309aa7be",
+          "source_scale_rank": 252,
+          "source_repo_name": "src-openeuler/python-cffi",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/python-cffi",
+          "retrieved_at_utc": "2026-09-06T04:33:08Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "7c6854ecf81086d2677dabb761819efff0247ae076243ee91a7e3ae3cc5fe23e",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "cb4172b7804854c59481e070848ad1820990750c315e55da7efe361e6e2daaf7",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_8b913a3e6c845444309aa7be",
+          "source_scale_rank": 252,
+          "source_repo_name": "src-openeuler/python-cffi",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/python-cffi",
+          "retrieved_at_utc": "2026-09-06T04:33:10Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "9c50f09db2ae485748a33b0239dff59a4a58fe7095f8c2b8fcbda89ca010a5d3",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "cb4172b7804854c59481e070848ad1820990750c315e55da7efe361e6e2daaf7",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 253,
+        "frame_id": "7216253",
+        "platform": "gitee",
+        "source_repo_name": "src-openeuler/python-productmd",
+        "source_container_class": "UNRESOLVED_SOURCE_CONTAINER",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_5ed485914807e7b9fdba89f7",
+          "source_scale_rank": 253,
+          "source_repo_name": "src-openeuler/python-productmd",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/src-openeuler/python-productmd",
+          "retrieved_at_utc": "2026-09-06T04:33:13Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "86606b10d200699078d6cf736dac057c6628695004022551fbfab7df78bde017",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "86606b10d200699078d6cf736dac057c6628695004022551fbfab7df78bde017",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_4817fdcd1dd83fcda09bf9c5",
+          "source_scale_rank": 253,
+          "source_repo_name": "src-openeuler/python-productmd",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_PACKAGE_SPEC_METADATA",
+          "source_url": "https://gitee.com/src-openeuler/python-productmd/raw/master/python-productmd.spec",
+          "retrieved_at_utc": "2026-09-06T04:33:16Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "bc3cdc86b79d7cd5966d903e4218f68a3fcbe79fb05259a626f6b6f1101a9b5b",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "4ca8717e4a3eee9ecfbe986ed1c85e9a2912e3425b1dd5e52b13357b50072336",
+          "evidence_summary": "EC02 deterministic package spec capture; locators parsed only from explicit source-controlled fields.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_d86be377d09b61a62434ec70",
+          "source_scale_rank": 253,
+          "source_repo_name": "src-openeuler/python-productmd",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/python-productmd",
+          "retrieved_at_utc": "2026-09-06T04:33:18Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "8b323c805105e771aab37c60268b85631989f6ed0dac880e19c215af862c6869",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "fe52adfd82c51857824f0d87cb4fde5803b7a219d36801b5f8450afda2382c14",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_d86be377d09b61a62434ec70",
+          "source_scale_rank": 253,
+          "source_repo_name": "src-openeuler/python-productmd",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/python-productmd",
+          "retrieved_at_utc": "2026-09-06T04:33:21Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "07ad5a49b43a6573ff8ffb61ab7a59f6172592125f23f3a3788301198578a6cf",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "fe52adfd82c51857824f0d87cb4fde5803b7a219d36801b5f8450afda2382c14",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_d86be377d09b61a62434ec70",
+          "source_scale_rank": 253,
+          "source_repo_name": "src-openeuler/python-productmd",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/src-openeuler/python-productmd",
+          "retrieved_at_utc": "2026-09-06T04:33:23Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "cefff781120dbb48586edbec034b80323064fb3cfe373872b02131e1db0c867c",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "fe52adfd82c51857824f0d87cb4fde5803b7a219d36801b5f8450afda2382c14",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_70b2a10cedbcf7a3ed286dd5",
+          "source_scale_rank": 253,
+          "source_repo_name": "src-openeuler/python-productmd",
+          "evidence_grade": "P2",
+          "evidence_type": "GITHUB_PROVIDER_NATIVE_REPOSITORY_METADATA",
+          "source_url": "https://api.github.com/repos/release-engineering/productmd",
+          "retrieved_at_utc": "2026-09-06T04:33:23Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "a2a5616bd24d3ff73a60464c0c18ef4c4fa2a73ac3337eaeaaf08b2230f6ba55",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "9dae5fd51fac70d304168916d6fdfe145ad86163ada995d8e23714c3c4c4bf40",
+          "evidence_summary": "EC03 GitHub provider-native metadata derived from explicit locator https://github.com/release-engineering/productmd.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_bb65359264b093642d45c69f",
+          "source_scale_rank": 253,
+          "source_repo_name": "src-openeuler/python-productmd",
+          "evidence_grade": "P1",
+          "evidence_type": "GITHUB_PROVIDER_NATIVE_README",
+          "source_url": "https://api.github.com/repos/release-engineering/productmd/readme",
+          "retrieved_at_utc": "2026-09-06T04:33:23Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "20730d20f982c6f0ff84726be1021be8b90f1b2f1d71a115ca2ad528e35ddbdc",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "3613fc2e358c7c815f307fcc34fa4a116556487f6757eb82a4dbdf575d816697",
+          "evidence_summary": "EC06 project-controlled README from explicit GitHub locator https://github.com/release-engineering/productmd.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": "T1_EXACT_PACKAGE_CONTROLLED_LOCATOR_PLUS_INDEPENDENT_PROJECT_CONTROLLED_P1",
+      "proposed": {
+        "entity_identity_basis_type": "OFFICIAL_CANONICAL_REPOSITORY_SET",
+        "entity_identity_basis_value": "https://github.com/release-engineering/productmd",
+        "human_gate_code": ""
+      }
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 1755,
+        "frame_id": "24707093",
+        "platform": "gitee",
+        "source_repo_name": "openharmony-sig/device_board_rpi",
+        "source_container_class": "OPENHARMONY_SIG_COMPONENT_OR_PROJECT_CANDIDATE",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_2ebe115b5f9a4f7965409712",
+          "source_scale_rank": 1755,
+          "source_repo_name": "openharmony-sig/device_board_rpi",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openharmony-sig/device_board_rpi",
+          "retrieved_at_utc": "2026-09-06T04:33:28Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "da9241e34a052a1f53d0b270765be23a3b8686584e1999015bb0c43c456b30b6",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "adfbb106cbbaf4d1b93627d78df1a9bc83d9ca1cea6b7320be3fc987561989f0",
+          "evidence_summary": "EC01 exact source repository page; default_branch=OpenHarmony-3.2-Release.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 1769,
+        "frame_id": "39783025",
+        "platform": "gitee",
+        "source_repo_name": "openeuler/SoftBR",
+        "source_container_class": "DIRECT_REPOSITORY_SCOPE_UNRESOLVED",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_12cdec26ab3aba4f1f9f6810",
+          "source_scale_rank": 1769,
+          "source_repo_name": "openeuler/SoftBR",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openeuler/SoftBR",
+          "retrieved_at_utc": "2026-09-06T04:33:31Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "6d03b5f457dc04657b922d63ac953029dbf2fcf0abaa0132aaa214ae2db289e3",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "4bce82b4ad40f371bf565f00f2bc224c043ab223704d40ef3dd12655ed751d09",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_8389a6d1fdc5611cb747fff9",
+          "source_scale_rank": 1769,
+          "source_repo_name": "openeuler/SoftBR",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/SoftBR",
+          "retrieved_at_utc": "2026-09-06T04:33:33Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "1109c6552ca4a5e31d51d1752e3d450ba902c603220dcad12bfa843e70a48b2b",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "614c2702648793e997532277d6105f51d0ae154a22799df4cf28ca365483b8df",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_8389a6d1fdc5611cb747fff9",
+          "source_scale_rank": 1769,
+          "source_repo_name": "openeuler/SoftBR",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/SoftBR",
+          "retrieved_at_utc": "2026-09-06T04:33:35Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "1f6f1ea0199ae4713eef5dd3dcb838bfe4638bb44b87b5826f3c20e531934132",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "614c2702648793e997532277d6105f51d0ae154a22799df4cf28ca365483b8df",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_8389a6d1fdc5611cb747fff9",
+          "source_scale_rank": 1769,
+          "source_repo_name": "openeuler/SoftBR",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/SoftBR",
+          "retrieved_at_utc": "2026-09-06T04:33:37Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "1dd2353783fc9211039434f4e431636b781bc822763f803aab170da95793c783",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "614c2702648793e997532277d6105f51d0ae154a22799df4cf28ca365483b8df",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 1784,
+        "frame_id": "14557175",
+        "platform": "gitee",
+        "source_repo_name": "openharmony/communication_wifi_aware",
+        "source_container_class": "OPENHARMONY_COMPONENT_OR_PROJECT_CANDIDATE",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_1f1edc2ae6b420932751eb3e",
+          "source_scale_rank": 1784,
+          "source_repo_name": "openharmony/communication_wifi_aware",
+          "evidence_grade": "P2",
+          "evidence_type": "OPENHARMONY_OFFICIAL_MANIFEST",
+          "source_url": "https://gitee.com/openharmony/manifest/raw/master/ohos/ohos.xml",
+          "retrieved_at_utc": "2026-09-06T04:33:45Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "1833e4f6fefa6eff8aa0b6d1e38737ca8786b5cf447a8dfc513a75767d24409a",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "6aeb0eb8ba8337a074096bc42ad792c72b1bac9cd4e144bd42d7df2d6c8d58fd",
+          "evidence_summary": "EC08 official OpenHarmony manifest exact-name membership check; repository/component evidence only, never automatic theoretical project identity.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 1797,
+        "frame_id": "26610230",
+        "platform": "gitee",
+        "source_repo_name": "openharmony-sig/device_soc_asrmicro",
+        "source_container_class": "OPENHARMONY_SIG_COMPONENT_OR_PROJECT_CANDIDATE",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_2c5a1e80d4b5d8a235584bde",
+          "source_scale_rank": 1797,
+          "source_repo_name": "openharmony-sig/device_soc_asrmicro",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openharmony-sig/device_soc_asrmicro",
+          "retrieved_at_utc": "2026-09-06T04:33:47Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "ce226bef6168d08b19560a3ab05fda18b54abce0deee4dfa26036019c4e0bb39",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "ac2eaa04300c5f08787fdf2feaa5ba14e714452761b79a3da717336cc8f3fc09",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 1799,
+        "frame_id": "36609386",
+        "platform": "gitee",
+        "source_repo_name": "openharmony-sig/vendor_hardmony",
+        "source_container_class": "OPENHARMONY_SIG_COMPONENT_OR_PROJECT_CANDIDATE",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_a562ecc28a8c79d245189d4b",
+          "source_scale_rank": 1799,
+          "source_repo_name": "openharmony-sig/vendor_hardmony",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openharmony-sig/vendor_hardmony",
+          "retrieved_at_utc": "2026-09-06T04:33:49Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "dec935f105d0c34a6a5fa68d048c9696f67016d60f4c86d6b258360bddcc5dbd",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "e9e1ecfec397dcb12383cbaa84e1b46b0488ce41fab32837fb3721969e717205",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 1800,
+        "frame_id": "13119718",
+        "platform": "gitee",
+        "source_repo_name": "openeuler/libcareplus",
+        "source_container_class": "DIRECT_REPOSITORY_SCOPE_UNRESOLVED",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_2ef446650c1f69ede282745c",
+          "source_scale_rank": 1800,
+          "source_repo_name": "openeuler/libcareplus",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openeuler/libcareplus",
+          "retrieved_at_utc": "2026-09-06T04:33:54Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "3967dd860bef2e022962bc1fd14065d9f27253e85406eca30624aae2f4c95dec",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "8a7d40d987e248697fe7552426b57322b7aa288be649d77bd7902a089df3bbb5",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_091a927c11c534c5809358fe",
+          "source_scale_rank": 1800,
+          "source_repo_name": "openeuler/libcareplus",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/libcareplus",
+          "retrieved_at_utc": "2026-09-06T04:33:56Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "ccdc16563efd4f67d1265e4167a8dbeb5534712be227a207e20d9ce47db5fb56",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "32636157d9b692bc9ca9ea04b2a5c599fe2041dc4f54d48b0baefcf469540ac6",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_091a927c11c534c5809358fe",
+          "source_scale_rank": 1800,
+          "source_repo_name": "openeuler/libcareplus",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/libcareplus",
+          "retrieved_at_utc": "2026-09-06T04:33:58Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "edc01310ee6b67e30d4f640917368d5462ce063981535bc328f67eeaf437e0e5",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "32636157d9b692bc9ca9ea04b2a5c599fe2041dc4f54d48b0baefcf469540ac6",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_70bb32d4f69542daca0f13de",
+          "source_scale_rank": 1800,
+          "source_repo_name": "openeuler/libcareplus",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/libcareplus",
+          "retrieved_at_utc": "2026-09-06T04:34:00Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "375e065fe8076e35ef7135f64d1a36fb352d360c87a3549b62126126e580c82d",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "7e4ceec3fcedca88805aa7b5fe5fb84a86e8d181a14ed2f11062372eece1ffac",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 1819,
+        "frame_id": "17348803",
+        "platform": "gitee",
+        "source_repo_name": "openharmony/vendor_bearpi",
+        "source_container_class": "OPENHARMONY_COMPONENT_OR_PROJECT_CANDIDATE",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_33d353cce7342b0448ddb538",
+          "source_scale_rank": 1819,
+          "source_repo_name": "openharmony/vendor_bearpi",
+          "evidence_grade": "P2",
+          "evidence_type": "OPENHARMONY_OFFICIAL_MANIFEST",
+          "source_url": "https://gitee.com/openharmony/manifest/raw/master/ohos/ohos.xml",
+          "retrieved_at_utc": "2026-09-06T04:34:07Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "1833e4f6fefa6eff8aa0b6d1e38737ca8786b5cf447a8dfc513a75767d24409a",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "beb3a1d3a87e62b655fc69c25dde1441185b298850dfb9a77f46dbc6c4724880",
+          "evidence_summary": "EC08 official OpenHarmony manifest exact-name membership check; repository/component evidence only, never automatic theoretical project identity.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 1846,
+        "frame_id": "22279421",
+        "platform": "gitee",
+        "source_repo_name": "openeuler/kiran-control-panel",
+        "source_container_class": "DIRECT_REPOSITORY_SCOPE_UNRESOLVED",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_b9cff93fa5ef6fbff6be888d",
+          "source_scale_rank": 1846,
+          "source_repo_name": "openeuler/kiran-control-panel",
+          "evidence_grade": "P2",
+          "evidence_type": "EXACT_SOURCE_REPOSITORY_PAGE",
+          "source_url": "https://gitee.com/openeuler/kiran-control-panel",
+          "retrieved_at_utc": "2026-09-06T04:34:08Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "d019e504a7984343cf8fb223d52caec2ec9bdf22414aaf0e2760e09107e34bf5",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "78635566ecd1270824d78a95a48cbfa84b4cd0881d9e6b8f147e0ebe39b4f390",
+          "evidence_summary": "EC01 exact source repository page; default_branch=master.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_e46044fc22e751421675621d",
+          "source_scale_rank": 1846,
+          "source_repo_name": "openeuler/kiran-control-panel",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/kiran-control-panel",
+          "retrieved_at_utc": "2026-09-06T04:34:11Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "874e52b712c71d9ee7bc9c469416dfc02548d5ae64e07e71ac2b5cf569173d82",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "9b8fb4b8c8dc5d32bfe9af75a36e7ff5c41b40bdabcc1ebad5bdd7ec271d58fb",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_e46044fc22e751421675621d",
+          "source_scale_rank": 1846,
+          "source_repo_name": "openeuler/kiran-control-panel",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/kiran-control-panel",
+          "retrieved_at_utc": "2026-09-06T04:34:14Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "acbf999bf5bfebc854b3f3852ec97cf4bdd0d28b90fe219c44f77699049efd4b",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "9b8fb4b8c8dc5d32bfe9af75a36e7ff5c41b40bdabcc1ebad5bdd7ec271d58fb",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        },
+        {
+          "evidence_id": "E_C6_e46044fc22e751421675621d",
+          "source_scale_rank": 1846,
+          "source_repo_name": "openeuler/kiran-control-panel",
+          "evidence_grade": "P2",
+          "evidence_type": "SOURCE_CONTAINER_MIGRATION_NOTICE",
+          "source_url": "https://atomgit.com/openeuler/kiran-control-panel",
+          "retrieved_at_utc": "2026-09-06T04:34:16Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "ef79bddc4be2bad863d3d62845ab367682a11907a71353adb63c31d44a35eb69",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "9b8fb4b8c8dc5d32bfe9af75a36e7ff5c41b40bdabcc1ebad5bdd7ec271d58fb",
+          "evidence_summary": "EC07 explicit migration target followed from source-controlled evidence.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    },
+    {
+      "source_row": {
+        "source_scale_rank": 1867,
+        "frame_id": "19862149",
+        "platform": "gitee",
+        "source_repo_name": "openharmony/security_access_token",
+        "source_container_class": "OPENHARMONY_COMPONENT_OR_PROJECT_CANDIDATE",
+        "upstream_or_project_locator_raw": ""
+      },
+      "cards": [
+        {
+          "evidence_id": "E_C6_4476d1c59a58230504fddaf1",
+          "source_scale_rank": 1867,
+          "source_repo_name": "openharmony/security_access_token",
+          "evidence_grade": "P2",
+          "evidence_type": "OPENHARMONY_OFFICIAL_MANIFEST",
+          "source_url": "https://gitee.com/openharmony/manifest/raw/master/ohos/ohos.xml",
+          "retrieved_at_utc": "2026-09-06T04:34:21Z",
+          "capture_method": "GITHUB_ACTIONS_EXACT_HTTPS_GET_R1",
+          "raw_sha256_if_available": "1833e4f6fefa6eff8aa0b6d1e38737ca8786b5cf447a8dfc513a75767d24409a",
+          "provider_native_hash_if_available": "",
+          "text_extract_sha256": "2cdabaf15fd1c6d7071e748459c4c4e01675b1611d0975ac5da8db87454a4cfc",
+          "evidence_summary": "EC08 official OpenHarmony manifest exact-name membership check; repository/component evidence only, never automatic theoretical project identity.",
+          "performance_outcomes_accessed": false
+        }
+      ],
+      "decision_template": null,
+      "proposed": {}
+    }
+  ]
+}
