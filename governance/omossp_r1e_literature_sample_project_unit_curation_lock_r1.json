@@ -1,0 +1,154 @@
+{
+  "protocol": "OMOSSP_R1E_LITERATURE_GROUNDED_SAMPLE_PROJECT_UNIT_CURATION_LOCK_R1",
+  "date": "2026-09-06",
+  "status": "PASS__DATA_ACQUISITION_STOP__GITHUB_ONLY_QUANTITY_ADEQUATE_PENDING_CURATION",
+  "literature_benchmarks": [
+    {
+      "study": "Huang, Huang & Hong (Information Systems Research, 2026), Workflow Automation in Open-Source Software Development",
+      "peer_review_status": "peer-reviewed journal",
+      "design": "longitudinal GitHub archival; issue-level DID plus project-month panel",
+      "period": "2019-01 to 2020-12",
+      "months": 24,
+      "projects": "over 4,500 matched projects",
+      "project_month_observations": 109152,
+      "exact_project_count_inferred_from_balanced_panel": 4548,
+      "inference_note": "109,152 / 24 = 4,548; paper text independently states over 4,500 projects.",
+      "relevance": "closest high-quality published benchmark for OSS project-month analysis"
+    },
+    {
+      "study": "Medappa & Srivastava (Information Systems Research, 2019)",
+      "peer_review_status": "peer-reviewed journal",
+      "design": "project-level cross-sectional archival analysis",
+      "projects": 6571,
+      "period": "development work restricted to 2014",
+      "relevance": "large-scale modern OSS project sample; not a panel minimum benchmark"
+    },
+    {
+      "study": "Colazo & Fang (Journal of the Association for Information Systems, 2010)",
+      "peer_review_status": "peer-reviewed journal",
+      "design": "cross-sectional OSS project-team analysis",
+      "sampling_frame_projects": 276,
+      "final_projects": 100,
+      "relevance": "historical small-N project-team study; not used as modern panel target"
+    },
+    {
+      "study": "GitHub Copilot OSS project-month study (full text in project library)",
+      "peer_review_status": "working-paper/preprint benchmark; not weighted equally with published ISR evidence",
+      "design": "project-month panel, project and month fixed effects / GSCM",
+      "period": "2021-01 to 2022-12",
+      "months": 24,
+      "projects": 7637,
+      "observations": 139329,
+      "robustness_expanded_projects": 12512,
+      "robustness_expanded_observations": 240433,
+      "relevance": "secondary structural benchmark for project-month scale and repeated-measures design"
+    }
+  ],
+  "design_thresholds": {
+    "universal_statistical_minimum_claimed": false,
+    "explanation": "No reviewed source establishes a universal minimum number of OSS projects for fixed-effects panel regression. Thresholds below are prospective design floors chosen from the literature benchmark scale, clustered-inference needs, expected curation attrition, and robustness/subgroup requirements; they are not literature-prescribed constants.",
+    "N_min_projects": 500,
+    "N_preferred_projects": 750,
+    "N_strong_target_projects": 900,
+    "T_min_months": 24,
+    "T_preferred_months": 36,
+    "interpretation": {
+      "below_500": "insufficient for the intended high-quality project-level panel design; supplementation reconsidered",
+      "500_to_749": "minimum acceptable design range; proceed only with strong coverage and limited subgroup fragmentation",
+      "750_to_899": "preferred range",
+      "900_plus": "strong quantity position relative to the current measurement-oriented design"
+    }
+  },
+  "r1d_candidate_state": {
+    "canonical_github_candidates": 1767,
+    "opendigger_exported": 1483,
+    "full24_candidates": 935,
+    "full24_project_month_upper_bound": 22440,
+    "full36_candidates": 891,
+    "full36_project_month_upper_bound": 32076
+  },
+  "attrition_stress_test": {
+    "note": "Scenario analysis only; not empirical post-curation counts.",
+    "full24": {
+      "start": 935,
+      "retain_90pct": 842,
+      "retain_80pct": 748,
+      "retain_75pct": 701,
+      "retain_70pct": 655,
+      "retain_65pct": 608,
+      "retain_60pct": 561,
+      "retain_55pct": 514,
+      "maximum_attrition_to_keep_N500_pct": 46.52
+    },
+    "full36": {
+      "start": 891,
+      "retain_90pct": 802,
+      "retain_80pct": 713,
+      "retain_75pct": 668,
+      "retain_70pct": 624,
+      "retain_65pct": 579,
+      "retain_60pct": 535,
+      "maximum_attrition_to_keep_N500_pct": 43.88
+    },
+    "decision": "The 24-month GitHub pool can lose up to 46.5% of candidates and still meet N_min=500; the 36-month pool can lose up to 43.9%. This provides substantial curation headroom but does not substitute for actual project-unit validation."
+  },
+  "prospective_project_unit_curation_rules": {
+    "unit": "OSS software project represented by one canonical GitHub repository, unless a multi-repository project boundary is prospectively validated and aggregated under a separate rule.",
+    "include": [
+      "public GitHub repository in the frozen OSS Compass single-repository candidate frame",
+      "software-development repository rather than documentation/data/course/demo-only repository",
+      "canonical project repository rather than fork, mirror, migration copy, package container, or organization/meta repository",
+      "repository remains observable across the chosen 24-month or 36-month analysis envelope",
+      "project identity and repository boundary can be justified without using performance outcomes"
+    ],
+    "exclude": [
+      "fork/mirror/migration copy where canonical upstream is distinct",
+      "documentation-only, tutorial/course-only, example-only, benchmark-only, or data-only repository when it is not the software project itself",
+      "package/container repository that primarily redistributes another upstream project",
+      "organization governance/meta repository without direct software-development scope",
+      "duplicate case/path aliases",
+      "multi-repository project where the selected repository cannot independently represent the project and complete membership cannot be validly aggregated"
+    ],
+    "outcome_blind": true,
+    "performance_values_used_for_curation": false,
+    "post_hoc_significance_filtering_prohibited": true
+  },
+  "sample_lock": {
+    "primary_candidate_platform": "GitHub",
+    "cross_platform_pooling": false,
+    "primary_time_window": "24 months",
+    "robustness_time_window": "36 months if variable coverage permits",
+    "formal_sample_not_yet_frozen": true,
+    "reason": "Actual project-unit curation and construct-valid variable contract must be completed before the analytic sample can be frozen."
+  },
+  "acquisition_decision": {
+    "DATA_ACQUISITION_STOP_OR_SUPPLEMENT_LOCK": "STOP_NEW_ACQUISITION_NOW",
+    "old_identity_crawler": "STOP",
+    "generic_web_crawler": "STOP",
+    "new_structured_bulk_source": "NOT_NEEDED_NOW",
+    "targeted_api": "NOT_NEEDED_NOW",
+    "gitee_pooling": "NOT_NEEDED_NOW",
+    "reopen_supplementation_only_if": [
+      "actual curated GitHub N falls below 500",
+      "a frozen construct-critical variable has adequate coverage in fewer than 500 projects",
+      "project-boundary validation reveals attrition beyond the 46.5% headroom for the 24-month pool",
+      "a required robustness design cannot be estimated with the retained sample"
+    ]
+  },
+  "next_stage": {
+    "id": "R2",
+    "title": "Research Design + Indicator Contract Freeze",
+    "purpose": "Freeze the narrow research question, dependent-variable family, focal objective indicators, controls, raw-trace-to-indicator-to-construct mapping, project-month schema, and Stata baseline specification before retrieving metric values.",
+    "paper_goal_alignment": "DIRECT",
+    "no_new_data_acquisition_until_design_freeze": true
+  },
+  "prohibitions": [
+    "C26 Batch3 Shard4",
+    "old 18,827-row identity production",
+    "generic crawler engineering",
+    "targeted API collection",
+    "cross-platform pooling",
+    "formal Stata estimation",
+    "manuscript drafting"
+  ]
+}
