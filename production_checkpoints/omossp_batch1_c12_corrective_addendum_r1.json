@@ -1,0 +1,81 @@
+{
+  "protocol": "OMOSSP_BATCH1_C12_HACKAGE_CORRECTIVE_ADDENDUM_R1",
+  "date": "2026-09-06",
+  "original_batch_checkpoint": "production_checkpoints/omossp_batch1_complete_checkpoint_r1.json",
+  "original_batch_checkpoint_commit": "dede6108299a594232cbcfd858a31cbf48561c14",
+  "original_observed_state": {
+    "auto_accept_p1": 19,
+    "auto_defer": 81,
+    "human_gate": 0,
+    "validation_errors": 0
+  },
+  "correction": {
+    "reason": "Hackage P1 regex double-escape false-negative implementation defect",
+    "corrected_worker_path": "omossp_c12_production_worker.py",
+    "corrected_worker_sha256": "e7f9c3e9d75a24edb509b38013003a4f6e220fef700b5045f2559fb54849ac4f",
+    "changed_lines_only": 2,
+    "scientific_rules_changed": false,
+    "evidence_classes_changed": false,
+    "p1_templates_changed": false,
+    "batch_membership_changed": false,
+    "network_reacquisition_used": false,
+    "corrected_rows": [
+      {
+        "rank": 10,
+        "repo": "src-openeuler/ghc-regex-posix",
+        "from": "AUTO_DEFER",
+        "to": "AUTO_ACCEPT_P1",
+        "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+        "basis_value": "Hackage:regex-posix"
+      },
+      {
+        "rank": 108,
+        "repo": "src-openeuler/ghc-hslua-list",
+        "from": "AUTO_DEFER",
+        "to": "AUTO_ACCEPT_P1",
+        "basis_type": "OFFICIAL_PROJECT_REGISTRY_ID",
+        "basis_value": "Hackage:hslua-list"
+      }
+    ]
+  },
+  "regression": {
+    "run_id": 34016003469,
+    "job_id": 101439760102,
+    "result": "PASS",
+    "fixtures_sha256": "0e8f63cb636fd662dc516011b482bc4acc718a7de38f34730b730620b7a0f00d",
+    "test_sha256": "36abf133c3e5c99a6e43739d01d98da3ca9989e6af64ddb0e6ddf82160ebb1f7",
+    "checks": [
+      "regex-posix positive",
+      "hslua-list positive",
+      "nonmatching ident negative",
+      "challenge true negative",
+      "EC02 URL/SourceN filter"
+    ]
+  },
+  "exact_runner_r2": {
+    "runner_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+    "replay_canonical_sha256": "15fa48d47008968bff21fb857083654a6b02aa34de639f724f8e0eba2b0ed57b",
+    "validation_errors": 0,
+    "corrected_auto_accept_p1": 2,
+    "final_project_entity_ids_minted": 0
+  },
+  "corrected_batch1_adjudication_state": {
+    "auto_accept_p1": 21,
+    "auto_defer": 79,
+    "human_gate": 0,
+    "validation_errors": 0
+  },
+  "seals": {
+    "performance_outcomes_accessed": false,
+    "final_project_entity_id_minted": false,
+    "paid_resources_used": false,
+    "original_acquisition_outputs_overwritten": false,
+    "original_runner_outputs_overwritten": false
+  },
+  "authorization": {
+    "batch1_corrective_addendum_complete": true,
+    "batch2_authorized": false,
+    "full_frame_authorized": false,
+    "next_stage": "C13 — Deterministic Batch-2 Freeze + Corrected Worker Production Authorization Gate"
+  }
+}
