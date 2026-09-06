@@ -1,0 +1,119 @@
+{
+  "protocol": "OMOSSP_C23_BATCH3_SHARD2_PRODUCTION_CHECKPOINT_R1",
+  "status": "CHECKPOINT_COMMITTED__NO_HUMAN_GATE",
+  "authority_sha256": "22d5205d1d89a01d45eb682e1ef672c621c5fd455d07f810ee8cbc04e9ad9bc8",
+  "batch3_membership_sha256": "74c1b9ca2f362ea5cb755b50cadcf3a5820ab59891445bd79fc325da2f28ccdd",
+  "batch3_selection_freeze_sha256": "8ca3a8bb179992c9fbb2ecc00fbba9be7ed2a3857bb4f8f072ba00b9c0f91ebc",
+  "c22_production_worker_sha256": "a0d6fb1018e7901622916d0318f9926e909b5c408279a2b47da998d33897fbe7",
+  "exact_runner_r2_sha256": "30046d5303ce482e7fb2d8f7f9dd7726b11d648391d7b0e3543fac781ab9c119",
+  "workflow": {
+    "run_id": 34040617696,
+    "job_id": 101506577960,
+    "event": "workflow_dispatch",
+    "head_branch": "main",
+    "head_sha": "ebdb9f1af9827a8fdd721f1f879f7aa57a76c10e",
+    "conclusion": "success"
+  },
+  "shard": {
+    "batch": "B003",
+    "index": 2,
+    "position_range": [
+      26,
+      50
+    ],
+    "row_count": 25,
+    "source_scale_rank_range": [
+      260,
+      284
+    ]
+  },
+  "acquisition": {
+    "canonical_sha256": "73794b0a6081b9bb3a98ca5d911cb290a1ea378930ca465b0b89da18ef9ad348",
+    "canonical_repository_path": "production_acquisition/omossp_c23_batch3_shard2_acquisition_canonical_r1.json",
+    "git_blob_sha": "2e28148a232bb066201816d9aa988cf084a4e489",
+    "git_commit": "7d6d8bd5ce40f3912cb2240bd45e80e7f3e9e7c3",
+    "drive_ledger_id": "1I-pkq1lZqVzLkrImFQttzN_Ip3OsM-PLbyfCVtQHok0",
+    "drive_replay_bundle_id": "1uKsorP3_Jh5_XY_536FYcGtGAJZuU2jHB7EqgGWhkjo",
+    "exact_route_attempts": 82,
+    "terminal_counts": {
+      "SUCCESS_CAPTURED": 67,
+      "NOT_FOUND_FOR_THIS_ENDPOINT": 14,
+      "ACCESS_INCOMPLETE_AFTER_RETRIES": 1
+    },
+    "evidence_cards": 67,
+    "evidence_class_order_violations": 0,
+    "duplicate_exact_routes": 0,
+    "access_incomplete": [
+      {
+        "source_scale_rank": "272",
+        "source_repo_name": "src-openeuler/glassfish-fastinfoset",
+        "class_id": "EC04",
+        "url": "https://fi.java.net"
+      }
+    ]
+  },
+  "exact_runner_replay": {
+    "canonical_sha256": "f2002fa3094af3986b165d2ac7a22d530943d6640fab3f2d099628993a93f195",
+    "canonical_repository_path": "production_replays/omossp_c23_batch3_shard2_exact_runner_r2_replay_canonical_r1.json",
+    "git_blob_sha": "b2b5ca792c63177be001ac91dd500178cbfeda8e",
+    "git_commit": "7b5d909a95bf061f648fbe6f4010ca489bb7a2ef",
+    "drive_replay_id": "1zT-0-wNObhvWPf6fnP2Got8xJddriVncRke2mDC-aVk",
+    "AUTO_ACCEPT_P1": 4,
+    "AUTO_DEFER": 21,
+    "HUMAN_GATE": 0,
+    "validation_errors": 0,
+    "accepted_ranks": [
+      "265",
+      "266",
+      "274",
+      "280"
+    ],
+    "accepted": [
+      {
+        "source_scale_rank": "265",
+        "source_repo_name": "src-openeuler/python-iso8601",
+        "entity_identity_basis_value": "PyPI:iso8601"
+      },
+      {
+        "source_scale_rank": "266",
+        "source_repo_name": "src-openeuler/faad2",
+        "entity_identity_basis_value": "https://github.com/knik0/faad2"
+      },
+      {
+        "source_scale_rank": "274",
+        "source_repo_name": "src-openeuler/dde-app-services",
+        "entity_identity_basis_value": "https://github.com/linuxdeepin/dde-app-services"
+      },
+      {
+        "source_scale_rank": "280",
+        "source_repo_name": "src-openeuler/keysmith",
+        "entity_identity_basis_value": "https://invent.kde.org/utilities/keysmith"
+      }
+    ]
+  },
+  "free_only": {
+    "repository_public": true,
+    "runner": "ubuntu-latest",
+    "workflow_artifacts": 0,
+    "artifact_upload": false,
+    "actions_cache": false,
+    "paid_apis": false,
+    "paid_storage": false,
+    "direct_cost": 0,
+    "status": "PASS__VERIFIED_ZERO_DIRECT_COST"
+  },
+  "canonicality_note": {
+    "canonical_byte_authority": "GitHub canonical JSON files above",
+    "drive_google_docs_role": "human-readable archival representation",
+    "reason": "Google Docs may normalize Unicode in long evidence text; it is not used as the byte-canonical carrier."
+  },
+  "search_used": false,
+  "name_similarity_inference_used": false,
+  "performance_outcomes_accessed": false,
+  "final_project_entity_id_minted": false,
+  "evidence_exhaustion_claimed": false,
+  "batch3_shard2_executed": true,
+  "batch3_shard2_runner_verified": true,
+  "batch3_shard3_authorized": false,
+  "full_frame_authorized": false
+}
