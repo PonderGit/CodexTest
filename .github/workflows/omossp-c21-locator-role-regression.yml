@@ -18,4 +18,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Run outcome-blind locator-role regression
         shell: bash
-        run: python3 production_regression/test_omossp_c21_locator_role.py
+        run: |
+          python3 production_regression/test_omossp_c21_locator_role.py
+          sha256sum omossp_c21_production_worker.py
+          sha256sum production_regression/omossp_c21_locator_role_fixtures.json
+          sha256sum production_regression/test_omossp_c21_locator_role.py
