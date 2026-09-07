@@ -1,0 +1,53 @@
+{
+  "protocol": "OMOSSP_R5A_FORMAL_PYTHON_PRIMARY_CLOSEOUT_R1",
+  "date": "2026-09-07",
+  "status": "PASS__FORMAL_PYTHON_PRIMARY_FROZEN__STATA17_VERIFICATION_PENDING",
+  "authority": {
+    "r4_corrected_data": "data/r4_corrected/r4_corrected_project_month_panel.dta",
+    "data_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "python_script": "analysis/r5_python_formal_r1.py",
+    "formal_output_commit": "a296587e3868416119e3a86f59b849960a17e8c4",
+    "formal_summary_blob": "c9a6a660799ce0d89df60f47414560bd10df2f72",
+    "formal_coefficients_blob": "f29d0b1380271aa2312e8de805419cb665aa4e23",
+    "formal_environment_blob": "2af2106704d71531ae61f1fc0381520e72dbd33c",
+    "formal_pip_freeze_blob": "81390197e5d7e67c9000420f09b5bca6cf0b13c8",
+    "equivalence_criteria": "governance/omossp_r5_dual_engine_equivalence_criteria_r1.json",
+    "equivalence_criteria_blob": "1852b32aeaab00ce2770d6d990b1cad0c87d99c0",
+    "equivalence_criteria_commit": "cc63545c6102c9317ccf514cbdb0c8634f3a9df0"
+  },
+  "engine": {
+    "role": "PRIMARY_FORMAL_EXECUTION",
+    "software": "Python",
+    "python": "3.12.14",
+    "pandas": "2.2.3",
+    "linearmodels": "6.1",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "statsmodels": "0.15.0",
+    "runner": "GitHub Actions standard ubuntu-24.04 in public repository",
+    "direct_cost": "FREE_ONLY"
+  },
+  "models": {
+    "A": {"N": 13781, "projects": 805},
+    "B": {"N": 13797, "projects": 805},
+    "C": {"N": 13797, "projects": 805},
+    "D": {"N": 20852, "projects": 871}
+  },
+  "validation": {
+    "data_checksum_assertion": "PASS",
+    "panel_skeleton_21168_rows": "PASS",
+    "formal_frame_882_projects": "PASS",
+    "project_month_uniqueness": "PASS",
+    "model_sample_assertions": "PASS",
+    "estimability": "PASS",
+    "formal_vs_prior_nonformal_preflight": "NUMERICALLY_REPRODUCED_AT_MACHINE_PRECISION"
+  },
+  "interpretive_boundary": {
+    "associational_measurement_validation_only": true,
+    "causal_claim_authorized": false,
+    "performance_redefinition_authorized": false,
+    "sample_redefinition_authorized": false
+  },
+  "next_stage": "R5B_STATA17_INDEPENDENT_VERIFICATION_PACKAGE_AND_LOCAL_RUN",
+  "r6_authorized": false
+}
