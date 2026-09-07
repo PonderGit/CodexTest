@@ -1,0 +1,46 @@
+{
+  "protocol": "OMOSSP_R6C_PYTHON_STATA17_EQUIVALENCE_CRITERIA_R1",
+  "date": "2026-09-07",
+  "status": "FROZEN_BEFORE_STATA17_R6_RESULTS",
+  "python_authority": {
+    "r6b_output_commit": "2b0bb0107c9df03395812c2eed121be57ef6a160",
+    "coefficients_blob": "a12fa9827d02382f2f27a2a7a4e14c9a04fe3887",
+    "summary_blob": "87707817ebb1f34a3fc69d252743e4c4296b641e",
+    "data24_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "data36_sha256": "8fe2f2cbeffc2e94bbfdb0df70861607ec6947b27c231c247fc5ff1557cd975b"
+  },
+  "hard_identity": [
+    "same 24m and 36m frozen datasets",
+    "same frozen sample rules",
+    "same regressors and dependent variables",
+    "project fixed effects",
+    "calendar-month fixed effects",
+    "project-clustered covariance target",
+    "all 20 core robustness specs plus both MD1 specs"
+  ],
+  "coefficient_pass": {
+    "rule": "absolute_difference <= 1e-8 OR relative_difference <= 1e-8",
+    "applies_to": "all common reported terms"
+  },
+  "raw_standard_error_pass": {
+    "relative_difference_max": 0.001,
+    "action_if_exceeded": "HOLD and diagnose only deterministic covariance finite-sample/df conventions; no data/sample/model/indicator changes"
+  },
+  "reconciled_standard_error_pass": {
+    "allowed_only_if": "explicit deterministic software covariance scaling explains the discrepancy",
+    "relative_difference_max": 1e-8
+  },
+  "direction_rule": "all coefficients must have the same direction except exact numerical zero",
+  "p05_rule": "p<0.05 classification must match unless a documented deterministic covariance-convention difference alone explains the classification boundary",
+  "significance_only_decision_prohibited": true,
+  "post_result_changes_prohibited": [
+    "sample",
+    "indicator",
+    "missingness rule",
+    "model",
+    "time window",
+    "covariance target",
+    "specification inclusion/exclusion"
+  ],
+  "target_gate": "PASS__R6_PYTHON_STATA17_CROSS_SOFTWARE_REPLICATION"
+}
