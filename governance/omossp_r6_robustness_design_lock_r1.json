@@ -1,0 +1,172 @@
+{
+  "protocol": "OMOSSP_R6_ROBUSTNESS_DESIGN_LOCK_R1",
+  "date": "2026-09-07",
+  "status": "PASS__R6_ROBUSTNESS_DESIGN_FROZEN__NO_ROBUSTNESS_RESULTS_RUN",
+  "transparency_note": "This R6 design is frozen after R5 baseline results were observed, but before any R6 robustness outcomes are computed. It is therefore prospective relative to robustness outcomes, not a preregistration made before baseline estimation.",
+  "research_boundary": {
+    "construct": "maintenance / issue-response timeliness",
+    "unit": "project-month",
+    "platform": "GitHub",
+    "inference": "ASSOCIATIONAL_MEASUREMENT_VALIDATION_ONLY__NO_CAUSAL_CLAIM",
+    "prohibited_inference": [
+      "overall OSS project performance",
+      "software-team or human-only performance",
+      "productivity",
+      "efficiency",
+      "technical quality",
+      "causal effects"
+    ]
+  },
+  "authority": {
+    "r2_design": "OMOSSP_R2_RESEARCH_DESIGN_INDICATOR_CONTRACT_R1_20260906",
+    "r4_closeout": "OMOSSP_R4_FORMAL_PANEL_CONSTRUCTION_DATA_QUALITY_CLOSEOUT_R1_20260907",
+    "r5_gate": "PASS__PYTHON_STATA17_CROSS_SOFTWARE_REPLICATION",
+    "r5_drive_freeze": "PASS__R5_DRIVE_FREEZE_COMPLETE",
+    "primary_24m_dta_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "formal_24m_frame_projects": 882,
+    "formal_36m_structural_frame_path": "governance/r6_full36_structural_frame_r1.csv",
+    "formal_36m_structural_frame_projects": 844,
+    "formal_36m_structural_frame_blob": "18579662a20587e43a0b23d6dcf0f0e0a0b6276a",
+    "formal_36m_structural_frame_commit": "341da3b77a94d6d39958fdd05a8cd3bfe86f0ae2",
+    "raw_snapshot_sha256": "ea2ffd5f86cfdd3d1681838521f74697754bce01854c0b78d4408c3fcbb8cf98"
+  },
+  "literature_rationale": [
+    {
+      "reference": "Flake & Fried (2020), Measurement Schmeasurement",
+      "doi": "10.1177/2515245920952393",
+      "use": "Measurement decisions and their transparency affect construct validity; all R6 measurement choices must be explicit and auditable."
+    },
+    {
+      "reference": "Steegen et al. (2016), Increasing Transparency Through a Multiverse Analysis",
+      "doi": "10.1177/1745691616658637",
+      "use": "Reasonable data-processing choices can alter conclusions; R6 tests a small, theory-relevant set of frozen alternatives rather than selecting favorable specifications."
+    },
+    {
+      "reference": "Cameron & Miller (2015), A Practitioner's Guide to Cluster-Robust Inference",
+      "doi": "10.3368/jhr.50.2.317",
+      "use": "Project-level clustering remains the core covariance target because repeated project-month errors can be correlated within project."
+    }
+  ],
+  "formal_core_robustness": {
+    "R6_1_minimum_usable_months": {
+      "purpose": "Test sensitivity to sparse availability of the closed-item resolution metric.",
+      "primary_window": "2024-01..2025-12",
+      "thresholds": [
+        6,
+        12
+      ],
+      "model_specific_project_counts_from_frozen_R4": {
+        "A": {
+          "ge6": 717,
+          "ge12": 600
+        },
+        "B": {
+          "ge6": 718,
+          "ge12": 601
+        },
+        "C": {
+          "ge6": 718,
+          "ge12": 601
+        },
+        "D": {
+          "ge6": 871,
+          "ge12": 870
+        }
+      },
+      "excluded_formal_threshold": {
+        "threshold": 18,
+        "reason": "Model A has 465 projects, below the prospectively frozen N_min_projects=500. It may be shown only as a descriptive sensitivity diagnostic, not used as a formal robustness gate."
+      },
+      "model_specification": "Same dependent variables, regressors, project FE, calendar-month FE, and project-clustered covariance as R5; only the pre-frozen minimum usable-month requirement changes."
+    },
+    "R6_2_common_support": {
+      "purpose": "Separate coefficient differences from model-specific sample-composition differences.",
+      "rule": "Require all five baseline analytic variables (ln_resolution, ln_open_age, asinh_backlog, ln_issues_new, ln_contributors) observed in a project-month, then retain projects with >=2 such months.",
+      "expected_24m_identity_from_read_only_audit": {
+        "N": 13781,
+        "projects": 805
+      },
+      "action": "Re-estimate Models A-D on exactly this same common-support project-month sample."
+    },
+    "R6_3_auxiliary_signed_change_context": {
+      "purpose": "Test whether baseline associations are sensitive to observable code-size change context after the R4 source-semantics correction.",
+      "variable": "asinh_net_code_lines",
+      "source_meaning": "signed net code-size change = additions - deletions",
+      "forbidden_meaning": [
+        "code-change magnitude",
+        "productivity",
+        "effort",
+        "quality"
+      ],
+      "sample_rule": "Use each model's original R5 sample; no sample deletion based on net-code sign or magnitude.",
+      "model_change": "Add asinh_net_code_lines as one auxiliary context covariate; all other specification elements unchanged."
+    },
+    "R6_4_36m_window_extension": {
+      "purpose": "Test temporal-window stability using the robustness window already specified in R1E/R2.",
+      "window": "2023-01..2025-12",
+      "structural_frame_rule": "Intersect the frozen R3 882-project frame with the pre-outcome R1D full_exposure_36==1 flag.",
+      "structural_projects": 844,
+      "data_rule": "Rebuild only from the already frozen R4 raw OpenDigger snapshot; no new retrieval.",
+      "semantic_rule": "Use the corrected R4 variable meanings, transformations, sparse-zero rules, and missingness rules without modification.",
+      "feasibility_gate": "Run formal 36m regression only if exact reconstructed Model A has >=500 projects with >=2 usable months.",
+      "if_gate_fails": "Report 36m robustness as not estimable under the frozen design. Do not acquire new data or change indicators merely to rescue the robustness test.",
+      "model_specification": "Same corrected A-D fixed-effects models and project-clustered covariance as R5."
+    }
+  },
+  "secondary_measurement_diagnostic": {
+    "R6_MD1_resolution_observability": {
+      "status": "SECONDARY__NOT_BASELINE_ROBUSTNESS",
+      "purpose": "Characterize whether availability of the closed-issue resolution median is itself systematically related to observable project-month context.",
+      "outcome": "resolution_observed_it = 1 when ln_resolution is defined within verified exposure, otherwise 0",
+      "predictors": [
+        "ln_issues_new",
+        "ln_contributors"
+      ],
+      "optional_auxiliary_predictor": "asinh_net_code_lines",
+      "estimator": "project-FE + calendar-month-FE linear probability diagnostic with project-clustered SE",
+      "interpretation": "Measurement-availability diagnostic only; no causal or performance claim.",
+      "reporting_rule": "Report regardless of sign or significance; do not use it to redefine the R5 sample."
+    }
+  },
+  "robustness_evaluation_rules": {
+    "all_frozen_specs_reported": true,
+    "significance_only_decision_prohibited": true,
+    "primary_evidence_dimensions": [
+      "focal coefficient direction",
+      "coefficient magnitude and its descriptive change across specifications",
+      "uncertainty / confidence interval",
+      "whether the bounded measurement interpretation changes"
+    ],
+    "hard_magnitude_stability_threshold": null,
+    "reason_no_hard_magnitude_threshold": "No reviewed source supplies a universal coefficient-change cutoff for this measurement-oriented panel design.",
+    "failure_interpretation": "Instability is evidence of a boundary condition, not a reason to change the sample, indicator, or model."
+  },
+  "execution_policy": {
+    "python": "FREE-ONLY formal primary engine; freeze R6 outputs before Stata verification.",
+    "stata17": "One consolidated local Stata 17 independent verification run after Python R6 outputs are frozen.",
+    "cross_software_rule": "Diagnose discrepancies only; do not select the more favorable engine or alter model/data/sample."
+  },
+  "explicitly_not_authorized_in_R6_core": [
+    "alternative quantiles or means of issue_resolution_duration",
+    "winsorization chosen after seeing R5 results",
+    "new outcome-driven exclusions",
+    "random-effects substitution",
+    "new causal lag interpretation",
+    "two-way clustering or alternative covariance selected because it changes significance",
+    "new crawler or new data source",
+    "cross-platform pooling",
+    "Gitee supplementation",
+    "replacement of the median indicator",
+    "composite performance index"
+  ],
+  "next_step": {
+    "id": "R6A",
+    "title": "Frozen Robustness Implementation + 36m Rebuild Feasibility Verification",
+    "rules": [
+      "Create code only from the frozen R6 design.",
+      "Do not run robustness regressions until code and expected sample identity checks are frozen.",
+      "Verify the 36m panel can be reconstructed from the locked R4 raw snapshot.",
+      "Preserve all R5 outputs unchanged."
+    ]
+  }
+}
