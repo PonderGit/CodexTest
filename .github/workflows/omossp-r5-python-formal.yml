@@ -1,0 +1,56 @@
+name: OMOSSP R5 Formal Python Primary
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "analysis/r5_python_formal_r1.py"
+      - "governance/omossp_r5_dual_engine_equivalence_criteria_r1.json"
+      - ".github/workflows/omossp-r5-python-formal.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  r5_python_formal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.14"
+
+      - name: Install frozen dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-cache-dir             "pandas==2.2.3"             "linearmodels==6.1"             "numpy==2.5.3"             "scipy==1.18.1"             "statsmodels==0.15.0"
+
+      - name: Run formal Python primary estimation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python analysis/r5_python_formal_r1.py
+          python -m pip freeze > results/r5_python_formal/r5_python_formal_pip_freeze.txt
+
+      - name: Commit frozen formal Python outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/r5_python_formal/r5_python_formal_summary.json
+          git add results/r5_python_formal/r5_python_formal_coefficients.csv
+          git add results/r5_python_formal/r5_python_formal_environment.json
+          git add results/r5_python_formal/r5_python_formal_pip_freeze.txt
+          if git diff --cached --quiet; then
+            echo "R5_PYTHON_FORMAL_COMMIT=NO_CHANGES"
+          else
+            git commit -m "R5 freeze formal Python primary estimation"
+            git push
+            echo "R5_PYTHON_FORMAL_COMMIT=PASS"
+          fi
