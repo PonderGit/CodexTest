@@ -1,0 +1,52 @@
+name: OMOSSP R5 Nonformal PanelOLS Preflight
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "analysis/r5_nonformal_panelols_preflight.py"
+      - ".github/workflows/omossp-r5-preflight.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  r5_preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install preflight dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-cache-dir "pandas==2.2.3" "linearmodels==6.1"
+
+      - name: Run nonformal preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          python analysis/r5_nonformal_panelols_preflight.py
+
+      - name: Commit preflight outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/r5_preflight/r5_panelols_preflight_summary.json
+          git add results/r5_preflight/r5_panelols_preflight_coefficients.csv
+          if git diff --cached --quiet; then
+            echo "R5_PREFLIGHT_COMMIT=NO_CHANGES"
+          else
+            git commit -m "R5 preserve nonformal PanelOLS preflight"
+            git push
+            echo "R5_PREFLIGHT_COMMIT=PASS"
+          fi
