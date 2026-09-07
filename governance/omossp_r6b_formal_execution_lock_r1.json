@@ -1,0 +1,57 @@
+{
+  "protocol": "OMOSSP_R6B_FORMAL_EXECUTION_LOCK_R1",
+  "date": "2026-09-07",
+  "status": "FROZEN_BEFORE_R6B_ROBUSTNESS_RESULTS",
+  "code": {
+    "path": "analysis/r6b_python_formal_robustness_r1.py",
+    "blob": "928789c9de843f59ab429bafb2e943ec6831b682",
+    "freeze_commit": "fe2db16a2c378b604879404c26b32c1cdd25caea"
+  },
+  "frozen_inputs": {
+    "data24_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "data36_sha256": "8fe2f2cbeffc2e94bbfdb0df70861607ec6947b27c231c247fc5ff1557cd975b",
+    "r6_design_blob": "495f39d52e5a91d616085662cec59de06b9b6980",
+    "r6a_closeout_blob": "dab27cb86330fd6abe33a34e87e9fd35a6d4021b"
+  },
+  "formal_specs": [
+    "R6_1_A_GE6",
+    "R6_1_A_GE12",
+    "R6_1_B_GE6",
+    "R6_1_B_GE12",
+    "R6_1_C_GE6",
+    "R6_1_C_GE12",
+    "R6_1_D_GE6",
+    "R6_1_D_GE12",
+    "R6_2_A_COMMON",
+    "R6_2_B_COMMON",
+    "R6_2_C_COMMON",
+    "R6_2_D_COMMON",
+    "R6_3_A_AUX_NET_CODE",
+    "R6_3_B_AUX_NET_CODE",
+    "R6_3_C_AUX_NET_CODE",
+    "R6_3_D_AUX_NET_CODE",
+    "R6_4_A_36M",
+    "R6_4_B_36M",
+    "R6_4_C_36M",
+    "R6_4_D_36M"
+  ],
+  "secondary_specs": [
+    "R6_MD1_BASE",
+    "R6_MD1_AUX_NET_CODE"
+  ],
+  "md1_option_resolution": "Both base and auxiliary MD1 specifications are mandatory. Neither may be selected or omitted after seeing results.",
+  "excluded_from_formal_execution": {
+    "R6_1_GE18": "No regression; descriptive sample diagnostic only because Model A projects=465 < frozen N_min=500."
+  },
+  "reporting_rules": {
+    "report_all_frozen_specs": true,
+    "significance_only_decision_prohibited": true,
+    "hard_magnitude_threshold": null,
+    "instability_means": "boundary_condition_not_redesign_trigger"
+  },
+  "engine": {
+    "primary": "Python linearmodels 6.1",
+    "free_only": true,
+    "stata17_verification_after_python_freeze": true
+  }
+}
