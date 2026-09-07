@@ -1,0 +1,41 @@
+{
+  "protocol": "OMOSSP_R4_SOURCE_SEMANTICS_CORRECTION_ADDENDUM_R1",
+  "date": "2026-09-07",
+  "status": "LOCKED__C3_REMOVED_FROM_BASELINE__R4_REBUILD_REQUIRED",
+  "trigger": {
+    "observed_negative_code_change_lines": 1958,
+    "original_interpretation": "code-change magnitude/activity context",
+    "original_transform": "ln(1 + code_change_lines_sum)",
+    "problem": "OpenDigger code_change_lines_sum can be negative, contradicting the assumed nonnegative magnitude semantics."
+  },
+  "source_verification": {
+    "repository": "X-lab2017/open-digger",
+    "master_head": "63e4b89ecd525221be95fe2a48a714ebb3c722ec",
+    "file": "src/metrics/chaoss.ts",
+    "blob": "b7a9293434a081d713406eac5f7fc889d35de97f",
+    "implementation": "for by='sum': additions=SUM(pull_additions); deletions=SUM(pull_deletions); lines=minus(additions,deletions)",
+    "correct_semantics": "net code-size change (additions minus deletions), not total code-change magnitude"
+  },
+  "decision": {
+    "preserve_original_r2_contract": true,
+    "preserve_original_r4_outputs": true,
+    "C3_baseline_status": "REMOVED",
+    "reason": "The original construct interpretation failed source-semantic verification. Reinterpreting it post hoc as a new baseline covariate would add an unmotivated construct after outcome values became available.",
+    "code_change_lines_sum_auxiliary_status": "PRESERVE_AS_SIGNED_NET_CODE_CHANGE__NOT_BASELINE",
+    "corrected_transform_for_auxiliary_only": "asinh(net_code_lines)",
+    "baseline_context_covariates": [
+      "ln1p(issues_new)",
+      "ln1p(contributors)"
+    ],
+    "no_new_data_retrieval": true,
+    "no_new_variable_addition": true,
+    "no_regression_run": true
+  },
+  "corrected_models": {
+    "A": "ln_open_age = beta1*ln_resolution + beta2*ln_issues_new + beta3*ln_contributors + project_FE + month_FE + error",
+    "B": "asinh_backlog = beta1*ln_resolution + beta2*ln_issues_new + beta3*ln_contributors + project_FE + month_FE + error",
+    "C": "ln_resolution = theta1*ln_issues_new + theta2*ln_contributors + project_FE + month_FE + error",
+    "D": "ln_open_age = theta1*ln_issues_new + theta2*ln_contributors + project_FE + month_FE + error"
+  },
+  "audit_rule": "This correction is fact-driven and source-semantic, not outcome-direction or significance-driven."
+}
