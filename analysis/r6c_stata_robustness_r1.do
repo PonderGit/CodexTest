@@ -66,11 +66,12 @@ use "`DATA24'", clear
 isid project_id month, sort
 quietly count
 assert r(N)==21168
-quietly levelsof project_id, local(P24)
-local NP24 : word count `P24'
-assert `NP24'==882
 
 encode project_id, gen(pid)
+quietly egen tagP24 = tag(pid)
+quietly count if tagP24
+assert r(N)==882
+drop tagP24
 xtset pid month_id
 
 assert inrange(elig_A,0,1)
@@ -165,11 +166,12 @@ use "`DATA36'", clear
 isid project_id month, sort
 quietly count
 assert r(N)==30384
-quietly levelsof project_id, local(P36)
-local NP36 : word count `P36'
-assert `NP36'==844
 
 encode project_id, gen(pid)
+quietly egen tagP36 = tag(pid)
+quietly count if tagP36
+assert r(N)==844
+drop tagP36
 xtset pid month_id
 
 assert inrange(elig_A,0,1)
