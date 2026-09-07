@@ -1,0 +1,14 @@
+{
+  "data_path": "data/r4_corrected/r4_corrected_project_month_panel.dta",
+  "data_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+  "packages": {
+    "linearmodels": "6.1",
+    "numpy": "2.5.3",
+    "pandas": "2.2.3",
+    "scipy": "1.18.1",
+    "statsmodels": "0.15.0"
+  },
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "python": "3.12.14 (main, Aug 13 2026, 02:47:42) [GCC 13.3.0]",
+  "python_implementation": "CPython"
+}

@@ -1,0 +1,138 @@
+{
+  "data_path": "data/r4_corrected/r4_corrected_project_month_panel.dta",
+  "data_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+  "estimator": {
+    "class": "PanelOLS",
+    "cluster_entity": true,
+    "cov_type": "clustered",
+    "debiased": true,
+    "entity_effects": true,
+    "software": "Python linearmodels",
+    "time_effects": true
+  },
+  "formal_result_status": "FORMAL_PYTHON_PRIMARY_FROZEN_PENDING_STATA17_VERIFICATION",
+  "interpretation": "ASSOCIATIONAL_MEASUREMENT_VALIDATION_ONLY__NO_CAUSAL_CLAIM",
+  "models": {
+    "A": {
+      "N": 13781,
+      "coefficients": [
+        {
+          "b": -0.008308255562697302,
+          "model": "A",
+          "p": 0.00022349135000387932,
+          "se": 0.0022503957104560387,
+          "t": -3.691908727027234,
+          "term": "ln_resolution"
+        },
+        {
+          "b": -0.09495910028259388,
+          "model": "A",
+          "p": 1.6497914145929826e-13,
+          "se": 0.012862802041429729,
+          "t": -7.382458345914104,
+          "term": "ln_issues_new"
+        },
+        {
+          "b": -0.010847341419730074,
+          "model": "A",
+          "p": 0.16912588528945083,
+          "se": 0.007888432458090589,
+          "t": -1.3750946689801151,
+          "term": "ln_contributors"
+        }
+      ],
+      "model": "A",
+      "projects": 805,
+      "rsquared_between": -0.07063469067142791,
+      "rsquared_overall": -0.08208358801662818,
+      "rsquared_within": 0.1396532206569906
+    },
+    "B": {
+      "N": 13797,
+      "coefficients": [
+        {
+          "b": 0.012560843583592808,
+          "model": "B",
+          "p": 0.0226761291172477,
+          "se": 0.005511269798419013,
+          "t": 2.279119702540432,
+          "term": "ln_resolution"
+        },
+        {
+          "b": 0.12141402044008608,
+          "model": "B",
+          "p": 0.06211557097107012,
+          "se": 0.06507933170557945,
+          "t": 1.8656310269036904,
+          "term": "ln_issues_new"
+        },
+        {
+          "b": -0.03155515331427929,
+          "model": "B",
+          "p": 0.20619595868203366,
+          "se": 0.02496139498703495,
+          "t": -1.2641582463908434,
+          "term": "ln_contributors"
+        }
+      ],
+      "model": "B",
+      "projects": 805,
+      "rsquared_between": 0.08311945204566751,
+      "rsquared_overall": 0.08902432688176543,
+      "rsquared_within": -0.03585735947319435
+    },
+    "C": {
+      "N": 13797,
+      "coefficients": [
+        {
+          "b": -0.24740538858242767,
+          "model": "C",
+          "p": 2.334432647188578e-10,
+          "se": 0.03900702161916497,
+          "t": -6.342585983567435,
+          "term": "ln_issues_new"
+        },
+        {
+          "b": -0.264937360174734,
+          "model": "C",
+          "p": 8.43769498715119e-15,
+          "se": 0.034104528450192545,
+          "t": -7.768392416322597,
+          "term": "ln_contributors"
+        }
+      ],
+      "model": "C",
+      "projects": 805,
+      "rsquared_between": -0.8881821166339741,
+      "rsquared_overall": -0.8544486859260978,
+      "rsquared_within": -0.007565946221373077
+    },
+    "D": {
+      "N": 20852,
+      "coefficients": [
+        {
+          "b": -0.07601186881303859,
+          "model": "D",
+          "p": 0.0,
+          "se": 0.00849375267404617,
+          "t": -8.949150243720107,
+          "term": "ln_issues_new"
+        },
+        {
+          "b": -0.01963307148994234,
+          "model": "D",
+          "p": 0.0045521717650347515,
+          "se": 0.006919273020809674,
+          "t": -2.8374471466721993,
+          "term": "ln_contributors"
+        }
+      ],
+      "model": "D",
+      "projects": 871,
+      "rsquared_between": -0.04574565319924684,
+      "rsquared_overall": -0.04549570684905291,
+      "rsquared_within": 0.12681873837390245
+    }
+  },
+  "protocol": "OMOSSP_R5_PYTHON_FORMAL_PRIMARY_R1"
+}
