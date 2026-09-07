@@ -1,0 +1,143 @@
+{
+  "data_path": "data/r4_corrected/r4_corrected_project_month_panel.dta",
+  "formal_result_status": "NOT_FORMAL__MUST_BE_CONFIRMED_BY_STATA_LOG",
+  "models": {
+    "A": {
+      "N": 13781,
+      "coefficients": [
+        {
+          "b": -0.0083082555626973,
+          "model": "A",
+          "p": 0.00022349135000387932,
+          "se": 0.0022503957104560387,
+          "t": -3.6919087270272337,
+          "term": "ln_resolution"
+        },
+        {
+          "b": -0.0949591002825939,
+          "model": "A",
+          "p": 1.6497914145929826e-13,
+          "se": 0.012862802041429729,
+          "t": -7.382458345914106,
+          "term": "ln_issues_new"
+        },
+        {
+          "b": -0.010847341419730074,
+          "model": "A",
+          "p": 0.16912588528945083,
+          "se": 0.007888432458090589,
+          "t": -1.3750946689801151,
+          "term": "ln_contributors"
+        }
+      ],
+      "model": "A",
+      "projects": 805,
+      "raw_eligible_N": 13808,
+      "regression_eligible_N_ge2": 13781,
+      "rsquared_between": -0.07063469067142769,
+      "rsquared_overall": -0.08208358801662796,
+      "rsquared_within": 0.13965322065699093,
+      "singleton_observations_removed": 27,
+      "singleton_projects_removed": 27
+    },
+    "B": {
+      "N": 13797,
+      "coefficients": [
+        {
+          "b": 0.012560843583592813,
+          "model": "B",
+          "p": 0.0226761291172477,
+          "se": 0.005511269798419013,
+          "t": 2.279119702540433,
+          "term": "ln_resolution"
+        },
+        {
+          "b": 0.1214140204400861,
+          "model": "B",
+          "p": 0.06211557097107012,
+          "se": 0.06507933170557946,
+          "t": 1.8656310269036904,
+          "term": "ln_issues_new"
+        },
+        {
+          "b": -0.0315551533142793,
+          "model": "B",
+          "p": 0.2061959586820339,
+          "se": 0.024961394987034966,
+          "t": -1.264158246390843,
+          "term": "ln_contributors"
+        }
+      ],
+      "model": "B",
+      "projects": 805,
+      "raw_eligible_N": 13825,
+      "regression_eligible_N_ge2": 13797,
+      "rsquared_between": 0.08311945204566762,
+      "rsquared_overall": 0.08902432688176543,
+      "rsquared_within": -0.03585735947319413,
+      "singleton_observations_removed": 28,
+      "singleton_projects_removed": 28
+    },
+    "C": {
+      "N": 13797,
+      "coefficients": [
+        {
+          "b": -0.24740538858242775,
+          "model": "C",
+          "p": 2.334432647188578e-10,
+          "se": 0.039007021619164965,
+          "t": -6.342585983567438,
+          "term": "ln_issues_new"
+        },
+        {
+          "b": -0.264937360174734,
+          "model": "C",
+          "p": 8.43769498715119e-15,
+          "se": 0.03410452845019253,
+          "t": -7.7683924163226,
+          "term": "ln_contributors"
+        }
+      ],
+      "model": "C",
+      "projects": 805,
+      "raw_eligible_N": 13825,
+      "regression_eligible_N_ge2": 13797,
+      "rsquared_between": -0.8881821166339741,
+      "rsquared_overall": -0.8544486859260987,
+      "rsquared_within": -0.007565946221373299,
+      "singleton_observations_removed": 28,
+      "singleton_projects_removed": 28
+    },
+    "D": {
+      "N": 20852,
+      "coefficients": [
+        {
+          "b": -0.0760118688130386,
+          "model": "D",
+          "p": 0.0,
+          "se": 0.008493752674046172,
+          "t": -8.949150243720107,
+          "term": "ln_issues_new"
+        },
+        {
+          "b": -0.019633071489942353,
+          "model": "D",
+          "p": 0.0045521717650347515,
+          "se": 0.00691927302080968,
+          "t": -2.837447146672199,
+          "term": "ln_contributors"
+        }
+      ],
+      "model": "D",
+      "projects": 871,
+      "raw_eligible_N": 20852,
+      "regression_eligible_N_ge2": 20852,
+      "rsquared_between": -0.045745653199246616,
+      "rsquared_overall": -0.04549570684905291,
+      "rsquared_within": 0.12681873837390256,
+      "singleton_observations_removed": 0,
+      "singleton_projects_removed": 0
+    }
+  },
+  "protocol": "OMOSSP_R5_NONFORMAL_PANELOLS_PREFLIGHT_R1"
+}
