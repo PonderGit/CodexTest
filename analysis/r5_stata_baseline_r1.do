@@ -1,4 +1,4 @@
-version 18.0
+version 16.0
 clear all
 set more off
 capture log close _all
@@ -92,7 +92,7 @@ scalar A_se_issue= _se[ln_issues_new]
 scalar A_b_contr = _b[ln_contributors]
 scalar A_se_contr= _se[ln_contributors]
 
-assert A_N==13808
+assert A_N==13781
 assert A_Ng==805
 
 * ============================================================
@@ -113,7 +113,7 @@ scalar B_se_issue= _se[ln_issues_new]
 scalar B_b_contr = _b[ln_contributors]
 scalar B_se_contr= _se[ln_contributors]
 
-assert B_N==13825
+assert B_N==13797
 assert B_Ng==805
 
 * ============================================================
@@ -132,7 +132,7 @@ scalar C_se_issue= _se[ln_issues_new]
 scalar C_b_contr = _b[ln_contributors]
 scalar C_se_contr= _se[ln_contributors]
 
-assert C_N==13825
+assert C_N==13797
 assert C_Ng==805
 
 * ============================================================
