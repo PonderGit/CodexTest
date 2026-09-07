@@ -1,0 +1,107 @@
+{
+  "frame_projects": 882,
+  "integrity_checks": {
+    "age_q2_non_numeric": 0,
+    "invalid_age_levels": 0,
+    "negative_age": 0,
+    "negative_code_lines": 1958,
+    "negative_contributors": 0,
+    "negative_issues_new": 0,
+    "negative_resolution": 0,
+    "resolution_q2_non_numeric": 0
+  },
+  "missing_files_by_metric": {
+    "code_change_lines_sum": 0,
+    "contributors": 0,
+    "issue_age": 6,
+    "issue_resolution_duration": 7,
+    "issues_new": 4
+  },
+  "model_eligibility": {
+    "A": {
+      "project_month_NT": 12387,
+      "projects_ge1": 830,
+      "projects_ge12": 563,
+      "projects_ge18": 389,
+      "projects_ge2": 801,
+      "projects_ge6": 705
+    },
+    "B": {
+      "project_month_NT": 12404,
+      "projects_ge1": 831,
+      "projects_ge12": 564,
+      "projects_ge18": 390,
+      "projects_ge2": 801,
+      "projects_ge6": 706
+    },
+    "C": {
+      "project_month_NT": 12404,
+      "projects_ge1": 831,
+      "projects_ge12": 564,
+      "projects_ge18": 390,
+      "projects_ge2": 801,
+      "projects_ge6": 706
+    },
+    "D": {
+      "project_month_NT": 18922,
+      "projects_ge1": 871,
+      "projects_ge12": 868,
+      "projects_ge18": 823,
+      "projects_ge2": 871,
+      "projects_ge6": 870
+    }
+  },
+  "months": 24,
+  "preferred_projects": 750,
+  "protocol": "OMOSSP_R4_FORMAL_PANEL_DATA_QUALITY_R1",
+  "retrieval_files": 4410,
+  "retrieval_status_counts": {
+    "200": 4393,
+    "404": 17
+  },
+  "sample_floor_projects": 500,
+  "selection_integrity": {
+    "formal_regression_run": false,
+    "new_variables_added": false,
+    "performance_value_based_project_exclusion": false
+  },
+  "skeleton_project_months": 21168,
+  "variable_missingness": {
+    "code_lines_n": {
+      "missing": 1958,
+      "missing_rate": 0.092498,
+      "observed": 19210
+    },
+    "contributors_n": {
+      "missing": 0,
+      "missing_rate": 0.0,
+      "observed": 21168
+    },
+    "issues_new_n": {
+      "missing": 96,
+      "missing_rate": 0.004535,
+      "observed": 21072
+    },
+    "open_age_med_days": {
+      "missing": 316,
+      "missing_rate": 0.014928,
+      "observed": 20852
+    },
+    "open_backlog_n": {
+      "missing": 144,
+      "missing_rate": 0.006803,
+      "observed": 21024
+    },
+    "res_med_days": {
+      "missing": 7343,
+      "missing_rate": 0.346892,
+      "observed": 13825
+    }
+  },
+  "zero_fill_counts": {
+    "backlog_count_from_missing_levels": 172,
+    "code_change_lines_sum": 5748,
+    "contributors": 7893,
+    "issues_new": 4811
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "platform": "GitHub",
+  "protocol": "OMOSSP_R4_VARIABLE_DICTIONARY_R1",
+  "source_version": {
+    "basic_ts_blob": "741591d9916ae068c0c5b46d6fe7e24b025a43bc",
+    "chaoss_ts_blob": "b7a9293434a081d713406eac5f7fc889d35de97f",
+    "opendigger_master_head": "63e4b89ecd525221be95fe2a48a714ebb3c722ec"
+  },
+  "unit": "project-month",
+  "variables": {
+    "asinh_backlog": {
+      "formula": "asinh(open_backlog_n)"
+    },
+    "code_lines_n": {
+      "construct_role": "code-change magnitude/activity context",
+      "source": "code_change_lines_sum[month]",
+      "zero_rule": "zero-fill omitted month within verified source observability"
+    },
+    "contributors_n": {
+      "construct_role": "participation-breadth context",
+      "source": "contributors[month]",
+      "zero_rule": "zero-fill omitted month within verified source observability"
+    },
+    "issues_new_n": {
+      "construct_role": "incoming observable workload context",
+      "source": "issues_new[month]",
+      "zero_rule": "zero-fill omitted month within verified source observability"
+    },
+    "ln_code_lines": {
+      "formula": "ln(1 + code_lines_n)"
+    },
+    "ln_contributors": {
+      "formula": "ln(1 + contributors_n)"
+    },
+    "ln_issues_new": {
+      "formula": "ln(1 + issues_new_n)"
+    },
+    "ln_open_age": {
+      "formula": "ln(1 + open_age_med_days)"
+    },
+    "ln_resolution": {
+      "formula": "ln(1 + res_med_days)"
+    },
+    "open_age_med_days": {
+      "construct_role": "unresolved-backlog age evidence",
+      "source": "issue_age.quantile_2",
+      "zero_rule": "undefined when no open-age distribution"
+    },
+    "open_backlog_n": {
+      "construct_role": "unresolved backlog burden/context",
+      "source": "sum(issue_age.levels)",
+      "zero_rule": "zero when issue_age is observed and month levels are omitted under the locked sparse/default semantics"
+    },
+    "res_med_days": {
+      "construct_role": "candidate completed-item timeliness",
+      "source": "issue_resolution_duration.quantile_2",
+      "zero_rule": "never zero-fill; undefined when no estimable closed-item median"
+    }
+  },
+  "window": "2024-01..2025-12"
+}

@@ -1,0 +1,40 @@
+{
+  "inputs": {
+    "basic_ts_blob": "741591d9916ae068c0c5b46d6fe7e24b025a43bc",
+    "chaoss_ts_blob": "b7a9293434a081d713406eac5f7fc889d35de97f",
+    "formal_frame_path": "governance/r3_formal_github_project_frame_r1.csv",
+    "formal_frame_sha256": "2b612252e775c6b5b0051a78b262d90665f29b769b62fbb4aab38756f3b81d11",
+    "opendigger_master_head": "63e4b89ecd525221be95fe2a48a714ebb3c722ec"
+  },
+  "outputs": {
+    "data/r4/r4_opendigger_raw_snapshot.jsonl.gz": {
+      "bytes": 8193501,
+      "sha256": "ea2ffd5f86cfdd3d1681838521f74697754bce01854c0b78d4408c3fcbb8cf98"
+    },
+    "data/r4/r4_project_month_panel.csv": {
+      "bytes": 3431507,
+      "sha256": "f793437a368bb3ab1b99bcab7d970ccbf750718e5bf7c0c2a1b3cbc441ef8f55"
+    },
+    "data/r4/r4_project_month_panel.dta": {
+      "bytes": 3844763,
+      "sha256": "a70d71b4a712ec07abbbaa5dcba3e1f5c9329ad159008c8e9414d57f9495653b"
+    },
+    "data/r4/r4_retrieval_ledger.csv": {
+      "bytes": 824039,
+      "sha256": "54cba9da1c0ae22fe2e879a9f2a51eedc2b512a2258b29f465a93c7545978739"
+    },
+    "governance/r4_panel_data_quality_summary_r1.json": {
+      "bytes": 2498,
+      "sha256": "6f546457a2e770f1711b444cf8910e52f3f60578c52acdf275356bbe1744daa8"
+    },
+    "governance/r4_panel_manifest_r1.json": {
+      "bytes": 1430,
+      "sha256": "a65c44572e819b261110b233a4c6f0759b41dc75fcc8917a3f0f5775ea45cbea"
+    },
+    "governance/r4_variable_dictionary_r1.json": {
+      "bytes": 2146,
+      "sha256": "3dd72281a11b89a3f568aa9d506328723424c9893e3011ebefc8cced6caf449d"
+    }
+  },
+  "protocol": "OMOSSP_R4_PANEL_MANIFEST_R1"
+}
