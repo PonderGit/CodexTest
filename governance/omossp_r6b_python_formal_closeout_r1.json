@@ -1,0 +1,111 @@
+{
+  "protocol": "OMOSSP_R6B_FORMAL_PYTHON_ROBUSTNESS_CLOSEOUT_R1",
+  "date": "2026-09-07",
+  "status": "PASS__R6B_PYTHON_FORMAL_FROZEN__STATA17_ROBUSTNESS_VERIFICATION_PENDING",
+  "authority": {
+    "r6_design_blob": "495f39d52e5a91d616085662cec59de06b9b6980",
+    "r6a_closeout_blob": "dab27cb86330fd6abe33a34e87e9fd35a6d4021b",
+    "r6b_code_freeze_commit": "fe2db16a2c378b604879404c26b32c1cdd25caea",
+    "r6b_code_blob": "928789c9de843f59ab429bafb2e943ec6831b682",
+    "r6b_execution_lock_commit": "65216abb1a53278047cb5026e3b5d2da24aba547",
+    "r6b_execution_lock_blob": "58476d67b9a2306774da4b916984790b47ef63f9",
+    "r6b_workflow_commit": "bfe443a947a272b6b2fdee1ffe186a5764e8b0bd",
+    "r6b_workflow_run": 34096782386,
+    "r6b_workflow_conclusion": "success",
+    "r6b_output_commit": "2b0bb0107c9df03395812c2eed121be57ef6a160",
+    "data24_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "data36_sha256": "8fe2f2cbeffc2e94bbfdb0df70861607ec6947b27c231c247fc5ff1557cd975b"
+  },
+  "output_blobs": {
+    "summary": "87707817ebb1f34a3fc69d252743e4c4296b641e",
+    "coefficients": "a12fa9827d02382f2f27a2a7a4e14c9a04fe3887",
+    "comparison_to_r5": "a137a778871639ca82d304ef0758553d3b8dcf77",
+    "environment": "1b10acc58699140732c8bf514c4e4369401bc69f",
+    "pip_freeze": "81390197e5d7e67c9000420f09b5bca6cf0b13c8"
+  },
+  "execution_completeness": {
+    "frozen_core_specs": 20,
+    "frozen_secondary_md1_specs": 2,
+    "all_frozen_core_specs_reported": true,
+    "ge18_regression_run": false,
+    "ge18_reason": "Model A has 465 projects < frozen N_min=500; sample diagnostic only.",
+    "post_result_specification_changes": false
+  },
+  "result_synthesis_python_only": {
+    "common_r5_slope_comparisons": 50,
+    "all_common_slope_directions_match_r5": true,
+    "p05_classification_changes": 3,
+    "p05_change_rows": [
+      "R6_2_B_COMMON / ln_issues_new: p=.0621 -> .000171, direction remains positive",
+      "R6_2_D_COMMON / ln_contributors: p=.00455 -> .26845, direction remains negative",
+      "R6_4_B_36M / ln_issues_new: p=.0621 -> .01801, direction remains positive"
+    ],
+    "focal_closed_resolution_relationships": {
+      "comparisons": 10,
+      "direction_match_all": true,
+      "p05_classification_match_all": true,
+      "model_A_ln_resolution": {
+        "baseline_b": -0.008308255562697302,
+        "ge6_b": -0.008334224788410479,
+        "ge12_b": -0.008345634052840584,
+        "common_support_b": -0.0083082555626973,
+        "auxiliary_net_code_b": -0.008306845273429814,
+        "window36_b": -0.011582246452553664,
+        "maximum_relative_absolute_change_vs_r5": 0.3940647787191382,
+        "pattern": "consistently negative"
+      },
+      "model_B_ln_resolution": {
+        "baseline_b": 0.012560843583592808,
+        "ge6_b": 0.01307789220040079,
+        "ge12_b": 0.013180243556494714,
+        "common_support_b": 0.01615825304498092,
+        "auxiliary_net_code_b": 0.012557205722832412,
+        "window36_b": 0.012345382825009061,
+        "maximum_relative_absolute_change_vs_r5": 0.28639871497859504,
+        "pattern": "consistently positive"
+      }
+    },
+    "auxiliary_signed_net_code_context": {
+      "baseline_focal_relationships_materially_unchanged_descriptively": true,
+      "note": "No hard magnitude threshold was frozen; this wording is descriptive, based on very small changes in the A/B focal coefficients.",
+      "aux_term_pvalues": {
+        "A": 0.5024433758242552,
+        "B": 0.0536857182967978,
+        "C": 0.910419229337387,
+        "D": 0.7748491929572787
+      }
+    },
+    "md1_resolution_observability": {
+      "sample_projects": 878,
+      "sample_project_months": 21072,
+      "base_ln_issues_new_b": 0.27657030758376705,
+      "base_ln_issues_new_se": 0.009937761505887129,
+      "base_ln_issues_new_p": 0,
+      "base_ln_contributors_b": 0.001077656251440763,
+      "base_ln_contributors_p": 0.8675709458675942,
+      "aux_ln_issues_new_b": 0.2762901081675974,
+      "aux_asinh_net_code_lines_b": 0.001174455525238226,
+      "aux_asinh_net_code_lines_p": 0.0020801372650982586,
+      "interpretation": "Availability of the closed-issue resolution median covaries strongly with incoming issue volume within projects over time. This is a measurement-availability result, not a causal or performance effect."
+    }
+  },
+  "provisional_measurement_interpretation": {
+    "status": "PYTHON_ONLY_PENDING_STATA17_VERIFICATION",
+    "statement": "The robustness pattern does not support treating closed-issue resolution duration as a standalone general timeliness measure. Its association with unresolved age remains negative across all frozen specifications, while its association with unresolved backlog burden remains positive. The persistence of this divergence is evidence of an inferential boundary rather than convergent validation.",
+    "observability_boundary": "The candidate metric's availability is itself strongly associated with observable issue inflow, reinforcing that missingness/observability is part of the measurement problem."
+  },
+  "anti_post_hoc_compliance": {
+    "sample_changed_after_r6_results": false,
+    "indicator_changed_after_r6_results": false,
+    "model_changed_after_r6_results": false,
+    "missingness_rule_changed_after_r6_results": false,
+    "favorable_specification_selection": false,
+    "all_frozen_specs_retained": true
+  },
+  "next_stage": {
+    "id": "R6C",
+    "title": "Local Stata 17 Independent Robustness Verification",
+    "authorization": "AUTHORIZED",
+    "rule": "Do not close R6 or draft definitive robustness claims until Stata 17 independently verifies the frozen Python robustness outputs."
+  }
+}
