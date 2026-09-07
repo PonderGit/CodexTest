@@ -1,0 +1,62 @@
+name: OMOSSP R4 Corrected Panel Rebuild
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "analysis/r4_corrected_panel_rebuild_from_snapshot.py"
+      - ".github/workflows/omossp-r4-corrected-panel-rebuild.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  r4_corrected:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: FREE-ONLY gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ github.repository_visibility }}" = "public"
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__NO_NEW_DATA_RETRIEVAL__NO_PAID_API"
+
+      - name: Install panel export dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-cache-dir "pandas==2.2.3"
+
+      - name: Rebuild corrected R4 panel from locked raw snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          python analysis/r4_corrected_panel_rebuild_from_snapshot.py
+
+      - name: Commit corrected R4 outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/r4_corrected/r4_corrected_project_month_panel.csv
+          git add data/r4_corrected/r4_corrected_project_month_panel.dta
+          git add governance/r4_corrected_variable_dictionary_r1.json
+          git add governance/r4_corrected_panel_data_quality_summary_r1.json
+          git add governance/r4_corrected_panel_manifest_r1.json
+          if git diff --cached --quiet; then
+            echo "R4_CORRECTED_OUTPUT_COMMIT=NO_CHANGES"
+          else
+            git commit -m "R4 preserve corrected formal panel outputs"
+            git push
+            echo "R4_CORRECTED_OUTPUT_COMMIT=PASS"
+          fi
