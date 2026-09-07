@@ -1,0 +1,47 @@
+{
+  "protocol": "OMOSSP_R6C_CROSS_SOFTWARE_VERIFICATION_CLOSEOUT_R1",
+  "date": "2026-09-07",
+  "status": "PASS__R6_PYTHON_STATA17_CROSS_SOFTWARE_REPLICATION",
+  "inputs": {
+    "stata_log_sha256": "756b00f21919bf57e6cd243b1aa005a679419adcdaa5f7e08d19484ded7cf745",
+    "stata_high_precision_csv_sha256": "44cc171922780b9fd8c8237b012217695c1111c58eb3fc3b7d633971ddea1a7b",
+    "python_coefficients_blob": "a12fa9827d02382f2f27a2a7a4e14c9a04fe3887",
+    "python_output_commit": "2b0bb0107c9df03395812c2eed121be57ef6a160",
+    "equivalence_criteria_commit": "c354b8340665f62bab72a6f4065113ae91ade846"
+  },
+  "execution_identity": {
+    "stata_specifications": 22,
+    "python_specifications": 22,
+    "stata_rows": 59,
+    "python_rows": 59,
+    "ster_saved": 22,
+    "log_closed_normally": true,
+    "sample_assertion_failure_observed": false
+  },
+  "equivalence": {
+    "coefficient_fail_count": 0,
+    "direction_mismatch_count": 0,
+    "max_coefficient_absolute_difference": 9.367506770274758e-15,
+    "max_coefficient_relative_difference": 8.701366524986669e-13,
+    "raw_se_relative_difference_min": 0.01347432743706067,
+    "raw_se_relative_difference_max": 0.029102121366464583,
+    "raw_se_threshold": 0.001,
+    "raw_se_result": "HOLD_TRIGGERED_AND_DIAGNOSED",
+    "reconciliation": "Deterministic finite-sample/df covariance scaling, same documented mechanism as R5",
+    "max_reconciled_se_relative_difference": 8.995966171875992e-14,
+    "reconciled_se_threshold": 1e-8,
+    "reconciled_se_fail_count": 0,
+    "p05_raw_mismatch_count": 1,
+    "p05_raw_mismatch": {
+      "spec_id": "R6_3_B_AUX_NET_CODE",
+      "term": "asinh_net_code_lines",
+      "stata_p": 0.0472275635885361,
+      "python_p": 0.0536857182967978,
+      "reason": "Mechanical consequence of the documented raw clustered-SE finite-sample/df convention difference; coefficient is identical and reconciled SE matches Python to machine precision."
+    },
+    "focal_relationship_p05_and_direction_consistency": true
+  },
+  "interpretation_boundary": "ASSOCIATIONAL_MEASUREMENT_VALIDATION_ONLY__NO_CAUSAL_CLAIM",
+  "gate": "PASS__R6_PYTHON_STATA17_CROSS_SOFTWARE_REPLICATION",
+  "next_stage": "R6_CLOSEOUT_AND_MANUSCRIPT_RESULT_SYNTHESIS"
+}
