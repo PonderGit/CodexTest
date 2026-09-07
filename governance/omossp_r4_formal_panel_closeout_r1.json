@@ -1,0 +1,141 @@
+{
+  "protocol": "OMOSSP_R4_FORMAL_PANEL_CONSTRUCTION_DATA_QUALITY_CLOSEOUT_R1",
+  "date": "2026-09-07",
+  "status": "PASS__CORRECTED_FORMAL_PANEL_ANALYSIS_READY__R5_STATA_BASELINE_AUTHORIZED",
+  "paper_goal_alignment": {
+    "gate": "PASS__DIRECTLY_SUPPORTS_PAPER",
+    "result": "The frozen 882-project GitHub frame has been converted into a reproducible 24-month project-month panel under source-verified zero/missing rules, with no performance-based project exclusion."
+  },
+  "authority": {
+    "formal_frame_projects": 882,
+    "formal_frame_sha256": "2b612252e775c6b5b0051a78b262d90665f29b769b62fbb4aab38756f3b81d11",
+    "raw_snapshot_sha256": "ea2ffd5f86cfdd3d1681838521f74697754bce01854c0b78d4408c3fcbb8cf98",
+    "corrected_panel_csv_sha256": "5cc29d08daf720a94a6eb9e3d59be4a6a499e2c5396811286ba1c3fc2b7a104c",
+    "corrected_panel_dta_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "corrected_output_commit": "4e989fbbab5ce8971b70654336d5e3711e99b740",
+    "corrected_summary_blob": "b7f805edc8b8dd05daa69ced74608cdca33c6b89",
+    "corrected_manifest_blob": "b6d02d21d1633ad9a2c290c53f5bc93c9c42d223",
+    "corrected_dictionary_blob": "7cf26212b987e6fc07db7aa62017081a0ebeaebd"
+  },
+  "panel": {
+    "projects": 882,
+    "months": 24,
+    "skeleton_project_months": 21168,
+    "primary_window": "2024-01 through 2025-12"
+  },
+  "corrected_semantic_issue": {
+    "issue": "OpenDigger code_change_lines_sum was originally interpreted as nonnegative code-change magnitude.",
+    "source_truth": "OpenDigger computes additions minus deletions, so signed negative values are valid net code-size change.",
+    "negative_signed_observations": 1958,
+    "resolution": [
+      "Original R2/R4 outputs preserved as audit trail.",
+      "C3 removed from baseline models.",
+      "No new variable substituted after outcome inspection.",
+      "net_code_lines retained only as auxiliary signed context with asinh transform.",
+      "Corrected panel rebuilt from locked raw snapshot without new retrieval."
+    ],
+    "correction_addendum": "governance/omossp_r4_source_semantics_correction_addendum_r1.json"
+  },
+  "data_quality": {
+    "retrieval_files": 4410,
+    "successful_200": 4393,
+    "unavailable_404": 17,
+    "transport_errors": 0,
+    "core_integrity_failures": {
+      "negative_resolution": 0,
+      "negative_age": 0,
+      "negative_backlog": 0,
+      "negative_issues_new": 0,
+      "negative_contributors": 0,
+      "nonnumeric_resolution_q2": 0,
+      "nonnumeric_age_q2": 0,
+      "invalid_age_levels": 0
+    },
+    "structural_or_semantic_missingness": {
+      "res_med_days_missing": 7343,
+      "res_med_days_missing_rate": 0.346892,
+      "open_age_med_days_missing": 316,
+      "open_age_missing_rate": 0.014928,
+      "open_backlog_missing": 144,
+      "open_backlog_missing_rate": 0.006803,
+      "issues_new_missing": 96,
+      "issues_new_missing_rate": 0.004535,
+      "contributors_missing": 0
+    },
+    "interpretation": "The high closed-issue median missingness is primarily a property of the candidate metric: a monthly closed-item median is undefined when no estimable closed-item distribution exists. It is not recoded to zero."
+  },
+  "model_eligibility": {
+    "A": {
+      "projects_ge2": 805,
+      "projects_ge6": 717,
+      "projects_ge12": 600,
+      "projects_ge18": 465,
+      "project_month_NT": 13808
+    },
+    "B": {
+      "projects_ge2": 805,
+      "projects_ge6": 718,
+      "projects_ge12": 601,
+      "projects_ge18": 466,
+      "project_month_NT": 13825
+    },
+    "C": {
+      "projects_ge2": 805,
+      "projects_ge6": 718,
+      "projects_ge12": 601,
+      "projects_ge18": 466,
+      "project_month_NT": 13825
+    },
+    "D": {
+      "projects_ge2": 871,
+      "projects_ge6": 871,
+      "projects_ge12": 870,
+      "projects_ge18": 869,
+      "project_month_NT": 20852
+    }
+  },
+  "sample_gate": {
+    "minimum_projects": 500,
+    "preferred_projects": 750,
+    "primary_model_projects_ge2": 805,
+    "decision": "PASS__EXCEEDS_PREFERRED_TARGET",
+    "supplementation_required": false
+  },
+  "formal_outputs": {
+    "raw_snapshot": "data/r4/r4_opendigger_raw_snapshot.jsonl.gz",
+    "retrieval_ledger": "data/r4/r4_retrieval_ledger.csv",
+    "corrected_panel_csv": "data/r4_corrected/r4_corrected_project_month_panel.csv",
+    "corrected_panel_dta": "data/r4_corrected/r4_corrected_project_month_panel.dta",
+    "corrected_dictionary": "governance/r4_corrected_variable_dictionary_r1.json",
+    "corrected_quality_summary": "governance/r4_corrected_panel_data_quality_summary_r1.json",
+    "corrected_manifest": "governance/r4_corrected_panel_manifest_r1.json"
+  },
+  "acquisition_lock": {
+    "new_data_acquisition": "STOP",
+    "old_identity_crawler": "STOP",
+    "generic_crawler": "STOP",
+    "targeted_api": "NOT_NEEDED",
+    "gitee_pooling": "NOT_NEEDED"
+  },
+  "next_stage": {
+    "id": "R5",
+    "title": "Stata Baseline Panel Analysis",
+    "authorization": "AUTHORIZED",
+    "rules": [
+      "Use only the corrected R4 .dta authority.",
+      "Use only corrected R2 baseline models with issues_new and contributors as context covariates.",
+      "Project fixed effects + calendar-month fixed effects.",
+      "Cluster standard errors by project.",
+      "No causal language.",
+      "No project/metric redefinition based on significance.",
+      "Preserve complete Stata do-file and log as formal output."
+    ]
+  },
+  "prohibitions": [
+    "new crawler",
+    "new project acquisition",
+    "cross-platform pooling",
+    "post-hoc covariate replacement",
+    "manuscript drafting before R6 unless user explicitly changes the pause"
+  ]
+}
