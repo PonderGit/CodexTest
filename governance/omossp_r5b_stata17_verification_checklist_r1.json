@@ -1,0 +1,39 @@
+{
+  "protocol": "OMOSSP_R5B_STATA17_VERIFICATION_CHECKLIST_R1",
+  "date": "2026-09-07",
+  "status": "READY__AWAITING_USER_LOCAL_STATA17_RUN",
+  "inputs": {
+    "data": "data/r4_corrected/r4_corrected_project_month_panel.dta",
+    "data_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "dofile": "analysis/r5_stata_baseline_r1.do",
+    "dofile_blob": "f2d93411103c352590caddfb8921718fc993520d",
+    "dofile_commit": "e6a5a403bdfc2a60ec95d34d5ff2a67d752cb703",
+    "stata_runtime": "Stata 17",
+    "dofile_version_statement": "version 16.0"
+  },
+  "expected_structure": {
+    "panel_rows": 21168,
+    "formal_projects": 882,
+    "A": {"N": 13781, "projects": 805},
+    "B": {"N": 13797, "projects": 805},
+    "C": {"N": 13797, "projects": 805},
+    "D": {"N": 20852, "projects": 871}
+  },
+  "python_benchmark": "results/r5_python_formal/r5_python_formal_coefficients.csv",
+  "equivalence_criteria": "governance/omossp_r5_dual_engine_equivalence_criteria_r1.json",
+  "required_stata_outputs": [
+    "results/r5/r5_stata_baseline.log",
+    "results/r5/r5_stata_baseline_summary.csv",
+    "results/r5/r5_A.ster",
+    "results/r5/r5_B.ster",
+    "results/r5/r5_C.ster",
+    "results/r5/r5_D.ster"
+  ],
+  "execution_rule": [
+    "Run the frozen do-file without editing sample, variables, estimator, missing rules, or model specification.",
+    "Do not inspect Python significance results for the purpose of changing the Stata specification.",
+    "Return the complete Stata text log and machine-readable summary for cross-software verification."
+  ],
+  "cross_software_gate": "PASS__PYTHON_STATA17_CROSS_SOFTWARE_REPLICATION",
+  "r6_authorized_before_gate": false
+}
