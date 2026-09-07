@@ -1,0 +1,54 @@
+{
+  "protocol": "OMOSSP_R5_DUAL_ENGINE_EQUIVALENCE_CRITERIA_R1",
+  "date": "2026-09-07",
+  "status": "FROZEN_BEFORE_STATA17_RESULTS",
+  "authority": {
+    "data": "data/r4_corrected/r4_corrected_project_month_panel.dta",
+    "data_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "stata_dofile": "analysis/r5_stata_baseline_r1.do",
+    "stata_dofile_blob": "f2d93411103c352590caddfb8921718fc993520d",
+    "stata_dofile_commit": "e6a5a403bdfc2a60ec95d34d5ff2a67d752cb703",
+    "stata_runtime_target": "Stata 17 executing do-file under version 16.0 compatibility semantics",
+    "python_primary": "analysis/r5_python_formal_r1.py"
+  },
+  "models": {
+    "A": {"N": 13781, "projects": 805},
+    "B": {"N": 13797, "projects": 805},
+    "C": {"N": 13797, "projects": 805},
+    "D": {"N": 20852, "projects": 871}
+  },
+  "hard_identity_requirements": [
+    "same frozen analytic dataset checksum",
+    "same model-specific observation count",
+    "same model-specific project-cluster count",
+    "same dependent and independent variables",
+    "same project fixed effects",
+    "same calendar-month fixed effects",
+    "same project-clustered covariance target",
+    "same >=2 usable-month sample rule"
+  ],
+  "numerical_equivalence": {
+    "coefficient": {
+      "rule": "PASS if absolute difference <= 1e-8 OR relative difference <= 1e-8 for every common slope coefficient"
+    },
+    "standard_error": {
+      "raw_strict_rule": "PASS_RAW if relative difference <= 0.001 for every common slope coefficient",
+      "diagnostic_rule": "If any raw relative difference exceeds 0.001, HOLD and diagnose only documented covariance finite-sample/degree-of-freedom implementation differences. No data, variable, model, sample, or significance-driven change is allowed.",
+      "reconciled_rule": "A reconciled pass is permitted only if the discrepancy is reproduced by an explicit deterministic scaling or covariance convention difference and the reconciled relative difference is <= 1e-8."
+    },
+    "inference": {
+      "direction": "must match for every common slope coefficient",
+      "alpha_005_classification": "must match unless a difference is mechanically attributable to a prospectively documented covariance finite-sample convention and is reported transparently",
+      "confidence_interval": "compare after any permitted covariance reconciliation"
+    }
+  },
+  "anti_post_hoc": [
+    "Python output must be frozen before Stata 17 verification",
+    "Do not change sample based on signs or p-values",
+    "Do not change indicators based on signs or p-values",
+    "Do not change model based on signs or p-values",
+    "Do not select the more favorable engine",
+    "Any discrepancy triggers diagnosis, not model redesign"
+  ],
+  "target_gate": "PASS__PYTHON_STATA17_CROSS_SOFTWARE_REPLICATION"
+}
