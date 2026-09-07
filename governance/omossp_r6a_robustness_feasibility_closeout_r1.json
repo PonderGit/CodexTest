@@ -1,0 +1,91 @@
+{
+  "protocol": "OMOSSP_R6A_ROBUSTNESS_IMPLEMENTATION_FEASIBILITY_CLOSEOUT_R1",
+  "date": "2026-09-07",
+  "status": "PASS__R6A_IMPLEMENTATION_AND_36M_FEASIBILITY_COMPLETE__R6B_FORMAL_ROBUSTNESS_EXECUTION_AUTHORIZED",
+  "governance_sequence": {
+    "r6_design_lock_commit": "a9022a9abf6fc754fc776a01f69b41aff4bf1423",
+    "r6_design_lock_blob": "495f39d52e5a91d616085662cec59de06b9b6980",
+    "r6a_code_freeze_commit_before_execution": "513769d52eadd6fdcb1012bf9449da5d92bce761",
+    "r6a_workflow_commit": "d95544db0507ab1ef9411b905bd8e0370e8e381a",
+    "r6a_workflow_run": 34095675307,
+    "r6a_workflow_conclusion": "success",
+    "r6a_output_commit": "f8659ce9a0785c15b5e50ecf9c0089cac4c06059"
+  },
+  "no_robustness_results_guard": {
+    "regression_run": false,
+    "robustness_coefficients_computed": false,
+    "robustness_standard_errors_computed": false,
+    "robustness_pvalues_computed": false,
+    "significance_based_selection_performed": false
+  },
+  "authority": {
+    "primary_24m_dta_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "raw_snapshot_sha256": "ea2ffd5f86cfdd3d1681838521f74697754bce01854c0b78d4408c3fcbb8cf98",
+    "structural_36m_frame_projects": 844,
+    "structural_36m_frame_blob": "18579662a20587e43a0b23d6dcf0f0e0a0b6276a"
+  },
+  "sample_identity_24m": {
+    "R6_1_A_ge6": {
+      "projects": 717,
+      "N": 13451
+    },
+    "R6_1_A_ge12": {
+      "projects": 600,
+      "N": 12444
+    },
+    "R6_1_A_ge18_descriptive_only": {
+      "projects": 465,
+      "N": 10480
+    },
+    "R6_2_common_support": {
+      "projects": 805,
+      "N": 13781
+    },
+    "R6_3_auxiliary_net_code_missing_in_baseline_samples": {
+      "A": 0,
+      "B": 0,
+      "C": 0,
+      "D": 0
+    }
+  },
+  "panel36": {
+    "projects": 844,
+    "months": 36,
+    "rows": 30384,
+    "csv_sha256": "73c0d25cc34e0b166c16113c0fa03f3708ccb7d953164101d82ae95f1ba4a03c",
+    "dta_sha256": "8fe2f2cbeffc2e94bbfdb0df70861607ec6947b27c231c247fc5ff1557cd975b",
+    "integrity_failures_core": {
+      "negative_resolution": 0,
+      "negative_age": 0,
+      "negative_backlog": 0,
+      "negative_issues_new": 0,
+      "negative_contributors": 0,
+      "nonnumeric_resolution_q2": 0,
+      "nonnumeric_age_q2": 0,
+      "invalid_age_levels": 0
+    },
+    "legitimate_negative_net_code_lines": 2984,
+    "model_A_ge2_projects": 800,
+    "model_A_ge2_N": 21020,
+    "feasibility_floor_projects": 500,
+    "feasibility_gate": "PASS__800_GE_500"
+  },
+  "output_authority": {
+    "feasibility_summary_blob": "d3f48ebe4e91f23314e8bb8a42ac2e069bef5a23",
+    "feasibility_manifest_blob": "00e417337f4d18ea3ea501f0845711651bb7c7b7"
+  },
+  "interpretation": "R6A establishes data/sample feasibility only. It does not provide robustness findings and must not be cited as evidence that baseline associations are robust.",
+  "next_stage": {
+    "id": "R6B",
+    "title": "Formal Python Robustness Execution",
+    "authorization": "AUTHORIZED",
+    "preconditions": [
+      "Use only the R6 design lock and R6A frozen inputs.",
+      "Freeze the R6B analysis code before execution.",
+      "Run all frozen robustness specifications and report all of them.",
+      "Python remains FREE-ONLY formal primary engine.",
+      "Do not change samples, indicators, missingness rules, or models based on robustness signs or significance.",
+      "Stata 17 verification occurs only after Python robustness outputs are frozen."
+    ]
+  }
+}
