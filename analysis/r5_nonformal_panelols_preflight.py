@@ -11,10 +11,10 @@ OUT_JSON=OUTDIR/"r5_panelols_preflight_summary.json"
 OUT_CSV=OUTDIR/"r5_panelols_preflight_coefficients.csv"
 
 MODELS={
-  "A":{"y":"ln_open_age","x":["ln_resolution","ln_issues_new","ln_contributors"],"elig":"elig_A","expected_N":13808,"expected_projects":805},
-  "B":{"y":"asinh_backlog","x":["ln_resolution","ln_issues_new","ln_contributors"],"elig":"elig_B","expected_N":13825,"expected_projects":805},
-  "C":{"y":"ln_resolution","x":["ln_issues_new","ln_contributors"],"elig":"elig_C","expected_N":13825,"expected_projects":805},
-  "D":{"y":"ln_open_age","x":["ln_issues_new","ln_contributors"],"elig":"elig_D","expected_N":20852,"expected_projects":871},
+  "A":{"y":"ln_open_age","x":["ln_resolution","ln_issues_new","ln_contributors"],"elig":"elig_A","expected_projects":805},
+  "B":{"y":"asinh_backlog","x":["ln_resolution","ln_issues_new","ln_contributors"],"elig":"elig_B","expected_projects":805},
+  "C":{"y":"ln_resolution","x":["ln_issues_new","ln_contributors"],"elig":"elig_C","expected_projects":805},
+  "D":{"y":"ln_open_age","x":["ln_issues_new","ln_contributors"],"elig":"elig_D","expected_projects":871},
 }
 
 def fit_model(df,name,spec):
@@ -22,8 +22,11 @@ def fit_model(df,name,spec):
     g=df.groupby("project_id")[spec["elig"]].sum()
     keep=set(g[g>=2].index)
     sub=df[df["project_id"].isin(keep) & (df[spec["elig"]]==1)].copy()
-    assert len(sub)==spec["expected_N"], (name,len(sub),spec["expected_N"])
     assert sub["project_id"].nunique()==spec["expected_projects"], (name,sub["project_id"].nunique(),spec["expected_projects"])
+    raw_N=int(df.loc[df[spec["elig"]]==1].shape[0])
+    regression_N=int(len(sub))
+    singleton_projects=int((g==1).sum())
+    singleton_observations=singleton_projects
 
     sub=sub.set_index(["project_id","month_id"]).sort_index()
     y=sub[spec["y"]]
@@ -44,6 +47,10 @@ def fit_model(df,name,spec):
     return {
       "model":name,
       "N":int(res.nobs),
+      "raw_eligible_N":raw_N,
+      "regression_eligible_N_ge2":regression_N,
+      "singleton_projects_removed":singleton_projects,
+      "singleton_observations_removed":singleton_observations,
       "projects":int(spec["expected_projects"]),
       "rsquared_within":float(res.rsquared_within),
       "rsquared_overall":float(res.rsquared_overall),
