@@ -1,0 +1,63 @@
+name: OMOSSP R6A Robustness Feasibility
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "analysis/r6a_robustness_feasibility_r1.py"
+      - "governance/omossp_r6_robustness_design_lock_r1.json"
+      - "governance/r6_full36_structural_frame_r1.csv"
+      - ".github/workflows/omossp-r6a-robustness-feasibility.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  r6a_feasibility:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.14"
+
+      - name: FREE-ONLY gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ github.repository_visibility }}" = "public"
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__STANDARD_RUNNER__NO_NEW_DATA_RETRIEVAL"
+
+      - name: Install frozen dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-cache-dir "pandas==2.2.3"
+
+      - name: Run R6A feasibility only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python analysis/r6a_robustness_feasibility_r1.py
+
+      - name: Commit R6A feasibility outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/r6_36m/r6_36m_corrected_project_month_panel.csv
+          git add data/r6_36m/r6_36m_corrected_project_month_panel.dta
+          git add governance/r6a_robustness_feasibility_summary_r1.json
+          git add governance/r6a_robustness_feasibility_manifest_r1.json
+          if git diff --cached --quiet; then
+            echo "R6A_OUTPUT_COMMIT=NO_CHANGES"
+          else
+            git commit -m "R6A freeze robustness feasibility outputs"
+            git push
+            echo "R6A_OUTPUT_COMMIT=PASS"
+          fi
