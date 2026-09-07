@@ -176,6 +176,7 @@ file write `fh' "D," %12.0f (D_N) "," %12.0f (D_Ng) "," %12.8f (D_r2w) ",ln_cont
 file close `fh'
 
 * Preserve estimates.
+estimates restore R5_A
 estimates save "`OUT'/r5_A.ster", replace
 estimates restore R5_B
 estimates save "`OUT'/r5_B.ster", replace
