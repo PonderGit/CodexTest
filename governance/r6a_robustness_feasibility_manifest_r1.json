@@ -1,0 +1,27 @@
+{
+  "inputs": {
+    "data/r4/r4_opendigger_raw_snapshot.jsonl.gz": "ea2ffd5f86cfdd3d1681838521f74697754bce01854c0b78d4408c3fcbb8cf98",
+    "data/r4_corrected/r4_corrected_project_month_panel.dta": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "governance/omossp_r6_robustness_design_lock_r1.json": "e8377e8e56dabded47cf83c7ddf1f00c123128dc58ec74650b5e43bc6a475674",
+    "governance/r6_full36_structural_frame_r1.csv": {
+      "git_blob_expected": "18579662a20587e43a0b23d6dcf0f0e0a0b6276a",
+      "projects": 844
+    }
+  },
+  "outputs": {
+    "data/r6_36m/r6_36m_corrected_project_month_panel.csv": {
+      "bytes": 5138438,
+      "sha256": "73c0d25cc34e0b166c16113c0fa03f3708ccb7d953164101d82ae95f1ba4a03c"
+    },
+    "data/r6_36m/r6_36m_corrected_project_month_panel.dta": {
+      "bytes": 5512859,
+      "sha256": "8fe2f2cbeffc2e94bbfdb0df70861607ec6947b27c231c247fc5ff1557cd975b"
+    },
+    "governance/r6a_robustness_feasibility_summary_r1.json": {
+      "bytes": 5743,
+      "sha256": "5b6f868e0f69c7a852236c9359a61f4380149fac94de084379b0ff90b12c4164"
+    }
+  },
+  "protocol": "OMOSSP_R6A_ROBUSTNESS_FEASIBILITY_MANIFEST_R1",
+  "regression_run": false
+}

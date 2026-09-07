@@ -1,0 +1,239 @@
+{
+  "date": "2026-09-07",
+  "formal_36m_regression_authorization": "AUTHORIZED_NEXT_STAGE",
+  "formal_36m_regression_feasibility_gate_min_projects": 500,
+  "formal_36m_regression_feasible": true,
+  "frame36_projects": 844,
+  "interpretation": "SAMPLE_AND_DATA_FEASIBILITY_ONLY__NO_ROBUSTNESS_RESULT_INTERPRETATION",
+  "model_A_ge2_projects": 800,
+  "panel36_file_status": {
+    "code_change_lines_sum": {
+      "200": 844,
+      "404": 0,
+      "ERROR": 0
+    },
+    "contributors": {
+      "200": 844,
+      "404": 0,
+      "ERROR": 0
+    },
+    "issue_age": {
+      "200": 838,
+      "404": 6,
+      "ERROR": 0
+    },
+    "issue_resolution_duration": {
+      "200": 837,
+      "404": 7,
+      "ERROR": 0
+    },
+    "issues_new": {
+      "200": 840,
+      "404": 4,
+      "ERROR": 0
+    }
+  },
+  "panel36_integrity": {
+    "age_q2_non_numeric": 0,
+    "invalid_age_levels": 0,
+    "negative_age": 0,
+    "negative_backlog": 0,
+    "negative_contributors": 0,
+    "negative_issues_new": 0,
+    "negative_net_code_lines_legitimate": 2984,
+    "negative_resolution": 0,
+    "resolution_q2_non_numeric": 0
+  },
+  "panel36_model_eligibility": {
+    "A": {
+      "N_ge1": 21034,
+      "N_ge12": 20256,
+      "N_ge18": 19336,
+      "N_ge2": 21020,
+      "N_ge24": 17556,
+      "N_ge6": 20869,
+      "projects_ge1": 814,
+      "projects_ge12": 683,
+      "projects_ge18": 619,
+      "projects_ge2": 800,
+      "projects_ge24": 532,
+      "projects_ge6": 755
+    },
+    "B": {
+      "N_ge1": 21060,
+      "N_ge12": 20291,
+      "N_ge18": 19385,
+      "N_ge2": 21045,
+      "N_ge24": 17586,
+      "N_ge6": 20894,
+      "projects_ge1": 815,
+      "projects_ge12": 684,
+      "projects_ge18": 621,
+      "projects_ge2": 800,
+      "projects_ge24": 533,
+      "projects_ge6": 755
+    },
+    "C": {
+      "N_ge1": 21060,
+      "N_ge12": 20291,
+      "N_ge18": 19385,
+      "N_ge2": 21045,
+      "N_ge24": 17586,
+      "N_ge6": 20894,
+      "projects_ge1": 815,
+      "projects_ge12": 684,
+      "projects_ge18": 621,
+      "projects_ge2": 800,
+      "projects_ge24": 533,
+      "projects_ge6": 755
+    },
+    "D": {
+      "N_ge1": 29893,
+      "N_ge12": 29885,
+      "N_ge18": 29872,
+      "N_ge2": 29893,
+      "N_ge24": 29872,
+      "N_ge6": 29891,
+      "projects_ge1": 834,
+      "projects_ge12": 832,
+      "projects_ge18": 831,
+      "projects_ge2": 834,
+      "projects_ge24": 831,
+      "projects_ge6": 833
+    }
+  },
+  "panel36_months": 36,
+  "panel36_rows": 30384,
+  "panel36_variable_missingness": {
+    "contributors_n": {
+      "missing": 0,
+      "missing_rate": 0.0,
+      "observed": 30384
+    },
+    "issues_new_n": {
+      "missing": 144,
+      "missing_rate": 0.004739336492890996,
+      "observed": 30240
+    },
+    "net_code_lines": {
+      "missing": 0,
+      "missing_rate": 0.0,
+      "observed": 30384
+    },
+    "open_age_med_days": {
+      "missing": 491,
+      "missing_rate": 0.016159820958399157,
+      "observed": 29893
+    },
+    "open_backlog_n": {
+      "missing": 216,
+      "missing_rate": 0.0071090047393364926,
+      "observed": 30168
+    },
+    "res_med_days": {
+      "missing": 9324,
+      "missing_rate": 0.3068720379146919,
+      "observed": 21060
+    }
+  },
+  "panel36_zero_fill_counts": {
+    "backlog_count_from_missing_levels": 275,
+    "contributors": 10860,
+    "issues_new": 6129,
+    "net_code_lines_sparse_zero": 7554
+  },
+  "primary_24m_input_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+  "protocol": "OMOSSP_R6A_ROBUSTNESS_IMPLEMENTATION_36M_FEASIBILITY_R1",
+  "raw_snapshot_sha256": "ea2ffd5f86cfdd3d1681838521f74697754bce01854c0b78d4408c3fcbb8cf98",
+  "regression_run": false,
+  "robustness_24m_sample_identity": {
+    "R6_1_minimum_usable_months": {
+      "A": {
+        "ge12": {
+          "N": 12444,
+          "projects": 600
+        },
+        "ge18_descriptive_only": {
+          "N": 10480,
+          "projects": 465
+        },
+        "ge6": {
+          "N": 13451,
+          "projects": 717
+        }
+      },
+      "B": {
+        "ge12": {
+          "N": 12465,
+          "projects": 601
+        },
+        "ge18_descriptive_only": {
+          "N": 10502,
+          "projects": 466
+        },
+        "ge6": {
+          "N": 13471,
+          "projects": 718
+        }
+      },
+      "C": {
+        "ge12": {
+          "N": 12465,
+          "projects": 601
+        },
+        "ge18_descriptive_only": {
+          "N": 10502,
+          "projects": 466
+        },
+        "ge6": {
+          "N": 13471,
+          "projects": 718
+        }
+      },
+      "D": {
+        "ge12": {
+          "N": 20846,
+          "projects": 870
+        },
+        "ge18_descriptive_only": {
+          "N": 20833,
+          "projects": 869
+        },
+        "ge6": {
+          "N": 20852,
+          "projects": 871
+        }
+      }
+    },
+    "R6_2_common_support": {
+      "N": 13781,
+      "projects": 805
+    },
+    "R6_3_auxiliary_signed_context": {
+      "A": {
+        "asinh_net_code_lines_missing_in_baseline_sample": 0,
+        "baseline_N": 13781,
+        "baseline_projects": 805
+      },
+      "B": {
+        "asinh_net_code_lines_missing_in_baseline_sample": 0,
+        "baseline_N": 13797,
+        "baseline_projects": 805
+      },
+      "C": {
+        "asinh_net_code_lines_missing_in_baseline_sample": 0,
+        "baseline_N": 13797,
+        "baseline_projects": 805
+      },
+      "D": {
+        "asinh_net_code_lines_missing_in_baseline_sample": 0,
+        "baseline_N": 20852,
+        "baseline_projects": 871
+      }
+    }
+  },
+  "robustness_coefficients_computed": false,
+  "robustness_pvalues_computed": false,
+  "robustness_standard_errors_computed": false,
+  "status": "PASS__R6A_IMPLEMENTATION_AND_FEASIBILITY_COMPLETE__NO_ROBUSTNESS_REGRESSION_RUN"
+}
