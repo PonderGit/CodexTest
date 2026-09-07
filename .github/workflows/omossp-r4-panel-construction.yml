@@ -1,0 +1,64 @@
+name: OMOSSP R4 Formal Panel Construction
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "analysis/r4_formal_panel_construction.py"
+      - ".github/workflows/omossp-r4-panel-construction.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  r4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: FREE-ONLY gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ github.repository_visibility }}" = "public"
+          echo "FREE_ONLY_GATE=PASS__PUBLIC_REPO__UBUNTU_LATEST__NO_ARTIFACT_UPLOAD__NO_CACHE__NO_PAID_API"
+
+      - name: Install panel export dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-cache-dir "pandas==2.2.3"
+
+      - name: Run R4 formal panel construction
+        shell: bash
+        run: |
+          set -euo pipefail
+          python analysis/r4_formal_panel_construction.py
+
+      - name: Commit R4 outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/r4/r4_opendigger_raw_snapshot.jsonl.gz
+          git add data/r4/r4_retrieval_ledger.csv
+          git add data/r4/r4_project_month_panel.csv
+          git add data/r4/r4_project_month_panel.dta
+          git add governance/r4_variable_dictionary_r1.json
+          git add governance/r4_panel_data_quality_summary_r1.json
+          git add governance/r4_panel_manifest_r1.json
+          if git diff --cached --quiet; then
+            echo "R4_OUTPUT_COMMIT=NO_CHANGES"
+          else
+            git commit -m "R4 preserve formal panel data and quality outputs"
+            git push
+            echo "R4_OUTPUT_COMMIT=PASS"
+          fi
