@@ -1,0 +1,119 @@
+{
+  "protocol": "OMOSSP_R6C_LOCAL_STATA17_EXECUTION_LOCK_R1",
+  "date": "2026-09-07",
+  "status": "FROZEN_BEFORE_STATA17_R6_RESULTS",
+  "stata_dofile": {
+    "path": "analysis/r6c_stata_robustness_r1.do",
+    "blob": "80352e660a4bebd3be601838442446ae8bbef850",
+    "final_freeze_commit": "c17e8a83c1618498ad2eb6c0aa9a23e65184f9f9",
+    "version_statement": "version 16.0",
+    "intended_runtime": "Stata 17"
+  },
+  "equivalence_criteria": {
+    "path": "governance/omossp_r6c_python_stata17_equivalence_criteria_r1.json",
+    "freeze_commit": "c354b8340665f62bab72a6f4065113ae91ade846"
+  },
+  "frozen_inputs": {
+    "data24_path": "data/r4_corrected/r4_corrected_project_month_panel.dta",
+    "data24_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "data36_path": "data/r6_36m/r6_36m_corrected_project_month_panel.dta",
+    "data36_sha256": "8fe2f2cbeffc2e94bbfdb0df70861607ec6947b27c231c247fc5ff1557cd975b"
+  },
+  "exact_expected_samples": {
+    "R6_1_A_GE6": [
+      13451,
+      717
+    ],
+    "R6_1_A_GE12": [
+      12444,
+      600
+    ],
+    "R6_1_B_GE6": [
+      13471,
+      718
+    ],
+    "R6_1_B_GE12": [
+      12465,
+      601
+    ],
+    "R6_1_C_GE6": [
+      13471,
+      718
+    ],
+    "R6_1_C_GE12": [
+      12465,
+      601
+    ],
+    "R6_1_D_GE6": [
+      20852,
+      871
+    ],
+    "R6_1_D_GE12": [
+      20846,
+      870
+    ],
+    "R6_2_A_COMMON": [
+      13781,
+      805
+    ],
+    "R6_2_B_COMMON": [
+      13781,
+      805
+    ],
+    "R6_2_C_COMMON": [
+      13781,
+      805
+    ],
+    "R6_2_D_COMMON": [
+      13781,
+      805
+    ],
+    "R6_3_A_AUX_NET_CODE": [
+      13781,
+      805
+    ],
+    "R6_3_B_AUX_NET_CODE": [
+      13797,
+      805
+    ],
+    "R6_3_C_AUX_NET_CODE": [
+      13797,
+      805
+    ],
+    "R6_3_D_AUX_NET_CODE": [
+      20852,
+      871
+    ],
+    "R6_MD1_BASE": [
+      21072,
+      878
+    ],
+    "R6_MD1_AUX_NET_CODE": [
+      21072,
+      878
+    ],
+    "R6_4_A_36M": [
+      21020,
+      800
+    ],
+    "R6_4_B_36M": [
+      21045,
+      800
+    ],
+    "R6_4_C_36M": [
+      21045,
+      800
+    ],
+    "R6_4_D_36M": [
+      29893,
+      834
+    ]
+  },
+  "result_files_expected": [
+    "results/r6c/r6c_stata_robustness.log",
+    "results/r6c/r6c_stata_robustness_high_precision.csv",
+    "22 .ster files, one per frozen specification"
+  ],
+  "success_marker": "OMOSSP_R6C_STATA_ROBUSTNESS_COMPLETE",
+  "prohibition": "No manual edits, reruns with changed specifications, sample changes, or omission of frozen specifications."
+}
