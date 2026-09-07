@@ -1,0 +1,177 @@
+{
+  "protocol": "OMOSSP_R5_STATA_BASELINE_EXECUTION_READINESS_R1",
+  "date": "2026-09-07",
+  "status": "HOLD__FORMAL_STATA_RUNTIME_UNAVAILABLE__DESIGN_AND_DOFILE_FROZEN",
+  "formal_authority": {
+    "data": "data/r4_corrected/r4_corrected_project_month_panel.dta",
+    "data_sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346",
+    "dofile": "analysis/r5_stata_baseline_r1.do",
+    "dofile_blob": "f2d93411103c352590caddfb8921718fc993520d",
+    "dofile_commit": "e6a5a403bdfc2a60ec95d34d5ff2a67d752cb703",
+    "minimum_stata_version_contract": "version 16.0"
+  },
+  "formal_models": {
+    "A": {
+      "N": 13781,
+      "projects": 805,
+      "y": "ln_open_age",
+      "x": [
+        "ln_resolution",
+        "ln_issues_new",
+        "ln_contributors"
+      ]
+    },
+    "B": {
+      "N": 13797,
+      "projects": 805,
+      "y": "asinh_backlog",
+      "x": [
+        "ln_resolution",
+        "ln_issues_new",
+        "ln_contributors"
+      ]
+    },
+    "C": {
+      "N": 13797,
+      "projects": 805,
+      "y": "ln_resolution",
+      "x": [
+        "ln_issues_new",
+        "ln_contributors"
+      ]
+    },
+    "D": {
+      "N": 20852,
+      "projects": 871,
+      "y": "ln_open_age",
+      "x": [
+        "ln_issues_new",
+        "ln_contributors"
+      ]
+    }
+  },
+  "sample_rule": {
+    "project_min_usable_months": 2,
+    "origin": "R3 frozen rule",
+    "singleton_removal": {
+      "A": {
+        "projects": 27,
+        "observations": 27
+      },
+      "B": {
+        "projects": 28,
+        "observations": 28
+      },
+      "C": {
+        "projects": 28,
+        "observations": 28
+      },
+      "D": {
+        "projects": 0,
+        "observations": 0
+      }
+    }
+  },
+  "estimator_contract": {
+    "software": "Stata",
+    "estimator": "xtreg, fe",
+    "fixed_effects": [
+      "project",
+      "calendar month"
+    ],
+    "covariance": "vce(cluster project)",
+    "causal_interpretation": false,
+    "significance_driven_redefinition": false
+  },
+  "nonformal_preflight": {
+    "software": "Python linearmodels PanelOLS",
+    "status": "NONFORMAL__VALIDATION_ONLY",
+    "workflow_run": 34083473522,
+    "summary_blob": "727254fbae3ef1b847bf619fb1ece9bda0748891",
+    "coefficients_blob": "3005745aa384439a23cf90524bd6bbf5268ce55b",
+    "purpose": "Verify sample construction, estimability, and expected coefficient direction before licensed Stata execution.",
+    "formal_claims_authorized": false,
+    "coefficients": {
+      "A": {
+        "ln_resolution": {
+          "b": -0.0083082555626973,
+          "se": 0.0022503957104560387,
+          "p": 0.00022349135000387932
+        },
+        "ln_issues_new": {
+          "b": -0.0949591002825939,
+          "se": 0.012862802041429729,
+          "p": 1.6497914145929826e-13
+        },
+        "ln_contributors": {
+          "b": -0.010847341419730074,
+          "se": 0.007888432458090589,
+          "p": 0.16912588528945083
+        }
+      },
+      "B": {
+        "ln_resolution": {
+          "b": 0.012560843583592813,
+          "se": 0.005511269798419013,
+          "p": 0.0226761291172477
+        },
+        "ln_issues_new": {
+          "b": 0.1214140204400861,
+          "se": 0.06507933170557946,
+          "p": 0.06211557097107012
+        },
+        "ln_contributors": {
+          "b": -0.0315551533142793,
+          "se": 0.024961394987034966,
+          "p": 0.2061959586820339
+        }
+      },
+      "C": {
+        "ln_issues_new": {
+          "b": -0.24740538858242775,
+          "se": 0.039007021619164965,
+          "p": 2.334432647188578e-10
+        },
+        "ln_contributors": {
+          "b": -0.264937360174734,
+          "se": 0.03410452845019253,
+          "p": 8.43769498715119e-15
+        }
+      },
+      "D": {
+        "ln_issues_new": {
+          "b": -0.0760118688130386,
+          "se": 0.008493752674046172,
+          "p": 0
+        },
+        "ln_contributors": {
+          "b": -0.019633071489942353,
+          "se": 0.00691927302080968,
+          "p": 0.0045521717650347515
+        }
+      }
+    }
+  },
+  "environment_audit": {
+    "github_repo_stata_runner_found": false,
+    "google_drive_stata_runner_found": false,
+    "current_runtime_stata_executable_found": false,
+    "stata_plugin_found": false,
+    "conclusion": "No licensed Stata runtime is currently connected or executable from this session."
+  },
+  "formal_outputs_required_to_close_R5": [
+    "results/r5/r5_stata_baseline.log",
+    "results/r5/r5_stata_baseline_summary.csv",
+    "results/r5/r5_A.ster",
+    "results/r5/r5_B.ster",
+    "results/r5/r5_C.ster",
+    "results/r5/r5_D.ster"
+  ],
+  "next_action": "Execute the frozen do-file in a licensed Stata 16+ environment, preserve the complete log and summary, then verify against the frozen N/project assertions. No model or sample changes are authorized before that run.",
+  "prohibitions": [
+    "Treating PanelOLS preflight as formal paper evidence",
+    "Changing variables or sample based on preflight signs/p-values",
+    "Proceeding to R6 as if R5 were complete",
+    "Using a different estimator without an explicit design decision"
+  ]
+}
