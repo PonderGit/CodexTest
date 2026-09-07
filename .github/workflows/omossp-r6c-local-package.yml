@@ -1,0 +1,46 @@
+name: OMOSSP R6C Local Stata Package
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/omossp-r6c-local-package.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: FREE-ONLY gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ github.repository_visibility }}" = "public"
+          echo "FREE_ONLY_GATE=PASS"
+
+      - name: Verify frozen package authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "8fe2f2cbeffc2e94bbfdb0df70861607ec6947b27c231c247fc5ff1557cd975b  data/r6_36m/r6_36m_corrected_project_month_panel.dta" | sha256sum -c -
+          test -f analysis/r6c_stata_robustness_r1.do
+          test -f governance/omossp_r6c_python_stata17_equivalence_criteria_r1.json
+          test -f governance/omossp_r6c_local_stata17_execution_lock_r1.json
+
+      - name: Upload frozen local Stata package
+        uses: actions/upload-artifact@v4
+        with:
+          name: OMOSSP_R6C_LOCAL_STATA17_PACKAGE_R1
+          path: |
+            analysis/r6c_stata_robustness_r1.do
+            data/r6_36m/r6_36m_corrected_project_month_panel.dta
+            governance/omossp_r6c_python_stata17_equivalence_criteria_r1.json
+            governance/omossp_r6c_local_stata17_execution_lock_r1.json
+          if-no-files-found: error
+          retention-days: 30
