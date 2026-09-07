@@ -1,0 +1,84 @@
+{
+  "protocol": "OMOSSP_R6_FINAL_CLOSEOUT_AND_MANUSCRIPT_RESULT_SYNTHESIS_R1",
+  "date": "2026-09-07",
+  "status": "PASS__R6_COMPLETE__ROBUSTNESS_AND_MEASUREMENT_BOUNDARIES_FROZEN",
+  "authority": {
+    "r5_cross_software_gate": "PASS__PYTHON_STATA17_CROSS_SOFTWARE_REPLICATION",
+    "r6_design_commit": "a9022a9abf6fc754fc776a01f69b41aff4bf1423",
+    "r6a_output_commit": "f8659ce9a0785c15b5e50ecf9c0089cac4c06059",
+    "r6b_python_output_commit": "2b0bb0107c9df03395812c2eed121be57ef6a160",
+    "r6c_cross_software_commit": "66084d3b1eb240f3311c0615d5958b6650b4abe6",
+    "r6_cross_software_gate": "PASS__R6_PYTHON_STATA17_CROSS_SOFTWARE_REPLICATION"
+  },
+  "manuscript_level_findings": {
+    "focal_closed_resolution_to_open_age": {
+      "r5_baseline_b": -0.008308255562697302,
+      "robustness_b": {
+        "ge6": -0.008334224788410479,
+        "ge12": -0.008345634052840584,
+        "common_support": -0.0083082555626973,
+        "auxiliary_net_code": -0.008306845273429814,
+        "window36": -0.011582246452553664
+      },
+      "direction": "negative_in_all_frozen_specifications",
+      "p05_classification": "significant_in_all_frozen_specifications"
+    },
+    "focal_closed_resolution_to_backlog_burden": {
+      "r5_baseline_b": 0.012560843583592808,
+      "robustness_b": {
+        "ge6": 0.01307789220040079,
+        "ge12": 0.013180243556494714,
+        "common_support": 0.01615825304498092,
+        "auxiliary_net_code": 0.012557205722832412,
+        "window36": 0.012345382825009061
+      },
+      "direction": "positive_in_all_frozen_specifications",
+      "p05_classification": "significant_in_all_frozen_specifications"
+    },
+    "common_slope_direction_consistency": {
+      "comparisons": 50,
+      "direction_matches": 50,
+      "p05_classification_changes": 3
+    },
+    "observability_diagnostic": {
+      "sample_projects": 878,
+      "sample_project_months": 21072,
+      "ln_issues_new_b": 0.27657030758376705,
+      "ln_issues_new_se": 0.009937761505887129,
+      "ln_issues_new_p": 0,
+      "ln_contributors_b": 0.001077656251440763,
+      "ln_contributors_p": 0.8675709458675942,
+      "auxiliary_net_code_b": 0.001174455525238226,
+      "auxiliary_net_code_p": 0.0020801372650982586
+    }
+  },
+  "cross_software_verification": {
+    "specifications": 22,
+    "coefficient_rows": 59,
+    "coefficient_failures": 0,
+    "direction_mismatches": 0,
+    "max_coefficient_absolute_difference": 9.367506770274758e-15,
+    "max_coefficient_relative_difference": 8.701366524986669e-13,
+    "raw_se_relative_difference_range": [
+      0.01347432743706067,
+      0.029102121366464583
+    ],
+    "max_reconciled_se_relative_difference": 8.995966171875992e-14,
+    "raw_p05_mismatches": 1,
+    "raw_p05_mismatch_note": "R6_3_B_AUX_NET_CODE asinh_net_code_lines only; mechanically attributable to documented finite-sample/df covariance convention difference. Coefficient identity and reconciled SE pass."
+  },
+  "interpretation_boundary": {
+    "construct": "maintenance / issue-response timeliness",
+    "valid_claim": "The closed-issue resolution-duration metric shows stable but divergent relationships with unresolved-work indicators: negative with unresolved issue age and positive with backlog burden. This pattern is inconsistent with treating it as a standalone general timeliness measure.",
+    "observability_claim": "Metric availability is systematically associated with issue inflow, so observability/missingness is part of the measurement boundary.",
+    "prohibited_claims": [
+      "overall OSS performance",
+      "software-team performance",
+      "productivity",
+      "efficiency",
+      "technical quality",
+      "causal effects"
+    ]
+  },
+  "next_stage": "MANUSCRIPT_METHODS_RESULTS_DISCUSSION_SYNTHESIS__NO_NEW_MODEL_REQUIRED"
+}
