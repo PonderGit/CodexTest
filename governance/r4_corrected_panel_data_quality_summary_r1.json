@@ -1,0 +1,126 @@
+{
+  "baseline_context_covariates": [
+    "ln_issues_new",
+    "ln_contributors"
+  ],
+  "file_status": {
+    "code_change_lines_sum": {
+      "200": 882,
+      "404": 0,
+      "ERROR": 0
+    },
+    "contributors": {
+      "200": 882,
+      "404": 0,
+      "ERROR": 0
+    },
+    "issue_age": {
+      "200": 876,
+      "404": 6,
+      "ERROR": 0
+    },
+    "issue_resolution_duration": {
+      "200": 875,
+      "404": 7,
+      "ERROR": 0
+    },
+    "issues_new": {
+      "200": 878,
+      "404": 4,
+      "ERROR": 0
+    }
+  },
+  "formal_regression_run": false,
+  "frame_projects": 882,
+  "integrity_checks": {
+    "age_q2_non_numeric": 0,
+    "invalid_age_levels": 0,
+    "negative_age": 0,
+    "negative_backlog": 0,
+    "negative_contributors": 0,
+    "negative_issues_new": 0,
+    "negative_net_code_lines_legitimate": 1958,
+    "negative_resolution": 0,
+    "resolution_q2_non_numeric": 0
+  },
+  "model_eligibility": {
+    "A": {
+      "project_month_NT": 13808,
+      "projects_ge1": 832,
+      "projects_ge12": 600,
+      "projects_ge18": 465,
+      "projects_ge2": 805,
+      "projects_ge6": 717
+    },
+    "B": {
+      "project_month_NT": 13825,
+      "projects_ge1": 833,
+      "projects_ge12": 601,
+      "projects_ge18": 466,
+      "projects_ge2": 805,
+      "projects_ge6": 718
+    },
+    "C": {
+      "project_month_NT": 13825,
+      "projects_ge1": 833,
+      "projects_ge12": 601,
+      "projects_ge18": 466,
+      "projects_ge2": 805,
+      "projects_ge6": 718
+    },
+    "D": {
+      "project_month_NT": 20852,
+      "projects_ge1": 871,
+      "projects_ge12": 870,
+      "projects_ge18": 869,
+      "projects_ge2": 871,
+      "projects_ge6": 871
+    }
+  },
+  "months": 24,
+  "net_code_lines_status": "AUXILIARY_SIGNED_CONTEXT_ONLY__NOT_BASELINE",
+  "performance_value_based_project_exclusion": false,
+  "preferred_projects": 750,
+  "protocol": "OMOSSP_R4_CORRECTED_FORMAL_PANEL_DATA_QUALITY_R1",
+  "sample_floor_projects": 500,
+  "skeleton_project_months": 21168,
+  "source_raw_snapshot_sha256": "ea2ffd5f86cfdd3d1681838521f74697754bce01854c0b78d4408c3fcbb8cf98",
+  "variable_missingness": {
+    "contributors_n": {
+      "missing": 0,
+      "missing_rate": 0.0,
+      "observed": 21168
+    },
+    "issues_new_n": {
+      "missing": 96,
+      "missing_rate": 0.004535,
+      "observed": 21072
+    },
+    "net_code_lines": {
+      "missing": 0,
+      "missing_rate": 0.0,
+      "observed": 21168
+    },
+    "open_age_med_days": {
+      "missing": 316,
+      "missing_rate": 0.014928,
+      "observed": 20852
+    },
+    "open_backlog_n": {
+      "missing": 144,
+      "missing_rate": 0.006803,
+      "observed": 21024
+    },
+    "res_med_days": {
+      "missing": 7343,
+      "missing_rate": 0.346892,
+      "observed": 13825
+    }
+  },
+  "zero_fill_counts": {
+    "backlog_count_from_missing_levels": 172,
+    "contributors": 7893,
+    "issues_new": 4811,
+    "net_code_lines_sparse_zero": 5748
+  }
+}

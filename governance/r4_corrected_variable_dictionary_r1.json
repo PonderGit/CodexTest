@@ -1,0 +1,47 @@
+{
+  "baseline_models_use": [
+    "ln_resolution",
+    "ln_open_age",
+    "asinh_backlog",
+    "ln_issues_new",
+    "ln_contributors"
+  ],
+  "platform": "GitHub",
+  "protocol": "OMOSSP_R4_CORRECTED_VARIABLE_DICTIONARY_R1",
+  "semantic_correction": "OpenDigger code_change_lines_sum = additions - deletions. It is not total code-change magnitude.",
+  "unit": "project-month",
+  "variables": {
+    "contributors_n": {
+      "role": "participation-breadth context",
+      "source": "contributors[month]",
+      "transform": "ln1p"
+    },
+    "issues_new_n": {
+      "role": "incoming issue-volume context",
+      "source": "issues_new[month]",
+      "transform": "ln1p"
+    },
+    "net_code_lines": {
+      "baseline_status": "excluded",
+      "role": "signed net code-size change only",
+      "source": "code_change_lines_sum[month]",
+      "transform": "asinh"
+    },
+    "open_age_med_days": {
+      "role": "unresolved-backlog age evidence",
+      "source": "issue_age.quantile_2",
+      "transform": "ln1p"
+    },
+    "open_backlog_n": {
+      "role": "unresolved backlog burden",
+      "source": "sum(issue_age.levels)",
+      "transform": "asinh"
+    },
+    "res_med_days": {
+      "role": "candidate completed-item timeliness",
+      "source": "issue_resolution_duration.quantile_2",
+      "transform": "ln1p"
+    }
+  },
+  "window": "2024-01..2025-12"
+}

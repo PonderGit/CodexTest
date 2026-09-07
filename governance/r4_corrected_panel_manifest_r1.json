@@ -1,0 +1,26 @@
+{
+  "inputs": {
+    "formal_frame_sha256": "2b612252e775c6b5b0051a78b262d90665f29b769b62fbb4aab38756f3b81d11",
+    "raw_snapshot_sha256": "ea2ffd5f86cfdd3d1681838521f74697754bce01854c0b78d4408c3fcbb8cf98",
+    "source_semantics_correction": "governance/omossp_r4_source_semantics_correction_addendum_r1.json"
+  },
+  "outputs": {
+    "data/r4_corrected/r4_corrected_project_month_panel.csv": {
+      "bytes": 3480343,
+      "sha256": "5cc29d08daf720a94a6eb9e3d59be4a6a499e2c5396811286ba1c3fc2b7a104c"
+    },
+    "data/r4_corrected/r4_corrected_project_month_panel.dta": {
+      "bytes": 3844763,
+      "sha256": "814eef9868630ac94c0d59f15733b894c39dff78785a81f535cbcbf0f00c8346"
+    },
+    "governance/r4_corrected_panel_data_quality_summary_r1.json": {
+      "bytes": 2916,
+      "sha256": "2d503561841457ce93e75dfffaa2e64f9ba6d070b7d9479366bf7dd3daae16b7"
+    },
+    "governance/r4_corrected_variable_dictionary_r1.json": {
+      "bytes": 1358,
+      "sha256": "8e1395acad7eceda6b6c21a1ae293c364c62d2cb6b989dc449177109e026b204"
+    }
+  },
+  "protocol": "OMOSSP_R4_CORRECTED_PANEL_MANIFEST_R1"
+}
