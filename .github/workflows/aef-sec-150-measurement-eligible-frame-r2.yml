@@ -1,0 +1,289 @@
+name: AEF SEC 150 Measurement-Eligible Frame R2
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-sec-150-measurement-eligible-frame-r2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild-frame:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+    steps:
+      - name: Validate protected SEC identification
+        shell: bash
+        run: |
+          if [ -z "$SEC_USER_AGENT" ]; then
+            echo 'SEC_USER_AGENT secret is missing; aborting before network access.' >&2
+            exit 2
+          fi
+
+      - name: Rebuild corrected frame, sample, and 2019-2025 metadata
+        shell: python
+        run: |
+          import csv, os, json, time, random, hashlib, urllib.request, pathlib, datetime, zipfile, io
+          from collections import defaultdict, Counter
+
+          UA=os.environ['SEC_USER_AGENT'].strip()
+          YEAR=2018
+          SEED=20260925
+          SAMPLE_N=150
+          EXCLUDED_SIC={'6189'}
+          EXPECTED_Q_HASHES={
+            1:'1c76fb8af1fd81935e02db2771849fa4bfb49e7344c5f2fadf8c1659fda24bb9',
+            2:'71ad669c60bdefa3a469f653fcf96ca1ea6fdf870ac239b82458edeaa861703a',
+            3:'3bcb79ffbd2a42b26d7ed666a7b3491b9f01265925a41908bf57f952cefd9b00',
+            4:'bfca373df69a64d3a2a5c408c1d01238f408b5a4aa33b2cac542d1af2f69ff69',
+          }
+          EXPECTED_FRAME_LOGICAL_HASH='c4839c7cb89485c68da1b3417cc45d5033f02a030a389e5751455f1806c3ea12'
+          EXPECTED_ORIGINAL_FRAME_N=6907
+          ROOT=pathlib.Path('aef_corrected_frame_r2')
+          ROOT.mkdir(exist_ok=True)
+
+          def sha_bytes(b):
+              return hashlib.sha256(b).hexdigest()
+
+          def stable_hash(obj):
+              return hashlib.sha256(json.dumps(obj,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode('utf-8')).hexdigest()
+
+          def norm_cik(x):
+              return str(x).strip().zfill(10)
+
+          def get_bytes(url, host, pace=0.5, retries=5):
+              last=None
+              for attempt in range(retries):
+                  time.sleep(pace if attempt==0 else min(12,2**attempt))
+                  req=urllib.request.Request(url,headers={'User-Agent':UA,'Accept-Encoding':'identity','Host':host})
+                  try:
+                      with urllib.request.urlopen(req,timeout=180) as r:
+                          status=getattr(r,'status',200); data=r.read()
+                      if not (200 <= status < 300):
+                          raise RuntimeError(f'HTTP {status}')
+                      low=data[:5000].lower()
+                      if b'undeclared automated tool' in low or b'rate threshold exceeded' in low:
+                          raise RuntimeError('SEC block page returned')
+                      return data,status
+                  except Exception as e:
+                      last=e
+              raise RuntimeError(f'GET failed after retries: {url}: {last}')
+
+          # S1: reconstruct the exact previously verified 2018 exact-10-K frame.
+          all_rows=[]; raw_index_prov=[]
+          for q in range(1,5):
+              url=f'https://www.sec.gov/Archives/edgar/full-index/2018/QTR{q}/master.idx'
+              b,status=get_bytes(url,'www.sec.gov',pace=0.7)
+              h=sha_bytes(b)
+              if h != EXPECTED_Q_HASHES[q]:
+                  raise RuntimeError(f'2018 QTR{q} master.idx hash drift: {h}')
+              raw_index_prov.append({'quarter':q,'url':url,'bytes':len(b),'sha256':h,'http_status':status})
+              start=False
+              for line in b.decode('latin-1').splitlines():
+                  if not start:
+                      if line.startswith('CIK|'): start=True
+                      continue
+                  if not line.strip(): continue
+                  s=line.strip()
+                  if s and set(s)=={'-'}: continue
+                  parts=line.split('|')
+                  if len(parts)!=5: raise RuntimeError(f'Unexpected master row: {line[:160]}')
+                  cik,company,form,filed,filename=parts
+                  all_rows.append({'cik':norm_cik(cik),'company_name':company.strip(),'form':form.strip(),'filed':filed.strip(),'filename':filename.strip()})
+
+          exact=[r for r in all_rows if r['form']=='10-K' and r['filed'].startswith('2018-')]
+          amends=[r for r in all_rows if r['form']=='10-K/A' and r['filed'].startswith('2018-')]
+          by=defaultdict(list); am=defaultdict(list)
+          for r in exact: by[r['cik']].append(r)
+          for r in amends: am[r['cik']].append(r)
+
+          frame=[]
+          for cik in sorted(by,key=int):
+              fs=sorted(by[cik],key=lambda x:(x['filed'],x['filename'])); can=fs[-1]
+              frame.append({
+                'cik':cik,'company_name':can['company_name'],'n_exact_10k_2018':len(fs),
+                'first_exact_10k_filed':fs[0]['filed'],'last_exact_10k_filed':fs[-1]['filed'],
+                'canonical_display_filed':can['filed'],'canonical_display_filename':can['filename'],
+                'n_10k_a_2018':len(am.get(cik,[]))
+              })
+
+          if len(frame) != EXPECTED_ORIGINAL_FRAME_N:
+              raise RuntimeError(f'Original frame row drift: {len(frame)}')
+          frame_hash=stable_hash(frame)
+          if frame_hash != EXPECTED_FRAME_LOGICAL_HASH:
+              raise RuntimeError(f'Original frame logical hash mismatch: {frame_hash}')
+
+          # S1/S2: SEC-recommended bulk submissions archive, one request, current SEC entity metadata.
+          bulk_url='https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip'
+          bulk_bytes,bulk_status=get_bytes(bulk_url,'www.sec.gov',pace=1.0)
+          bulk_sha=sha_bytes(bulk_bytes)
+          z=zipfile.ZipFile(io.BytesIO(bulk_bytes))
+          names=set(z.namelist())
+
+          def zip_member_candidates(cik):
+              base=f'CIK{cik}.json'
+              return [base, f'submissions/{base}']
+
+          def load_top(cik):
+              for name in zip_member_candidates(cik):
+                  if name in names:
+                      return json.loads(z.read(name)), name
+              return None, None
+
+          joined=[]
+          missing_top=[]
+          missing_sic=[]
+          for r in frame:
+              data,member=load_top(r['cik'])
+              if data is None:
+                  missing_top.append(r['cik'])
+                  continue
+              sic=str(data.get('sic','') or '').strip()
+              if not sic:
+                  missing_sic.append(r['cik'])
+              joined.append({
+                  **r,
+                  'sec_current_name':data.get('name',''),
+                  'sec_current_sic':sic,
+                  'sec_current_sic_description':data.get('sicDescription',''),
+                  'sec_current_entity_type':data.get('entityType',''),
+                  'sec_bulk_member':member,
+                  'measurement_eligible_excluding_sic6189':int(sic not in EXCLUDED_SIC and bool(sic)),
+              })
+
+          if missing_top:
+              raise RuntimeError(f'SEC bulk submissions missing top-level JSON for {len(missing_top)} frame CIKs; first={missing_top[:20]}')
+          if missing_sic:
+              raise RuntimeError(f'SEC bulk submissions missing SIC for {len(missing_sic)} frame CIKs; first={missing_sic[:20]}')
+          if len(joined) != len(frame):
+              raise RuntimeError('SIC join row count mismatch')
+
+          excluded=[r for r in joined if r['sec_current_sic'] in EXCLUDED_SIC]
+          eligible=[r for r in joined if r['measurement_eligible_excluding_sic6189']==1]
+          if not excluded:
+              raise RuntimeError('No SIC 6189 rows found; expected positive exclusion count')
+          if len(eligible) + len(excluded) != len(joined):
+              raise RuntimeError('Unexpected eligibility partition')
+
+          # S3: redraw from the corrected eligible frame with the same seed and the same random.sample design.
+          rng=random.Random(SEED)
+          selected=set(rng.sample([r['cik'] for r in eligible], SAMPLE_N))
+          sample=[r for r in eligible if r['cik'] in selected]
+          if len(sample)!=SAMPLE_N or len({r['cik'] for r in sample})!=SAMPLE_N:
+              raise RuntimeError('Corrected sample structure failure')
+          sample_hash=stable_hash(sample)
+
+          def write_csv(path,rows):
+              if not rows: raise RuntimeError(f'No rows for {path}')
+              with path.open('w',newline='',encoding='utf-8') as f:
+                  w=csv.DictWriter(f,fieldnames=list(rows[0].keys())); w.writeheader(); w.writerows(rows)
+
+          write_csv(ROOT/'SEC_2018_10K_Frame_With_SEC_SIC_R4.csv',joined)
+          write_csv(ROOT/'SEC_2018_10K_MeasurementEligible_CIK_Frame_R4.csv',eligible)
+          write_csv(ROOT/'SEC_2018_10K_Excluded_SIC6189_R4.csv',excluded)
+          write_csv(ROOT/'SEC_2018_10K_Prevalence_Sample_150_R4.csv',sample)
+
+          # S3/S4 dependency: build exact 2019-2025 metadata for the corrected sample.
+          records=[]; submission_sources=[]
+          for row in sample:
+              cik=row['cik']
+              data,member=load_top(cik)
+              if data is None: raise RuntimeError(f'Lost top submission JSON: {cik}')
+              chunks=[data.get('filings',{}).get('recent',{})]
+              submission_sources.append({'cik':cik,'source':'bulk_top','member':member,'sha256':sha_bytes(z.read(member))})
+              for hist in data.get('filings',{}).get('files',[]) or []:
+                  name=hist.get('name')
+                  if not name: continue
+                  member_name = name if name in names else (f'submissions/{name}' if f'submissions/{name}' in names else None)
+                  if member_name:
+                      hb=z.read(member_name)
+                      chunks.append(json.loads(hb))
+                      submission_sources.append({'cik':cik,'source':'bulk_history','member':member_name,'sha256':sha_bytes(hb)})
+                  else:
+                      hurl=f'https://data.sec.gov/submissions/{name}'
+                      hb,_=get_bytes(hurl,'data.sec.gov',pace=0.25)
+                      chunks.append(json.loads(hb))
+                      submission_sources.append({'cik':cik,'source':'live_history','url':hurl,'sha256':sha_bytes(hb)})
+
+              seen=set(); company=data.get('name','')
+              for recent in chunks:
+                  accs=recent.get('accessionNumber',[]) or []
+                  for i,acc in enumerate(accs):
+                      if acc in seen: continue
+                      seen.add(acc)
+                      def at(k,d=''):
+                          arr=recent.get(k,[]) or []
+                          return arr[i] if i < len(arr) else d
+                      form=at('form'); filed=at('filingDate')
+                      if form not in {'10-K','10-K/A','10-Q','10-Q/A'}: continue
+                      if not filed or not ('2019-01-01' <= filed <= '2025-12-31'): continue
+                      primary=at('primaryDocument')
+                      accnodash=str(acc).replace('-',''); cikint=str(int(cik))
+                      primary_url=f'https://www.sec.gov/Archives/edgar/data/{cikint}/{accnodash}/{primary}' if primary else ''
+                      records.append({
+                        'cik':cik,'company_name':company,'sec_current_sic':row['sec_current_sic'],
+                        'accession':acc,'filing_date':filed,'report_date':at('reportDate'),
+                        'acceptance_datetime':at('acceptanceDateTime'),'form':form,'primary_document':primary,
+                        'primary_doc_description':at('primaryDocDescription'),'file_number':at('fileNumber'),
+                        'film_number':at('filmNumber'),'items':at('items'),'size':at('size'),
+                        'is_xbrl':at('isXBRL'),'is_inline_xbrl':at('isInlineXBRL'),
+                        'primary_url':primary_url,
+                        'index_url':f'https://www.sec.gov/Archives/edgar/data/{cikint}/{accnodash}/{acc}-index.html'
+                      })
+
+          records.sort(key=lambda r:(int(r['cik']),r['filing_date'],r['form'],r['accession']))
+          write_csv(ROOT/'SEC_150_MultiYear_Filing_Metadata_2019_2025_R2.csv',records)
+
+          exact_primary=[r for r in records if r['form'] in {'10-K','10-Q'}]
+          audit={
+            'created_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),
+            'commit_sha':os.environ.get('GITHUB_SHA'),
+            'authority_correction':'exclude SEC SIC 6189 Asset-Backed Securities for current measurement route',
+            'seed':SEED,'sample_n':SAMPLE_N,
+            'original_frame_n':len(frame),
+            'original_frame_logical_hash':frame_hash,
+            'sec_bulk_submissions_url':bulk_url,
+            'sec_bulk_submissions_http_status':bulk_status,
+            'sec_bulk_submissions_bytes':len(bulk_bytes),
+            'sec_bulk_submissions_sha256':bulk_sha,
+            'sic_join_coverage_n':len(joined),
+            'sic_missing_n':len(missing_sic),
+            'excluded_sic6189_n':len(excluded),
+            'corrected_eligible_frame_n':len(eligible),
+            'corrected_eligible_frame_logical_hash':stable_hash(eligible),
+            'corrected_sample_logical_hash':sample_hash,
+            'metadata_rows_all_forms':len(records),
+            'metadata_rows_exact_primary_forms':len(exact_primary),
+            'form_counts':dict(Counter(r['form'] for r in records)),
+            'year_counts_exact':{str(y):sum(r['form'] in {'10-K','10-Q'} and r['filing_date'].startswith(str(y)) for r in records) for y in range(2019,2026)},
+            'issuers_with_any_exact_2019_2025':len(set(r['cik'] for r in exact_primary)),
+            'excluded_sic_codes':sorted(EXCLUDED_SIC),
+            'sampling_rule':'random.Random(20260925).sample(sorted corrected eligible CIK list, 150)',
+            'raw_2018_index_provenance':raw_index_prov,
+            'submission_source_count':len(submission_sources),
+          }
+          (ROOT/'SEC_2018_10K_Frame_Audit_R4.json').write_text(json.dumps(audit,indent=2),encoding='utf-8')
+          (ROOT/'SEC_150_MultiYear_Metadata_Provenance_R2.json').write_text(json.dumps({
+            **audit,
+            'submission_sources':submission_sources,
+          },indent=2),encoding='utf-8')
+
+          print(json.dumps({k:audit[k] for k in [
+            'original_frame_n','sic_join_coverage_n','sic_missing_n','excluded_sic6189_n',
+            'corrected_eligible_frame_n','corrected_sample_logical_hash',
+            'metadata_rows_exact_primary_forms','issuers_with_any_exact_2019_2025','year_counts_exact'
+          ]},indent=2))
+
+      - name: Upload corrected frame and metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-measurement-eligible-frame-r2-${{ github.run_id }}
+          path: aef_corrected_frame_r2/
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 6
