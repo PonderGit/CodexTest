@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   rebuild-frame:
@@ -16,6 +16,9 @@ jobs:
     env:
       SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Validate protected SEC identification
         shell: bash
         run: |
@@ -278,6 +281,22 @@ jobs:
             'corrected_eligible_frame_n','corrected_sample_logical_hash',
             'metadata_rows_exact_primary_forms','issuers_with_any_exact_2019_2025','year_counts_exact'
           ]},indent=2))
+
+      - name: Commit compact audit outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="aef_workflow_outputs/measurement_eligible_frame_r2"
+          mkdir -p "$DEST"
+          cp aef_corrected_frame_r2/SEC_2018_10K_Frame_Audit_R4.json "$DEST/"
+          cp aef_corrected_frame_r2/SEC_2018_10K_Prevalence_Sample_150_R4.csv "$DEST/"
+          cp aef_corrected_frame_r2/SEC_2018_10K_Excluded_SIC6189_R4.csv "$DEST/"
+          cp aef_corrected_frame_r2/SEC_150_MultiYear_Metadata_Provenance_R2.json "$DEST/"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DEST"
+          git commit -m "AEF persist corrected SIC6189-excluded frame audit outputs" || exit 0
+          git push
 
       - name: Upload corrected frame and metadata
         uses: actions/upload-artifact@v4
