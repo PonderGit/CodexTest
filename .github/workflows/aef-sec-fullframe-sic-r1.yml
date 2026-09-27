@@ -1,0 +1,208 @@
+name: AEF SEC Full-Frame SIC R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-sec-fullframe-sic-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-sic-map:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+    steps:
+      - name: Validate protected SEC identification
+        shell: bash
+        run: |
+          if [ -z "$SEC_USER_AGENT" ]; then
+            echo 'SEC_USER_AGENT secret is missing; aborting before network access.' >&2
+            exit 2
+          fi
+
+      - name: Rebuild verified 2018 exact-10K frame and join official SEC bulk SIC metadata
+        shell: python
+        run: |
+          import csv, hashlib, json, os, pathlib, time, urllib.request, zipfile
+          from collections import defaultdict
+          from datetime import datetime, timezone
+
+          YEAR = 2018
+          EXPECTED_FRAME_N = 6907
+          EXPECTED_FRAME_HASH = 'c4839c7cb89485c68da1b3417cc45d5033f02a030a389e5751455f1806c3ea12'
+          ua = os.environ['SEC_USER_AGENT'].strip()
+          out = pathlib.Path('aef_stage1_sic')
+          out.mkdir(exist_ok=True)
+
+          def norm(cik):
+              s = str(cik).strip()
+              if not s.isdigit():
+                  raise ValueError(cik)
+              return s.zfill(10)
+
+          def fetch(url, timeout=120):
+              req = urllib.request.Request(url, headers={
+                  'User-Agent': ua,
+                  'Accept-Encoding': 'identity',
+              })
+              with urllib.request.urlopen(req, timeout=timeout) as resp:
+                  status = getattr(resp, 'status', 200)
+                  if not (200 <= status < 300):
+                      raise RuntimeError(f'HTTP {status} for {url}')
+                  return resp.read(), {
+                      'status': status,
+                      'content_length': resp.headers.get('Content-Length'),
+                      'last_modified': resp.headers.get('Last-Modified'),
+                      'etag': resp.headers.get('ETag'),
+                  }
+
+          def parse_master(text):
+              rows=[]; start=False
+              for line in text.splitlines():
+                  if not start:
+                      if line.startswith('CIK|'):
+                          start=True
+                      continue
+                  if not line.strip():
+                      continue
+                  stripped=line.strip()
+                  if stripped and set(stripped)=={'-'}:
+                      continue
+                  parts=line.split('|')
+                  if len(parts)!=5:
+                      raise RuntimeError('Unexpected master row: '+line[:160])
+                  cik, company, form, filed, filename=parts
+                  rows.append({'cik':norm(cik),'company_name':company.strip(),'form':form.strip(),'filed':filed.strip(),'filename':filename.strip()})
+              if not start:
+                  raise RuntimeError('master.idx header not found')
+              return rows
+
+          def stable_json_hash(obj):
+              b=json.dumps(obj,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode('utf-8')
+              return hashlib.sha256(b).hexdigest()
+
+          # Rebuild the exact historical descriptive frame from official SEC indexes.
+          all_rows=[]; index_prov=[]
+          for q in range(1,5):
+              url=f'https://www.sec.gov/Archives/edgar/full-index/2018/QTR{q}/master.idx'
+              data,h=fetch(url,90)
+              rows=parse_master(data.decode('latin-1'))
+              all_rows.extend(rows)
+              index_prov.append({'quarter':q,'url':url,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),**h})
+              time.sleep(0.25)
+
+          exact=[r for r in all_rows if r['form']=='10-K' and r['filed'].startswith('2018-')]
+          amendments=[r for r in all_rows if r['form']=='10-K/A' and r['filed'].startswith('2018-')]
+          by=defaultdict(list); aby=defaultdict(list)
+          for r in exact: by[r['cik']].append(r)
+          for r in amendments: aby[r['cik']].append(r)
+          frame=[]
+          for cik in sorted(by,key=int):
+              fs=sorted(by[cik],key=lambda x:(x['filed'],x['filename']))
+              canonical=fs[-1]
+              frame.append({
+                  'cik':cik,'company_name':canonical['company_name'],'n_exact_10k_2018':len(fs),
+                  'first_exact_10k_filed':fs[0]['filed'],'last_exact_10k_filed':fs[-1]['filed'],
+                  'canonical_display_filed':canonical['filed'],'canonical_display_filename':canonical['filename'],
+                  'n_10k_a_2018':len(aby.get(cik,[])),
+              })
+          frame_hash=stable_json_hash(frame)
+          assert len(frame)==EXPECTED_FRAME_N, (len(frame),EXPECTED_FRAME_N)
+          assert frame_hash==EXPECTED_FRAME_HASH, (frame_hash,EXPECTED_FRAME_HASH)
+
+          # SEC documents this as the official nightly bulk archive for the Submissions API.
+          bulk_url='https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip'
+          req=urllib.request.Request(bulk_url,headers={'User-Agent':ua,'Accept-Encoding':'identity'})
+          bulk_path=out/'submissions.zip'
+          bulk_sha=hashlib.sha256(); bulk_bytes=0
+          with urllib.request.urlopen(req,timeout=180) as resp, bulk_path.open('wb') as f:
+              bulk_headers={
+                  'status':getattr(resp,'status',200),
+                  'content_length':resp.headers.get('Content-Length'),
+                  'last_modified':resp.headers.get('Last-Modified'),
+                  'etag':resp.headers.get('ETag'),
+              }
+              while True:
+                  chunk=resp.read(1024*1024)
+                  if not chunk: break
+                  f.write(chunk); bulk_sha.update(chunk); bulk_bytes += len(chunk)
+
+          with zipfile.ZipFile(bulk_path) as z:
+              bad=z.testzip()
+              if bad is not None:
+                  raise RuntimeError(f'Corrupt submissions.zip member: {bad}')
+              members={pathlib.PurePosixPath(n).name:n for n in z.namelist() if pathlib.PurePosixPath(n).name.startswith('CIK') and n.endswith('.json')}
+              output=[]
+              for r in frame:
+                  base=f"CIK{r['cik']}.json"
+                  member=members.get(base)
+                  if not member:
+                      output.append({**r,'submission_json_present':0,'sic':'','sic_description':'','entity_type':'','sec_name':'','category':'','state_of_incorporation':'','fiscal_year_end':''})
+                      continue
+                  obj=json.loads(z.read(member).decode('utf-8'))
+                  output.append({
+                      **r,
+                      'submission_json_present':1,
+                      'sic':str(obj.get('sic','') or ''),
+                      'sic_description':obj.get('sicDescription','') or '',
+                      'entity_type':obj.get('entityType','') or '',
+                      'sec_name':obj.get('name','') or '',
+                      'category':obj.get('category','') or '',
+                      'state_of_incorporation':obj.get('stateOfIncorporation','') or '',
+                      'fiscal_year_end':obj.get('fiscalYearEnd','') or '',
+                  })
+
+          fields=list(output[0].keys())
+          csv_path=out/'SEC_2018_Exact10K_Frame_SIC_Map_R1.csv'
+          with csv_path.open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(output)
+
+          missing_json=sum(x['submission_json_present']==0 for x in output)
+          missing_sic=sum(x['submission_json_present']==1 and not x['sic'] for x in output)
+          sic6189=[x for x in output if x['sic']=='6189']
+          sec_name_mismatch=sum(bool(x['sec_name']) and x['sec_name'].strip().upper()!=x['company_name'].strip().upper() for x in output)
+          summary={
+              'stage':'S1_FULL_FRAME_SEC_SIC_METADATA',
+              'retrieved_at_utc':datetime.now(timezone.utc).isoformat(),
+              'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),
+              'commit_sha':os.environ.get('GITHUB_SHA'),
+              'frame_n':len(frame),
+              'frame_logical_hash':frame_hash,
+              'expected_frame_logical_hash':EXPECTED_FRAME_HASH,
+              'frame_hash_match':frame_hash==EXPECTED_FRAME_HASH,
+              'submission_json_present_n':sum(x['submission_json_present']==1 for x in output),
+              'missing_submission_json_n':missing_json,
+              'missing_sic_n':missing_sic,
+              'sic6189_n':len(sic6189),
+              'distinct_sic_n':len({x['sic'] for x in output if x['sic']}),
+              'sec_name_mismatch_n':sec_name_mismatch,
+              'bulk_url':bulk_url,
+              'bulk_bytes':bulk_bytes,
+              'bulk_sha256':bulk_sha.hexdigest(),
+              'bulk_headers':bulk_headers,
+              'index_provenance':index_prov,
+              'output_csv_sha256':hashlib.sha256(csv_path.read_bytes()).hexdigest(),
+          }
+          (out/'SEC_2018_Exact10K_Frame_SIC_Map_Summary_R1.json').write_text(json.dumps(summary,indent=2,ensure_ascii=False),encoding='utf-8')
+          (out/'SEC_2018_SIC6189_List_R1.csv').write_text('cik,company_name,sic,sic_description,entity_type\n' + '\n'.join(
+              ','.join('"'+str(v).replace('"','""')+'"' for v in [x['cik'],x['company_name'],x['sic'],x['sic_description'],x['entity_type']]) for x in sic6189
+          ) + '\n', encoding='utf-8')
+          print(json.dumps(summary,indent=2))
+          # Bulk ZIP is intentionally not uploaded as an artifact; the SHA and response provenance are retained.
+          bulk_path.unlink()
+
+      - name: Upload SIC map and audit summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-fullframe-sic-r1-${{ github.run_id }}
+          path: |
+            aef_stage1_sic/SEC_2018_Exact10K_Frame_SIC_Map_R1.csv
+            aef_stage1_sic/SEC_2018_Exact10K_Frame_SIC_Map_Summary_R1.json
+            aef_stage1_sic/SEC_2018_SIC6189_List_R1.csv
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 6
