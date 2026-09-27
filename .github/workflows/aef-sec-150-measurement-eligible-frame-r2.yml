@@ -33,7 +33,7 @@ jobs:
       - name: Rebuild corrected frame, sample, and 2019-2025 metadata
         shell: python
         run: |
-          import csv, os, json, time, random, hashlib, urllib.request, pathlib, datetime, zipfile, io
+          import csv, os, json, time, random, hashlib, urllib.request, pathlib, datetime, zipfile, io, re
           from collections import defaultdict, Counter
 
           UA=os.environ['SEC_USER_AGENT'].strip()
@@ -154,21 +154,42 @@ jobs:
               joined.append({
                   **r,
                   'sec_current_name':data.get('name',''),
-                  'sec_current_sic':sic,
-                  'sec_current_sic_description':data.get('sicDescription',''),
+                  'sec_sic_for_measurement_eligibility':sic,
+                  'sec_sic_description':data.get('sicDescription',''),
                   'sec_current_entity_type':data.get('entityType',''),
                   'sec_bulk_member':member,
+                  'sic_measurement_source':'SEC_SUBMISSIONS_BULK_CURRENT' if sic else '',
                   'measurement_eligible_excluding_sic6189':int(sic not in EXCLUDED_SIC and bool(sic)),
               })
 
           if missing_top:
               raise RuntimeError(f'SEC bulk submissions missing top-level JSON for {len(missing_top)} frame CIKs; first={missing_top[:20]}')
+
+          # Official filing-time fallback only for bulk records with blank SIC.
           if missing_sic:
-              raise RuntimeError(f'SEC bulk submissions missing SIC for {len(missing_sic)} frame CIKs; first={missing_sic[:20]}')
+              missing_set=set(missing_sic)
+              for j in joined:
+                  if j['cik'] not in missing_set:
+                      continue
+                  hdr_url='https://www.sec.gov/Archives/' + j['canonical_display_filename'].lstrip('/')
+                  hb,_=get_bytes(hdr_url,'www.sec.gov',pace=0.35)
+                  txt=hb[:250000].decode('latin-1','ignore')
+                  m=re.search(r'(?im)^STANDARD INDUSTRIAL CLASSIFICATION:\\s*.*?\\[(\\d{4})\\]',txt)
+                  if not m:
+                      m=re.search(r'(?i)<ASSIGNED-SIC>\\s*(\\d{4})',txt)
+                  if m:
+                      sic=m.group(1)
+                      j['sec_sic_for_measurement_eligibility']=sic
+                      j['sic_measurement_source']='2018_10K_SUBMISSION_HEADER_FALLBACK'
+                      j['measurement_eligible_excluding_sic6189']=int(sic not in EXCLUDED_SIC)
+              missing_sic=[j['cik'] for j in joined if not j['sec_sic_for_measurement_eligibility']]
+
+          if missing_sic:
+              raise RuntimeError(f'SIC still missing after official 2018 10-K header fallback for {len(missing_sic)} frame CIKs; first={missing_sic[:20]}')
           if len(joined) != len(frame):
               raise RuntimeError('SIC join row count mismatch')
 
-          excluded=[r for r in joined if r['sec_current_sic'] in EXCLUDED_SIC]
+          excluded=[r for r in joined if r['sec_sic_for_measurement_eligibility'] in EXCLUDED_SIC]
           eligible=[r for r in joined if r['measurement_eligible_excluding_sic6189']==1]
           if not excluded:
               raise RuntimeError('No SIC 6189 rows found; expected positive exclusion count')
@@ -231,7 +252,7 @@ jobs:
                       accnodash=str(acc).replace('-',''); cikint=str(int(cik))
                       primary_url=f'https://www.sec.gov/Archives/edgar/data/{cikint}/{accnodash}/{primary}' if primary else ''
                       records.append({
-                        'cik':cik,'company_name':company,'sec_current_sic':row['sec_current_sic'],
+                        'cik':cik,'company_name':company,'sec_sic_for_measurement_eligibility':row['sec_sic_for_measurement_eligibility'],
                         'accession':acc,'filing_date':filed,'report_date':at('reportDate'),
                         'acceptance_datetime':at('acceptanceDateTime'),'form':form,'primary_document':primary,
                         'primary_doc_description':at('primaryDocDescription'),'file_number':at('fileNumber'),
