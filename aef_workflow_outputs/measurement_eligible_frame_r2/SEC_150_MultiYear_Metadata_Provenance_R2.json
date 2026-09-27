@@ -1,0 +1,1451 @@
+{
+  "created_at_utc": "2026-09-27T13:30:36.418373+00:00",
+  "workflow_run_id": "36322533553",
+  "commit_sha": "2b425c38c7b3e2bcf132cdd59fcb9fd35e6f4f82",
+  "authority_correction": "exclude SEC SIC 6189 Asset-Backed Securities for current measurement route",
+  "seed": 20260925,
+  "sample_n": 150,
+  "original_frame_n": 6907,
+  "original_frame_logical_hash": "c4839c7cb89485c68da1b3417cc45d5033f02a030a389e5751455f1806c3ea12",
+  "sec_bulk_submissions_url": "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip",
+  "sec_bulk_submissions_http_status": 200,
+  "sec_bulk_submissions_bytes": 1565742655,
+  "sec_bulk_submissions_sha256": "9fc1f0536567b9ee8aaa59346b00d58a59774d5f2722187fa199a0812a0456f3",
+  "sic_join_coverage_n": 6907,
+  "sic_missing_n": 91,
+  "blank_sic_verified_non_abs_n": 91,
+  "measurement_eligibility_verified_n": 6907,
+  "excluded_sic6189_n": 652,
+  "corrected_eligible_frame_n": 6255,
+  "corrected_eligible_frame_logical_hash": "75f9fce9c9d26f7ae32f3b4757c78e5643f54bc897b7bab488ed4ceb1e32b027",
+  "corrected_sample_logical_hash": "654798ac74cc2df597b6daf89fe11b2422ea6909f796362d57a533c3c71df2e1",
+  "metadata_rows_all_forms": 3181,
+  "metadata_rows_exact_primary_forms": 3039,
+  "form_counts": {
+    "10-Q": 2272,
+    "10-K": 767,
+    "10-K/A": 96,
+    "10-Q/A": 46
+  },
+  "year_counts_exact": {
+    "2019": 535,
+    "2020": 498,
+    "2021": 492,
+    "2022": 430,
+    "2023": 400,
+    "2024": 355,
+    "2025": 329
+  },
+  "issuers_with_any_exact_2019_2025": 137,
+  "excluded_sic_codes": [
+    "6189"
+  ],
+  "sampling_rule": "random.Random(20260925).sample(sorted corrected eligible CIK list, 150)",
+  "raw_2018_index_provenance": [
+    {
+      "quarter": 1,
+      "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR1/master.idx",
+      "bytes": 27208905,
+      "sha256": "1c76fb8af1fd81935e02db2771849fa4bfb49e7344c5f2fadf8c1659fda24bb9",
+      "http_status": 200
+    },
+    {
+      "quarter": 2,
+      "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR2/master.idx",
+      "bytes": 22254945,
+      "sha256": "71ad669c60bdefa3a469f653fcf96ca1ea6fdf870ac239b82458edeaa861703a",
+      "http_status": 200
+    },
+    {
+      "quarter": 3,
+      "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR3/master.idx",
+      "bytes": 17550854,
+      "sha256": "3bcb79ffbd2a42b26d7ed666a7b3491b9f01265925a41908bf57f952cefd9b00",
+      "http_status": 200
+    },
+    {
+      "quarter": 4,
+      "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR4/master.idx",
+      "bytes": 17974263,
+      "sha256": "bfca373df69a64d3a2a5c408c1d01238f408b5a4aa33b2cac542d1af2f69ff69",
+      "http_status": 200
+    }
+  ],
+  "submission_source_count": 229,
+  "submission_sources": [
+    {
+      "cik": "0000006845",
+      "source": "bulk_top",
+      "member": "CIK0000006845.json",
+      "sha256": "ded26e93014b10f7ab867ac9aa37b11d538692ab6c643c0e8ea575beff8a16cf"
+    },
+    {
+      "cik": "0000006845",
+      "source": "bulk_history",
+      "member": "CIK0000006845-submissions-001.json",
+      "sha256": "a3640cf8df8effb7e1bb60a7a581f6607d3c8699df2f42284542d1e839a2b4ab"
+    },
+    {
+      "cik": "0000009984",
+      "source": "bulk_top",
+      "member": "CIK0000009984.json",
+      "sha256": "4d8ee99d644cf35da3c6bb10c741e8e8429f374c7e6fc329ec1cfb7466ce430d"
+    },
+    {
+      "cik": "0000009984",
+      "source": "bulk_history",
+      "member": "CIK0000009984-submissions-001.json",
+      "sha256": "9ac53fbd019c6668d023a4507809601f02900ffe62d05397aa48d47f4ec26532"
+    },
+    {
+      "cik": "0000012040",
+      "source": "bulk_top",
+      "member": "CIK0000012040.json",
+      "sha256": "b9b3a1aed5fe5e655c50b42a8c77263f8b2bd7b2178b19990d2c83daebdaea89"
+    },
+    {
+      "cik": "0000039899",
+      "source": "bulk_top",
+      "member": "CIK0000039899.json",
+      "sha256": "756a50bc8711363e8211c9ce30b61cb527b3f965b0fa8ff86e2e3a36c67ee9e4"
+    },
+    {
+      "cik": "0000039899",
+      "source": "bulk_history",
+      "member": "CIK0000039899-submissions-001.json",
+      "sha256": "1d949566739029937f70928f80215a12fc093436c9e074fe7af8617da2ccd80b"
+    },
+    {
+      "cik": "0000040730",
+      "source": "bulk_top",
+      "member": "CIK0000040730.json",
+      "sha256": "6f55d8f976cbfbe692bd134ba34f28fa2a576e6bb18b6e6dc072a532ae86e2d3"
+    },
+    {
+      "cik": "0000040730",
+      "source": "bulk_history",
+      "member": "CIK0000040730-submissions-001.json",
+      "sha256": "ac0d3edc4784c349725877af5637f126aae844488e634cea361597f85dc87ef1"
+    },
+    {
+      "cik": "0000054381",
+      "source": "bulk_top",
+      "member": "CIK0000054381.json",
+      "sha256": "5ed679da3ff19898bef51197bd177fb0a93363122203f415e01e3420cb60bfcf"
+    },
+    {
+      "cik": "0000054381",
+      "source": "bulk_history",
+      "member": "CIK0000054381-submissions-001.json",
+      "sha256": "34c4860c0102a722fd4108c9cdbe6444cf8f0331dbe582340a2eb803d4b86c7c"
+    },
+    {
+      "cik": "0000057725",
+      "source": "bulk_top",
+      "member": "CIK0000057725.json",
+      "sha256": "dd8a97046d4b96bc6cd222f2bc417613e3d930c706de0a9c29004e6784e5314c"
+    },
+    {
+      "cik": "0000057725",
+      "source": "bulk_history",
+      "member": "CIK0000057725-submissions-001.json",
+      "sha256": "5da68b4e842aff8bcd2a78f7bb146dac602f70ec9d1caa5634d52fee7fc9bafe"
+    },
+    {
+      "cik": "0000071508",
+      "source": "bulk_top",
+      "member": "CIK0000071508.json",
+      "sha256": "9e35011157970469e830541446cf169fee124ea7a1e2c37633dd6ea832494435"
+    },
+    {
+      "cik": "0000071557",
+      "source": "bulk_top",
+      "member": "CIK0000071557.json",
+      "sha256": "c7d61a1adc30a3075134a13abe4fa1c1493ee21966e9e808875b8e827254c87a"
+    },
+    {
+      "cik": "0000074208",
+      "source": "bulk_top",
+      "member": "CIK0000074208.json",
+      "sha256": "5697dc7190bfd3e0c01e2eabf37d6efa1eec0343a1653221ff8be2ec7abdfb6d"
+    },
+    {
+      "cik": "0000074208",
+      "source": "bulk_history",
+      "member": "CIK0000074208-submissions-001.json",
+      "sha256": "d5a7a35b475115e14dcf433508d0317559eec50372dfd42092e2c4a89da9ebbe"
+    },
+    {
+      "cik": "0000105770",
+      "source": "bulk_top",
+      "member": "CIK0000105770.json",
+      "sha256": "c288f3f0886db56a2ebd237a6306ac81a69efc6eebbdef6e4ecf8e3bb7ff7885"
+    },
+    {
+      "cik": "0000105770",
+      "source": "bulk_history",
+      "member": "CIK0000105770-submissions-001.json",
+      "sha256": "8940a21c5789c34a9d76e9319f095a3347131cc76829c1c2262ef22838f09de0"
+    },
+    {
+      "cik": "0000105770",
+      "source": "bulk_history",
+      "member": "CIK0000105770-submissions-002.json",
+      "sha256": "09bcd8c1fe7aa385f39700940993e3d91ff509f3d6d0f3df92dad17d5961ccff"
+    },
+    {
+      "cik": "0000106455",
+      "source": "bulk_top",
+      "member": "CIK0000106455.json",
+      "sha256": "5323487b4ac8a3d99add60aaa4475cba6ceb37a8db2f0d3967dbf5597575bb5b"
+    },
+    {
+      "cik": "0000106455",
+      "source": "bulk_history",
+      "member": "CIK0000106455-submissions-001.json",
+      "sha256": "771fe3573b98edbad02a722e7fd88165390b1d1608956a47532f1298ae101abe"
+    },
+    {
+      "cik": "0000278166",
+      "source": "bulk_top",
+      "member": "CIK0000278166.json",
+      "sha256": "5c04a922280842bf01dab194f61b2b12a0ff7f3acdcbfb1538c47c0726a4f0a1"
+    },
+    {
+      "cik": "0000278166",
+      "source": "bulk_history",
+      "member": "CIK0000278166-submissions-001.json",
+      "sha256": "838a6bd20f7b9d645ee3f1371b366e610cad444cf30306958282a41ba1b00940"
+    },
+    {
+      "cik": "0000310826",
+      "source": "bulk_top",
+      "member": "CIK0000310826.json",
+      "sha256": "64a6d19c5e447a8c98bd125cfef2ca07e946e19f23b475f23016a8dd918bf0a9"
+    },
+    {
+      "cik": "0000318306",
+      "source": "bulk_top",
+      "member": "CIK0000318306.json",
+      "sha256": "aacd85057cae6f73af1be73b3988b44e0d6268f82b1e71b69130925107abe614"
+    },
+    {
+      "cik": "0000318306",
+      "source": "bulk_history",
+      "member": "CIK0000318306-submissions-001.json",
+      "sha256": "abcc3de3bedefbbdc0823072e740c8f65f841aa3c6f6a7acb5880f3994ab3d98"
+    },
+    {
+      "cik": "0000722313",
+      "source": "bulk_top",
+      "member": "CIK0000722313.json",
+      "sha256": "e5085f0fd97f3e44e59a7a40ba4c86b13e0cc2ba31991a9cdb2c2a7dd181cce1"
+    },
+    {
+      "cik": "0000722723",
+      "source": "bulk_top",
+      "member": "CIK0000722723.json",
+      "sha256": "c8646cff7fbc0fb030b6611fcbece28b27366a5e6fde07cd922fb7c21c4b3056"
+    },
+    {
+      "cik": "0000722723",
+      "source": "bulk_history",
+      "member": "CIK0000722723-submissions-001.json",
+      "sha256": "f3c55103efe8ad26b320121628861480422d8f54eb025f8a6e54bb06d193eaa5"
+    },
+    {
+      "cik": "0000723733",
+      "source": "bulk_top",
+      "member": "CIK0000723733.json",
+      "sha256": "d4fda8336f129795431aa2edaad6fb891bc82ec20e0151b6aa8904028eaea01e"
+    },
+    {
+      "cik": "0000732712",
+      "source": "bulk_top",
+      "member": "CIK0000732712.json",
+      "sha256": "13c6078f0c2edf6fac8584aa832699acbe8384409a6ce8b21b13fc86c2e0b6e9"
+    },
+    {
+      "cik": "0000732712",
+      "source": "bulk_history",
+      "member": "CIK0000732712-submissions-001.json",
+      "sha256": "a02ac55ae746f66f261d03b9df13e0237c575c270a23c0387edfba6a6059eb4e"
+    },
+    {
+      "cik": "0000732712",
+      "source": "bulk_history",
+      "member": "CIK0000732712-submissions-002.json",
+      "sha256": "c03c71f37196ee322200cfee844d147842a32b1930b023780ec6598e4285d0e1"
+    },
+    {
+      "cik": "0000732712",
+      "source": "bulk_history",
+      "member": "CIK0000732712-submissions-003.json",
+      "sha256": "163fa5936e008cdbdabba9577534dd359d541f96e6ddc6168f81c491f3ec0eba"
+    },
+    {
+      "cik": "0000732712",
+      "source": "bulk_history",
+      "member": "CIK0000732712-submissions-004.json",
+      "sha256": "1306aa0c5569b1fd1d8ab4350856010bb977dac8b4de58ca04c5136fbef873ae"
+    },
+    {
+      "cik": "0000732712",
+      "source": "bulk_history",
+      "member": "CIK0000732712-submissions-005.json",
+      "sha256": "2b4f4a45ea50c56dc4e7d05bad2b04cbf6344f4cb7ecce590ed98eb38ff747e7"
+    },
+    {
+      "cik": "0000737207",
+      "source": "bulk_top",
+      "member": "CIK0000737207.json",
+      "sha256": "c01365107af8332264e61275c4c92583b99f23ec75292a85daa887974fc2dd3f"
+    },
+    {
+      "cik": "0000737207",
+      "source": "bulk_history",
+      "member": "CIK0000737207-submissions-001.json",
+      "sha256": "4629d3b4c5cbedca1c4a38b3b5682e1040dc110febaed1890dc67333a142f7cd"
+    },
+    {
+      "cik": "0000737875",
+      "source": "bulk_top",
+      "member": "CIK0000737875.json",
+      "sha256": "5b18f03548e043f9df2a8a62f0f8f1548de21883b902f8a6b14887b43dc59f5f"
+    },
+    {
+      "cik": "0000745981",
+      "source": "bulk_top",
+      "member": "CIK0000745981.json",
+      "sha256": "c5a8c4b54bf4b30049c714c0e83c927192f95ad9213a708351269492a94bffbd"
+    },
+    {
+      "cik": "0000745981",
+      "source": "bulk_history",
+      "member": "CIK0000745981-submissions-001.json",
+      "sha256": "b4bf23f956ed37b731d51b678fde31f7350543323dd63e81928e242e316aab7e"
+    },
+    {
+      "cik": "0000746598",
+      "source": "bulk_top",
+      "member": "CIK0000746598.json",
+      "sha256": "fc4685d1797950388222a44ebdcd109a976391405c6b1062f08af65507792a87"
+    },
+    {
+      "cik": "0000746598",
+      "source": "bulk_history",
+      "member": "CIK0000746598-submissions-001.json",
+      "sha256": "424f56b6ad81697acbddee39ac629c39f61288785ad6751be0c7b7118cedc0b5"
+    },
+    {
+      "cik": "0000746598",
+      "source": "bulk_history",
+      "member": "CIK0000746598-submissions-002.json",
+      "sha256": "1a416248a4f2b53bf0fe6b8e948157e7b082921860c4397fc4dec8c8656c656c"
+    },
+    {
+      "cik": "0000749647",
+      "source": "bulk_top",
+      "member": "CIK0000749647.json",
+      "sha256": "62728cd119ae7b1e09e25a9a06631d56810502166efa91641a8ea572784dc1e0"
+    },
+    {
+      "cik": "0000749647",
+      "source": "bulk_history",
+      "member": "CIK0000749647-submissions-001.json",
+      "sha256": "5d72dc948942e3d122a2f938362f8a6b350d0c789e2fd96641939a17876535d5"
+    },
+    {
+      "cik": "0000765880",
+      "source": "bulk_top",
+      "member": "CIK0000765880.json",
+      "sha256": "b86a5b45e6915a478f6337f2056c7a2416d0a55acf524a604c7d23be8b6bca68"
+    },
+    {
+      "cik": "0000765880",
+      "source": "bulk_history",
+      "member": "CIK0000765880-submissions-001.json",
+      "sha256": "9d727b3331109a61f310194b251f9bf63c1ee36f1b6d559bad7698a558da0509"
+    },
+    {
+      "cik": "0000768710",
+      "source": "bulk_top",
+      "member": "CIK0000768710.json",
+      "sha256": "ccd41c3c39f932dced6df9242ff1f12df1d5e1f71afac1d4cfca32a9ad44b51d"
+    },
+    {
+      "cik": "0000768710",
+      "source": "bulk_history",
+      "member": "CIK0000768710-submissions-001.json",
+      "sha256": "5386b101628608709b3ca3c7474c2298f6b1b2d17bfb8936d6d29e15565431e8"
+    },
+    {
+      "cik": "0000787253",
+      "source": "bulk_top",
+      "member": "CIK0000787253.json",
+      "sha256": "87f3e41cd3d960cdd928ad7ad1dddab969b8814711406187de27f5160c2e9b0e"
+    },
+    {
+      "cik": "0000797468",
+      "source": "bulk_top",
+      "member": "CIK0000797468.json",
+      "sha256": "1fd98144147f520cd1f4fe0617ca29fe46f83f4de5e1bc09112dd3b085c3e289"
+    },
+    {
+      "cik": "0000797468",
+      "source": "bulk_history",
+      "member": "CIK0000797468-submissions-001.json",
+      "sha256": "791459126a4446de2056ba01fd7ed42cfc7902f4d812c28cb58cee5757f5459b"
+    },
+    {
+      "cik": "0000819913",
+      "source": "bulk_top",
+      "member": "CIK0000819913.json",
+      "sha256": "207c27638fe07f13856b922424675424cdf8c2e752b3fd4615c10a8d1396d874"
+    },
+    {
+      "cik": "0000820081",
+      "source": "bulk_top",
+      "member": "CIK0000820081.json",
+      "sha256": "1fbc76224c1b85bc2823d8ebcffae36dd27e9546e963107563af2b58be6553a6"
+    },
+    {
+      "cik": "0000820081",
+      "source": "bulk_history",
+      "member": "CIK0000820081-submissions-001.json",
+      "sha256": "fe39b2b680f3444bcd290d765ec0472348be14d1636d13ee57ffdad13cd6853a"
+    },
+    {
+      "cik": "0000844887",
+      "source": "bulk_top",
+      "member": "CIK0000844887.json",
+      "sha256": "717374fafc24f125fd006f2fceb9443c64ed745480865ddb51b0c407e1864772"
+    },
+    {
+      "cik": "0000851968",
+      "source": "bulk_top",
+      "member": "CIK0000851968.json",
+      "sha256": "40b566926244d5f47387f8dc0fd77825f54c6ef63d54b77ad20877c97ac37214"
+    },
+    {
+      "cik": "0000851968",
+      "source": "bulk_history",
+      "member": "CIK0000851968-submissions-001.json",
+      "sha256": "bce0c8485f206111d793d9fbd65f3c2fdb46a3005ed9a141a253514f1f99e02f"
+    },
+    {
+      "cik": "0000858470",
+      "source": "bulk_top",
+      "member": "CIK0000858470.json",
+      "sha256": "5a379f84fb1ae18044b7d7d682a6020c7fdf3d129790ce9e0ffa7553faf48c6f"
+    },
+    {
+      "cik": "0000858470",
+      "source": "bulk_history",
+      "member": "CIK0000858470-submissions-001.json",
+      "sha256": "888fa3ded7e55e4fa5d98a71f752f7ab636a2d5073428d7b011dbc24cee7f20b"
+    },
+    {
+      "cik": "0000876437",
+      "source": "bulk_top",
+      "member": "CIK0000876437.json",
+      "sha256": "a7f998db43daf95363c2ddfb81ba1d5fc83837cd9fd5d2b189edc0951f4f1bd7"
+    },
+    {
+      "cik": "0000876437",
+      "source": "bulk_history",
+      "member": "CIK0000876437-submissions-001.json",
+      "sha256": "8aa691cdc21d3d2514e8262dc2b59582ef77510326f02e090a484e4a3b195120"
+    },
+    {
+      "cik": "0000882095",
+      "source": "bulk_top",
+      "member": "CIK0000882095.json",
+      "sha256": "fb0fa8c9ee5af5a5722bb94af26964acf6e53d49e8ba8f5241ad6eaf86cf9139"
+    },
+    {
+      "cik": "0000882095",
+      "source": "bulk_history",
+      "member": "CIK0000882095-submissions-001.json",
+      "sha256": "732262b079d4325a4b6a7dd5dea93cf46e5d9b93435cd67f0443ba73375e1189"
+    },
+    {
+      "cik": "0000882095",
+      "source": "bulk_history",
+      "member": "CIK0000882095-submissions-002.json",
+      "sha256": "95cbd0b6226e72cafdaf07c7bd91f39b6e1cc9f91baa86eb07814119d0a02c4b"
+    },
+    {
+      "cik": "0000884713",
+      "source": "bulk_top",
+      "member": "CIK0000884713.json",
+      "sha256": "dc18e44aa23ba52104f1e0a86d8ea8b135f35def3e9dafad3f34f2fd7f4ca9d9"
+    },
+    {
+      "cik": "0000884713",
+      "source": "bulk_history",
+      "member": "CIK0000884713-submissions-001.json",
+      "sha256": "d91955ffcee1c471dccea9f360788dd9fee9ce1bc5fe29844fb9133bb7b6ed9b"
+    },
+    {
+      "cik": "0000887151",
+      "source": "bulk_top",
+      "member": "CIK0000887151.json",
+      "sha256": "9fdc418666f190d8e72e34543fc04cc51333fe43bf724fbdd2af3372f1c65689"
+    },
+    {
+      "cik": "0000893691",
+      "source": "bulk_top",
+      "member": "CIK0000893691.json",
+      "sha256": "f1c3c19aa1908fa3c350a04043677499b0aa77548271bd789f41faad48b57d9c"
+    },
+    {
+      "cik": "0000893691",
+      "source": "bulk_history",
+      "member": "CIK0000893691-submissions-001.json",
+      "sha256": "8b1bb1322c00fd0b7e2c82c8e5321bf60824e4377f431b5ad070c8a14159a33e"
+    },
+    {
+      "cik": "0000893847",
+      "source": "bulk_top",
+      "member": "CIK0000893847.json",
+      "sha256": "d4d331e2a05bb714d8518be7045c1b9361f7152438b608b1138d5c646b82fd08"
+    },
+    {
+      "cik": "0000900349",
+      "source": "bulk_top",
+      "member": "CIK0000900349.json",
+      "sha256": "71eda6d6bc27d14ca3264f41a896692340663bf20f3ead175d1524c23acb49be"
+    },
+    {
+      "cik": "0000900349",
+      "source": "bulk_history",
+      "member": "CIK0000900349-submissions-001.json",
+      "sha256": "e8ba38b5fabb57769c7124dc9475fb240a51adfe25b74641d074db14ba83372e"
+    },
+    {
+      "cik": "0000910521",
+      "source": "bulk_top",
+      "member": "CIK0000910521.json",
+      "sha256": "07fcc71f56201ce8742745dbab961c3daa6596845cf728cc9d49d8f6caea4cde"
+    },
+    {
+      "cik": "0000910521",
+      "source": "bulk_history",
+      "member": "CIK0000910521-submissions-001.json",
+      "sha256": "9352b12c3cb8af3e9b2a00ffd1f8c963fd880cf76e8d0b2814f8390018cc6cd1"
+    },
+    {
+      "cik": "0000915778",
+      "source": "bulk_top",
+      "member": "CIK0000915778.json",
+      "sha256": "44e08f8b106f64b8ead033ac58fc25a1d72f443f0a7747a2e7248509588ad7c9"
+    },
+    {
+      "cik": "0000915778",
+      "source": "bulk_history",
+      "member": "CIK0000915778-submissions-001.json",
+      "sha256": "f6c58bbc5fd3b54b255095ed031936832e2d379c07a08d29c018f5acc055a938"
+    },
+    {
+      "cik": "0000920424",
+      "source": "bulk_top",
+      "member": "CIK0000920424.json",
+      "sha256": "2f2efc4dce9e38a61cace932cacaa8464206fdc9cb04f6f7fd46da0bfd7e7398"
+    },
+    {
+      "cik": "0000920424",
+      "source": "bulk_history",
+      "member": "CIK0000920424-submissions-001.json",
+      "sha256": "7431869cf8f3cedb3ccb8eb6d4f6264039a6f436127079af617229b793b6d291"
+    },
+    {
+      "cik": "0000920448",
+      "source": "bulk_top",
+      "member": "CIK0000920448.json",
+      "sha256": "1912cafd73cfddf765d44fe676fd8152637148be8112a27ff0098b8aefa446ce"
+    },
+    {
+      "cik": "0000925263",
+      "source": "bulk_top",
+      "member": "CIK0000925263.json",
+      "sha256": "686ef5623c4ce2f1ae352df6cc6093c0fa31465503a6717ea09a545ddd63f4dc"
+    },
+    {
+      "cik": "0000929008",
+      "source": "bulk_top",
+      "member": "CIK0000929008.json",
+      "sha256": "00ac1f5473426a6c9eb7f7fc63d2d640d0d3aa95b7fe72ee5a98c8d509226a95"
+    },
+    {
+      "cik": "0000929008",
+      "source": "bulk_history",
+      "member": "CIK0000929008-submissions-001.json",
+      "sha256": "a6f519f2fd007b90f3f89dba65941e5d996044862a4fd1b052dafea22bd3641f"
+    },
+    {
+      "cik": "0000929351",
+      "source": "bulk_top",
+      "member": "CIK0000929351.json",
+      "sha256": "0bcc33ebc5f89b211d3200b006663b5a1459b07bb0ee257b260aea7b4875418d"
+    },
+    {
+      "cik": "0000929351",
+      "source": "bulk_history",
+      "member": "CIK0000929351-submissions-001.json",
+      "sha256": "d2075029c6e5045fb74a38a22b750d67f0156613835ec561ce265d99815fbb74"
+    },
+    {
+      "cik": "0000930245",
+      "source": "bulk_top",
+      "member": "CIK0000930245.json",
+      "sha256": "45809e9db3beee8dbc7ef4a0f15c739d1ffe2f5f3b70abc6d92e2bcb7a902e7f"
+    },
+    {
+      "cik": "0000932781",
+      "source": "bulk_top",
+      "member": "CIK0000932781.json",
+      "sha256": "8e660f898300b598376b6cbb250210ffa97ec9cba3cfd8a405d7b9cbda0dcfbd"
+    },
+    {
+      "cik": "0000932781",
+      "source": "bulk_history",
+      "member": "CIK0000932781-submissions-001.json",
+      "sha256": "65736b196791e4fbce3a931932f5595c0cd89abedeb2fff3ffee3a6f50aa0251"
+    },
+    {
+      "cik": "0000934549",
+      "source": "bulk_top",
+      "member": "CIK0000934549.json",
+      "sha256": "22df7ce1af2e75b272125e30c703008415d776082cf4c302ca38dbce04538464"
+    },
+    {
+      "cik": "0000934549",
+      "source": "bulk_history",
+      "member": "CIK0000934549-submissions-001.json",
+      "sha256": "34db0d8bb0b4e034297dfe04ac9a4996e2f8c0431d9643156dbb90ff00b7740b"
+    },
+    {
+      "cik": "0000939767",
+      "source": "bulk_top",
+      "member": "CIK0000939767.json",
+      "sha256": "2e09b3fe86e18b6a2b2bde0fb31df90c48b5a1b5c896ca6f77cf5e0d4c4d25cf"
+    },
+    {
+      "cik": "0000939767",
+      "source": "bulk_history",
+      "member": "CIK0000939767-submissions-001.json",
+      "sha256": "9300ba5faad7727584f8014c26f4165ad38cf8723ada4312d245c12fe94d2f60"
+    },
+    {
+      "cik": "0000941685",
+      "source": "bulk_top",
+      "member": "CIK0000941685.json",
+      "sha256": "248bfda796ab0408f3978a93b3c77d9543967832d81b9de51888c5baf8f2d79a"
+    },
+    {
+      "cik": "0001011659",
+      "source": "bulk_top",
+      "member": "CIK0001011659.json",
+      "sha256": "e53ddbdfd5154573f442cc5ef798410a1925a1f2355d69cd361dc6f80e95775b"
+    },
+    {
+      "cik": "0001011659",
+      "source": "bulk_history",
+      "member": "CIK0001011659-submissions-001.json",
+      "sha256": "da9582e54cd7c7aba536a06b1d328a5d5d326af1c90f4aca60829cbd6155d392"
+    },
+    {
+      "cik": "0001023298",
+      "source": "bulk_top",
+      "member": "CIK0001023298.json",
+      "sha256": "c8c2373c33420dc00bd5c9be9c040cd7e826ba9715e1680a7fcac4cfc6c796a9"
+    },
+    {
+      "cik": "0001043951",
+      "source": "bulk_top",
+      "member": "CIK0001043951.json",
+      "sha256": "dcbbfc3b3d4afe9128ba0ca0176584cde58c99774502dc52b19f92da123711ed"
+    },
+    {
+      "cik": "0001051343",
+      "source": "bulk_top",
+      "member": "CIK0001051343.json",
+      "sha256": "22a3c428456837a710ebd1981a66ee98087fa89c5f97e79ed42a5aed86495a9c"
+    },
+    {
+      "cik": "0001051343",
+      "source": "bulk_history",
+      "member": "CIK0001051343-submissions-001.json",
+      "sha256": "4a0fa901d94309116793a6b2b403c1306bf87569d952df60ee6bfdd1210e210c"
+    },
+    {
+      "cik": "0001052054",
+      "source": "bulk_top",
+      "member": "CIK0001052054.json",
+      "sha256": "17b73de13944b2f6ff3adeb466b93e2922b7a5c61787990a003ef89c9a575dab"
+    },
+    {
+      "cik": "0001052054",
+      "source": "bulk_history",
+      "member": "CIK0001052054-submissions-001.json",
+      "sha256": "0f77d4233c9e7d93f49130a2ef2aee89d1a4bd5c92a68e6bd4a45cb818349c05"
+    },
+    {
+      "cik": "0001056288",
+      "source": "bulk_top",
+      "member": "CIK0001056288.json",
+      "sha256": "dcb4b12dcf14b47b4439f734999f5d0e9b151a559732fa95f35ac3d2227bc4f4"
+    },
+    {
+      "cik": "0001056288",
+      "source": "bulk_history",
+      "member": "CIK0001056288-submissions-001.json",
+      "sha256": "1be1cfe9771fbd92dffda05518e9446935e75dd794d74ed54d7736341a427bb8"
+    },
+    {
+      "cik": "0001056288",
+      "source": "bulk_history",
+      "member": "CIK0001056288-submissions-002.json",
+      "sha256": "41ab62d25892399cf3c444af649fd68bf7cd314891b998c56f1379767eccc48a"
+    },
+    {
+      "cik": "0001061027",
+      "source": "bulk_top",
+      "member": "CIK0001061027.json",
+      "sha256": "89a805e4de14a11e96f15301950960df8c0faa7b5d803522c118278315185d6b"
+    },
+    {
+      "cik": "0001061027",
+      "source": "bulk_history",
+      "member": "CIK0001061027-submissions-001.json",
+      "sha256": "23f42a279d56d295fdaabdc42d7aaa44f98fc1784836c5c49d01482274327a33"
+    },
+    {
+      "cik": "0001083522",
+      "source": "bulk_top",
+      "member": "CIK0001083522.json",
+      "sha256": "2618cb31b67022348729c090d5a574be0e32eb3061d4cd88012067ebbd6849cc"
+    },
+    {
+      "cik": "0001083522",
+      "source": "bulk_history",
+      "member": "CIK0001083522-submissions-001.json",
+      "sha256": "e0019039a2b6e18d52c96bf14f59e9a0da62cfc2ceb70d613f57e2383f94cf38"
+    },
+    {
+      "cik": "0001089748",
+      "source": "bulk_top",
+      "member": "CIK0001089748.json",
+      "sha256": "9f1ae7ac310271fbc77c4765e71990ebb63b990cb39663fcf3746c2f4e915718"
+    },
+    {
+      "cik": "0001099219",
+      "source": "bulk_top",
+      "member": "CIK0001099219.json",
+      "sha256": "7c806953b9621472168440b4b29ed349e2c3b5e912ced81551871f7ad4f7818a"
+    },
+    {
+      "cik": "0001099219",
+      "source": "bulk_history",
+      "member": "CIK0001099219-submissions-001.json",
+      "sha256": "4ac410298f80277adffd9e5c5b1eb2c68f82cc2bfc52b9a89bc7a89b7d847473"
+    },
+    {
+      "cik": "0001099219",
+      "source": "bulk_history",
+      "member": "CIK0001099219-submissions-002.json",
+      "sha256": "5303f4d75cb9f9a0e74d32e57dce26d2044f9e239862c8510cf46da98f64d001"
+    },
+    {
+      "cik": "0001104506",
+      "source": "bulk_top",
+      "member": "CIK0001104506.json",
+      "sha256": "368369757b8b5cd092ab30a267fbdea9b5655d6a198f2fca964bc794ace838b8"
+    },
+    {
+      "cik": "0001104506",
+      "source": "bulk_history",
+      "member": "CIK0001104506-submissions-001.json",
+      "sha256": "ebd60f4df0c6cbb9ce8b6e82add9f4ad777e33025bc8913bb7685a0900913174"
+    },
+    {
+      "cik": "0001106213",
+      "source": "bulk_top",
+      "member": "CIK0001106213.json",
+      "sha256": "10781a0724b3f644b7fd06dcbba2cf701039476c6cfa1eb5d15b1a5c58aebadd"
+    },
+    {
+      "cik": "0001121788",
+      "source": "bulk_top",
+      "member": "CIK0001121788.json",
+      "sha256": "6faf5e2816b4c9cbb5a88adcebffd5ce17e0c2d882294ee6c38164577012de4e"
+    },
+    {
+      "cik": "0001121788",
+      "source": "bulk_history",
+      "member": "CIK0001121788-submissions-001.json",
+      "sha256": "03e4cb1da9599edf81ffbe4ee7d62b0cef468da71f7f0e5a28d46e536978e16b"
+    },
+    {
+      "cik": "0001127703",
+      "source": "bulk_top",
+      "member": "CIK0001127703.json",
+      "sha256": "e6e21d25e382290b4d919764271afc1e1398839d212ad85268137ec7d26de9b6"
+    },
+    {
+      "cik": "0001127703",
+      "source": "bulk_history",
+      "member": "CIK0001127703-submissions-001.json",
+      "sha256": "482dd82ec16205fc2904524dfd1b63c1289085ea0b6220a8e027597359b2bcb8"
+    },
+    {
+      "cik": "0001140536",
+      "source": "bulk_top",
+      "member": "CIK0001140536.json",
+      "sha256": "e057313afd3a9cacf6fae3e3af83a9012d20b9455af926f72c2cf41bf549a97c"
+    },
+    {
+      "cik": "0001140536",
+      "source": "bulk_history",
+      "member": "CIK0001140536-submissions-001.json",
+      "sha256": "bbbd5a0864dd0cc6106fc5407f468f91aebe1ab32c2607f67de547adda188677"
+    },
+    {
+      "cik": "0001140536",
+      "source": "bulk_history",
+      "member": "CIK0001140536-submissions-002.json",
+      "sha256": "9a269443202198668710949a155ef16ef70bcc95893e0b99ef3c3b8f4df58cad"
+    },
+    {
+      "cik": "0001142801",
+      "source": "bulk_top",
+      "member": "CIK0001142801.json",
+      "sha256": "921eddc340948a7084b8ccf353bc59b2e8463e894e1cdffd98cbf56b9b11b404"
+    },
+    {
+      "cik": "0001156375",
+      "source": "bulk_top",
+      "member": "CIK0001156375.json",
+      "sha256": "e36770bff5d88a2a2214534f809d6fa88c70e449a8960bdff61bf5c9f49baf19"
+    },
+    {
+      "cik": "0001156375",
+      "source": "bulk_history",
+      "member": "CIK0001156375-submissions-001.json",
+      "sha256": "4722cd9f32b91c0a923545cd9a411ae2cb1dc1ee9fcb09e7eac7376c4f80054f"
+    },
+    {
+      "cik": "0001156375",
+      "source": "bulk_history",
+      "member": "CIK0001156375-submissions-002.json",
+      "sha256": "1dd2bffd2807d673aa8009500448e8b155517e23201d54c1c2e7de984f75d934"
+    },
+    {
+      "cik": "0001164888",
+      "source": "bulk_top",
+      "member": "CIK0001164888.json",
+      "sha256": "1868693fdc029c3302337795986f7a82142cf12c6c75df9452200a74b28d7175"
+    },
+    {
+      "cik": "0001168220",
+      "source": "bulk_top",
+      "member": "CIK0001168220.json",
+      "sha256": "c9139be3c5032f8fda27e04bfd6d06fb39476e3df7068e9888d9ec077f0ea69b"
+    },
+    {
+      "cik": "0001171486",
+      "source": "bulk_top",
+      "member": "CIK0001171486.json",
+      "sha256": "39118aa94935326e69fdd2db2e3e97f89e6e139d1d40fb03e0d8fd69cc1dad02"
+    },
+    {
+      "cik": "0001171486",
+      "source": "bulk_history",
+      "member": "CIK0001171486-submissions-001.json",
+      "sha256": "8555037a16d50e65110a9941c58cf483240c563b4e5ac35fd425f2b3eb781b54"
+    },
+    {
+      "cik": "0001223786",
+      "source": "bulk_top",
+      "member": "CIK0001223786.json",
+      "sha256": "9b4e199f5f1856eb274c3cb41cffa6bf6cb939cde8599361b6d44acad2563492"
+    },
+    {
+      "cik": "0001282648",
+      "source": "bulk_top",
+      "member": "CIK0001282648.json",
+      "sha256": "460fec7ad408418e12b80570351607b40cc4241cf7c9e798bdb88359356daf8d"
+    },
+    {
+      "cik": "0001282648",
+      "source": "bulk_history",
+      "member": "CIK0001282648-submissions-001.json",
+      "sha256": "cf64b87b7680fd8a29755f44d5a75fc25d7424f04a15667e900970dc6096b920"
+    },
+    {
+      "cik": "0001297184",
+      "source": "bulk_top",
+      "member": "CIK0001297184.json",
+      "sha256": "20bb84e76d91111738b071cc6e6d7e1b2a76456517c6fb77657843ebe7f8d061"
+    },
+    {
+      "cik": "0001300524",
+      "source": "bulk_top",
+      "member": "CIK0001300524.json",
+      "sha256": "4b02d227a836294c9c7f5dee31d161236a9986c2217d952b7710e612d6e9f7db"
+    },
+    {
+      "cik": "0001313536",
+      "source": "bulk_top",
+      "member": "CIK0001313536.json",
+      "sha256": "208ffc44f5042dd8ac81f7afaf9a4433fbdf942e59060258beeb4afec0f5e1fa"
+    },
+    {
+      "cik": "0001324410",
+      "source": "bulk_top",
+      "member": "CIK0001324410.json",
+      "sha256": "f0a7ae8a7b3305c90f43f713cfd4e1a2a4e49d170c6579c7a7802516c634795c"
+    },
+    {
+      "cik": "0001325740",
+      "source": "bulk_top",
+      "member": "CIK0001325740.json",
+      "sha256": "a94a45ef9eb4b7ca92c6c2d514f5387f2ebec11ca9fad296891a90b3635201c8"
+    },
+    {
+      "cik": "0001328598",
+      "source": "bulk_top",
+      "member": "CIK0001328598.json",
+      "sha256": "25e1a93870d7504bf4e1833fa742840acdc91d49d5b4e5548f8f5e678ec860b6"
+    },
+    {
+      "cik": "0001333835",
+      "source": "bulk_top",
+      "member": "CIK0001333835.json",
+      "sha256": "72489d3f912d4d8682040f40922c06c9450897702bd51654cea4523e8aa93595"
+    },
+    {
+      "cik": "0001338749",
+      "source": "bulk_top",
+      "member": "CIK0001338749.json",
+      "sha256": "ff64e9080bbbcb5c1a2bee782e59fef67310089f2031c38b62f08be13d1e7c5d"
+    },
+    {
+      "cik": "0001338749",
+      "source": "bulk_history",
+      "member": "CIK0001338749-submissions-001.json",
+      "sha256": "bffc31dff8fd91f133a73bb06574d7d8ee4f378f2ee95fa092dc0b6a4de21353"
+    },
+    {
+      "cik": "0001345126",
+      "source": "bulk_top",
+      "member": "CIK0001345126.json",
+      "sha256": "a4173fc168282e18071b09115b9258e6b829738983feaceea94dd1ca881f4aef"
+    },
+    {
+      "cik": "0001345126",
+      "source": "bulk_history",
+      "member": "CIK0001345126-submissions-001.json",
+      "sha256": "fe09d49b41e252d13a78490bd3a0f3151d6eb7e90a6809af3329d4f870b536cc"
+    },
+    {
+      "cik": "0001350102",
+      "source": "bulk_top",
+      "member": "CIK0001350102.json",
+      "sha256": "eb2585f450525e2bf29d623d57828479cf21a9eb8bb48bf16e2f39d3b8fb4433"
+    },
+    {
+      "cik": "0001350102",
+      "source": "bulk_history",
+      "member": "CIK0001350102-submissions-001.json",
+      "sha256": "2d161fe7e9e7301d7b5f31e4798a881c02b6a0f8ab6ec470090486e9683edc39"
+    },
+    {
+      "cik": "0001352952",
+      "source": "bulk_top",
+      "member": "CIK0001352952.json",
+      "sha256": "9b2bd299a35c6df8bd2a3f19c77c4f45a97fc206622c6627289ee834aa01b3cf"
+    },
+    {
+      "cik": "0001353283",
+      "source": "bulk_top",
+      "member": "CIK0001353283.json",
+      "sha256": "2990f92a805816d08a08021835627e701b41286cd8052d09ace835af1f05d91e"
+    },
+    {
+      "cik": "0001353283",
+      "source": "bulk_history",
+      "member": "CIK0001353283-submissions-001.json",
+      "sha256": "6cf5ccb4aefecd5f453c624857d6593a916fefba3e5bbe869ab695151ee650d9"
+    },
+    {
+      "cik": "0001358831",
+      "source": "bulk_top",
+      "member": "CIK0001358831.json",
+      "sha256": "8fc1c96eef210de463c0a67fdaa2a0ad0ba6eed7b42191cfe3155e687b82f18c"
+    },
+    {
+      "cik": "0001359555",
+      "source": "bulk_top",
+      "member": "CIK0001359555.json",
+      "sha256": "da5f4c7eea7dd3fc0eed67a8c6a24153be14d572aa30f5b0ccff0979328ae8bf"
+    },
+    {
+      "cik": "0001360604",
+      "source": "bulk_top",
+      "member": "CIK0001360604.json",
+      "sha256": "aa3c559bdfe84edfa2574368cd4827ffa279d7b3d4a386c24f8ca8855b5dde5c"
+    },
+    {
+      "cik": "0001360604",
+      "source": "bulk_history",
+      "member": "CIK0001360604-submissions-001.json",
+      "sha256": "2f2f12764823844eef809a0a201b1eb56bd9887c41b3814a26f2d085e948add0"
+    },
+    {
+      "cik": "0001370450",
+      "source": "bulk_top",
+      "member": "CIK0001370450.json",
+      "sha256": "54bc90ba1223141ccef8647729ec0c6994fef2a4874b47e3ebc6615a5be48d1b"
+    },
+    {
+      "cik": "0001370450",
+      "source": "bulk_history",
+      "member": "CIK0001370450-submissions-001.json",
+      "sha256": "8be76506aa13600570524f231d77ba874eb7076653c0f6de0d05473c8fddcb1e"
+    },
+    {
+      "cik": "0001382574",
+      "source": "bulk_top",
+      "member": "CIK0001382574.json",
+      "sha256": "2b056cb004ded80e9ce8033360e0fc3aa021b8bc4620988e6d291632da9f6a23"
+    },
+    {
+      "cik": "0001383414",
+      "source": "bulk_top",
+      "member": "CIK0001383414.json",
+      "sha256": "b52060e254fb82841bc4c5461754a7896ca6cace408102888893d4fa49494900"
+    },
+    {
+      "cik": "0001398137",
+      "source": "bulk_top",
+      "member": "CIK0001398137.json",
+      "sha256": "b8948e09ac0b796bab0a4ca97edf64dbfdf719c41c0febb039a8c8a793ac2146"
+    },
+    {
+      "cik": "0001412126",
+      "source": "bulk_top",
+      "member": "CIK0001412126.json",
+      "sha256": "82bee9934f1f42ad17317ce34f4cd9b25545f0e7d424d97b779ad73a8dd7bdd7"
+    },
+    {
+      "cik": "0001413263",
+      "source": "bulk_top",
+      "member": "CIK0001413263.json",
+      "sha256": "28256f9fe906d0dfb03a59513811b5286babf65f4647c710e7725692f2dd6a95"
+    },
+    {
+      "cik": "0001413909",
+      "source": "bulk_top",
+      "member": "CIK0001413909.json",
+      "sha256": "dce6698112a19b6e0034720a61a7661205b8032ecb65dd0aeaa478d6c166f752"
+    },
+    {
+      "cik": "0001423325",
+      "source": "bulk_top",
+      "member": "CIK0001423325.json",
+      "sha256": "8cc27a82d3b385ac5a269a422481dde5f5389cda3f31c57c407ad5db6650e359"
+    },
+    {
+      "cik": "0001430592",
+      "source": "bulk_top",
+      "member": "CIK0001430592.json",
+      "sha256": "79b4a8d3169ee3e038f4ab4bbea3188a400eae2d4d526241dfe23410089cf481"
+    },
+    {
+      "cik": "0001430592",
+      "source": "bulk_history",
+      "member": "CIK0001430592-submissions-001.json",
+      "sha256": "5f686f95f6a507f12dbe33fc948675cb4d02012eea97878209323d40bf6b8b2e"
+    },
+    {
+      "cik": "0001433660",
+      "source": "bulk_top",
+      "member": "CIK0001433660.json",
+      "sha256": "2da1c988a3ed5f49db50fe487c093e750e73098a921f28cb2f424aca7efa1fa8"
+    },
+    {
+      "cik": "0001433660",
+      "source": "bulk_history",
+      "member": "CIK0001433660-submissions-001.json",
+      "sha256": "be42988dc0b0bb0160f2670cba9c915f753823f11e87b593f711385f8380784d"
+    },
+    {
+      "cik": "0001434728",
+      "source": "bulk_top",
+      "member": "CIK0001434728.json",
+      "sha256": "4c500198f6552688ca8c7db386b95efff0b8066b625b734d0a76aafd0874fa07"
+    },
+    {
+      "cik": "0001434728",
+      "source": "bulk_history",
+      "member": "CIK0001434728-submissions-001.json",
+      "sha256": "4f4545ea5d83e98cb1edc617e3c28af71dea50449997ae1eba3bff389ec2c648"
+    },
+    {
+      "cik": "0001438133",
+      "source": "bulk_top",
+      "member": "CIK0001438133.json",
+      "sha256": "704d6ea0a0eb091b6216848765abfba570b0b792c04708370566702e6f791267"
+    },
+    {
+      "cik": "0001438133",
+      "source": "bulk_history",
+      "member": "CIK0001438133-submissions-001.json",
+      "sha256": "4dea863af952cbbc1eabdac333b4232e3f7229274fb96d25ee4889f51fe07a14"
+    },
+    {
+      "cik": "0001442145",
+      "source": "bulk_top",
+      "member": "CIK0001442145.json",
+      "sha256": "5545d367728184b0f32d1c69f435ba347725aecf741a4cabb04a63b676464f07"
+    },
+    {
+      "cik": "0001442145",
+      "source": "bulk_history",
+      "member": "CIK0001442145-submissions-001.json",
+      "sha256": "05e7f7a04f138eadd29e109b5366503821879da7e95bff0ad2e2fd36567a67bc"
+    },
+    {
+      "cik": "0001445815",
+      "source": "bulk_top",
+      "member": "CIK0001445815.json",
+      "sha256": "9ac33ff49cff58c7ddb74969e9f155837579cad6bf3eee25c7a1b65bd81d1688"
+    },
+    {
+      "cik": "0001447028",
+      "source": "bulk_top",
+      "member": "CIK0001447028.json",
+      "sha256": "7acb07c8b3c440bd239e9fa4ce66925eaa681c0d69b011da8dd4f28cae582d7a"
+    },
+    {
+      "cik": "0001447028",
+      "source": "bulk_history",
+      "member": "CIK0001447028-submissions-001.json",
+      "sha256": "e5a65d27a161ab39498b48413083b92ac2c5e9455224e7b043917cacfa5c2729"
+    },
+    {
+      "cik": "0001453593",
+      "source": "bulk_top",
+      "member": "CIK0001453593.json",
+      "sha256": "ee2c52784754329db67997c1ccfcd0d0df232be122412c1e03ca0d16a5faa65a"
+    },
+    {
+      "cik": "0001453593",
+      "source": "bulk_history",
+      "member": "CIK0001453593-submissions-001.json",
+      "sha256": "b7edb3a0b01cdc33b33ebb88223a7a8a115aca56051ac1ecef2d071cfdeb4e8b"
+    },
+    {
+      "cik": "0001456772",
+      "source": "bulk_top",
+      "member": "CIK0001456772.json",
+      "sha256": "e7a1c5008c6b04b7fef9a6c133141f69345d9f7e7bda1bd5e70f993ae450eca0"
+    },
+    {
+      "cik": "0001465740",
+      "source": "bulk_top",
+      "member": "CIK0001465740.json",
+      "sha256": "2cd3c4e72dbfa11837f728cf32102623b7786b7953ff4ade4499044b7345cfcd"
+    },
+    {
+      "cik": "0001465740",
+      "source": "bulk_history",
+      "member": "CIK0001465740-submissions-001.json",
+      "sha256": "b2a11394058a27d15d0c5f2e36aa2c5bc5d5a132345f59614c87b568f1aca026"
+    },
+    {
+      "cik": "0001469372",
+      "source": "bulk_top",
+      "member": "CIK0001469372.json",
+      "sha256": "02e8f5a28a04d7b1d24d628b8061b3deab15b1e2e1def33da76ee18c98174ac7"
+    },
+    {
+      "cik": "0001487986",
+      "source": "bulk_top",
+      "member": "CIK0001487986.json",
+      "sha256": "357afafd80c0ae2c67ec7baf30e41fffc2259e8bc62af688939a0dcb618183c1"
+    },
+    {
+      "cik": "0001493137",
+      "source": "bulk_top",
+      "member": "CIK0001493137.json",
+      "sha256": "0bdcaaf3f0de806bdb71b32eb6e37f88dad35a385ff54f264de365a2836c7305"
+    },
+    {
+      "cik": "0001502555",
+      "source": "bulk_top",
+      "member": "CIK0001502555.json",
+      "sha256": "d770ba4bbb0802be5bc806284db7e40389863d3a718636907f8ecbc94b4df66a"
+    },
+    {
+      "cik": "0001507605",
+      "source": "bulk_top",
+      "member": "CIK0001507605.json",
+      "sha256": "1f99e49913f5c1faad7c790eb1a1a397a602083a7877c4d6377e7d550d080ae9"
+    },
+    {
+      "cik": "0001507605",
+      "source": "bulk_history",
+      "member": "CIK0001507605-submissions-001.json",
+      "sha256": "548721bb4f67042a758b6e0aec816e22e6ad059b574415e236c5a0034ff24a2b"
+    },
+    {
+      "cik": "0001509570",
+      "source": "bulk_top",
+      "member": "CIK0001509570.json",
+      "sha256": "dfe3bf8d979ec1a0eaee577e88cac6b7d3be0460a8d95516a7a7d250b0fa83d0"
+    },
+    {
+      "cik": "0001509879",
+      "source": "bulk_top",
+      "member": "CIK0001509879.json",
+      "sha256": "e53126228f666c1254bdcc16f5eca74692f38451699c76be42080e2e8ca94df0"
+    },
+    {
+      "cik": "0001518720",
+      "source": "bulk_top",
+      "member": "CIK0001518720.json",
+      "sha256": "d117a27cb12e4b1216b78d95edd96c9f67f15d06021148b2b567ecce2fae2316"
+    },
+    {
+      "cik": "0001527590",
+      "source": "bulk_top",
+      "member": "CIK0001527590.json",
+      "sha256": "c967eddec9c0b0affb0bf07870d09b8cefaaee5c1fa2154d6fe3590c51bc5c92"
+    },
+    {
+      "cik": "0001540729",
+      "source": "bulk_top",
+      "member": "CIK0001540729.json",
+      "sha256": "2606ba9ef866dd14d631c918c1bc0d3871daa5058fa6ef63285177c69cd385be"
+    },
+    {
+      "cik": "0001545654",
+      "source": "bulk_top",
+      "member": "CIK0001545654.json",
+      "sha256": "769c7b224cb5af877b2982b9d91ad797544b5cae54ffdacde57b9dff92449a04"
+    },
+    {
+      "cik": "0001547903",
+      "source": "bulk_top",
+      "member": "CIK0001547903.json",
+      "sha256": "2ac997955f7abeae710e705ec11c1a5d2339e47e607a9a33f85032068b5b1f2f"
+    },
+    {
+      "cik": "0001560385",
+      "source": "bulk_top",
+      "member": "CIK0001560385.json",
+      "sha256": "3da9d0ad0735e2b8fab601a4b50cee34ed3e104cb3f9e2b3a156123b9e9b3361"
+    },
+    {
+      "cik": "0001560385",
+      "source": "bulk_history",
+      "member": "CIK0001560385-submissions-001.json",
+      "sha256": "afcee1c92ec8d57b48e5d582f1c182412721c1a5a1a00161f19bc0c8f8c3c51a"
+    },
+    {
+      "cik": "0001562463",
+      "source": "bulk_top",
+      "member": "CIK0001562463.json",
+      "sha256": "4b0f7977e0155b4cd58ffaa35b494f82e5cbf1aa65a8614f15d68674a7a470f5"
+    },
+    {
+      "cik": "0001562622",
+      "source": "bulk_top",
+      "member": "CIK0001562622.json",
+      "sha256": "9e6f440f3a867efddc1ec11952fc9161812ccf16723b6982077075536b47fdd2"
+    },
+    {
+      "cik": "0001569187",
+      "source": "bulk_top",
+      "member": "CIK0001569187.json",
+      "sha256": "2db110720309d802d03b963b7fbfacf50b9b6a1b68c7e9b906fd29c521ae4726"
+    },
+    {
+      "cik": "0001571398",
+      "source": "bulk_top",
+      "member": "CIK0001571398.json",
+      "sha256": "f467bcc32b72702a013cd81ef053225870611256f804a71e11edeef3bbfac0c3"
+    },
+    {
+      "cik": "0001578776",
+      "source": "bulk_top",
+      "member": "CIK0001578776.json",
+      "sha256": "bac29f6de4c0f41353f9c6b7efa0bf6e1ce40ec48ca892ca434abeaeb40c4269"
+    },
+    {
+      "cik": "0001594686",
+      "source": "bulk_top",
+      "member": "CIK0001594686.json",
+      "sha256": "582d3ed956f7ecff205f1c26c5a110971c319bd081460c4f539e2a441cf8026d"
+    },
+    {
+      "cik": "0001600438",
+      "source": "bulk_top",
+      "member": "CIK0001600438.json",
+      "sha256": "f94511f6f93c9ae24bbad0ec1d6ae8ef6c27fef2b79085f364d9bb94ecf16d09"
+    },
+    {
+      "cik": "0001601046",
+      "source": "bulk_top",
+      "member": "CIK0001601046.json",
+      "sha256": "2ade209b9a3089f2500b4f9ddd2d24269767461fa86f06010fb9a873efc95235"
+    },
+    {
+      "cik": "0001601046",
+      "source": "bulk_history",
+      "member": "CIK0001601046-submissions-001.json",
+      "sha256": "8e524c2d442cd8fba4c6b1ec259947ec94fef369108ff664c4acd2163d44a737"
+    },
+    {
+      "cik": "0001609702",
+      "source": "bulk_top",
+      "member": "CIK0001609702.json",
+      "sha256": "c315df30e1ada23bec2d2a01b5f6236a42e835b121df806cb6e77803d5ac4f2b"
+    },
+    {
+      "cik": "0001611547",
+      "source": "bulk_top",
+      "member": "CIK0001611547.json",
+      "sha256": "132900f9408d54aa7093a15d6d2a0111d367017a0cc61f521c5032b2d18fdf15"
+    },
+    {
+      "cik": "0001615063",
+      "source": "bulk_top",
+      "member": "CIK0001615063.json",
+      "sha256": "dbccd9640a56bdba75391bcf0b82ca98fc3fa5f26495d28e6a3391ddd48f0c90"
+    },
+    {
+      "cik": "0001616741",
+      "source": "bulk_top",
+      "member": "CIK0001616741.json",
+      "sha256": "797814bafdbc75e4d11a0509a54eb0464432b6017e09cc8dd276694cf9db5ed2"
+    },
+    {
+      "cik": "0001620928",
+      "source": "bulk_top",
+      "member": "CIK0001620928.json",
+      "sha256": "0c04c2475a92fdb1db0bc25d23922f09b22204db82556b47a932007e2bb522b8"
+    },
+    {
+      "cik": "0001629205",
+      "source": "bulk_top",
+      "member": "CIK0001629205.json",
+      "sha256": "da9cca619fcbfffaeafb9e39dfa6a026aedf2f338b12263378803965b3e5e020"
+    },
+    {
+      "cik": "0001635282",
+      "source": "bulk_top",
+      "member": "CIK0001635282.json",
+      "sha256": "5991ad63d001ab2452dea5d43c2f2b68da09dc855f14f968ed787b71aa170b28"
+    },
+    {
+      "cik": "0001635282",
+      "source": "bulk_history",
+      "member": "CIK0001635282-submissions-001.json",
+      "sha256": "cb72119efae009ac791ad6b4b5959d0082796ee9ca254a74314c688e3ed29aa3"
+    },
+    {
+      "cik": "0001635984",
+      "source": "bulk_top",
+      "member": "CIK0001635984.json",
+      "sha256": "65a5758fd026dccb545dfa76fe5e818555c108b4037555ac5fcfb33d3c7482bc"
+    },
+    {
+      "cik": "0001637558",
+      "source": "bulk_top",
+      "member": "CIK0001637558.json",
+      "sha256": "4739ad2c2e7cd3c742c8e2eeb9bc143c75e78fa39af209d18d4786ac98f3984d"
+    },
+    {
+      "cik": "0001637757",
+      "source": "bulk_top",
+      "member": "CIK0001637757.json",
+      "sha256": "ee4c786917d1e04f12cabc3bfea855d4cb74d18db90ac73b568ef3dd1f288692"
+    },
+    {
+      "cik": "0001640982",
+      "source": "bulk_top",
+      "member": "CIK0001640982.json",
+      "sha256": "f3aad24a634092ddd63136bbf7359abb29a95d708ff10ba37651fe9d754e0d81"
+    },
+    {
+      "cik": "0001641991",
+      "source": "bulk_top",
+      "member": "CIK0001641991.json",
+      "sha256": "964750131031456fbe6e02dc8bf66b59e7ca86fecae4a9ac338d5e6a8f89beb1"
+    },
+    {
+      "cik": "0001652871",
+      "source": "bulk_top",
+      "member": "CIK0001652871.json",
+      "sha256": "c15cb743bb87e35d59d8ec86d7a1f1ab74cff3c802dea74a0c84696687e4acee"
+    },
+    {
+      "cik": "0001655075",
+      "source": "bulk_top",
+      "member": "CIK0001655075.json",
+      "sha256": "ad6d1c82bc342422c7c01ae9a0565e3aad0db922b5cce9d50ce3e63c70e2ee85"
+    },
+    {
+      "cik": "0001662524",
+      "source": "bulk_top",
+      "member": "CIK0001662524.json",
+      "sha256": "7fb5d98e991638e1a2af7e8dce5270bd0058b1ca57605297abc2745aac512f19"
+    },
+    {
+      "cik": "0001663038",
+      "source": "bulk_top",
+      "member": "CIK0001663038.json",
+      "sha256": "56aa15fcd59af8cfcaf7e52b4256604974c39cbc5e67263382f2bd96d9d65141"
+    },
+    {
+      "cik": "0001679273",
+      "source": "bulk_top",
+      "member": "CIK0001679273.json",
+      "sha256": "d6006ccca26dd8218a08a68e745a5e17818d7231696b68ca354272df8b94f171"
+    },
+    {
+      "cik": "0001686850",
+      "source": "bulk_top",
+      "member": "CIK0001686850.json",
+      "sha256": "731fdcd707fe5aa97c6911dab38e4950ae3a6be5a5b6f191de31d3e4793d76b4"
+    },
+    {
+      "cik": "0001692981",
+      "source": "bulk_top",
+      "member": "CIK0001692981.json",
+      "sha256": "b61f48a419b416819ad3c8b7665f122c2060dd0658bd580584480849ff28c519"
+    },
+    {
+      "cik": "0001696195",
+      "source": "bulk_top",
+      "member": "CIK0001696195.json",
+      "sha256": "43bff096a230c78d955346be43ff1cd22fa348ab4347493a15e44f2828e7e684"
+    },
+    {
+      "cik": "0001711291",
+      "source": "bulk_top",
+      "member": "CIK0001711291.json",
+      "sha256": "e33f0732e1c561763ca80b5ca57c2fafeaa2cc1ed0172276e5d72ba13711721d"
+    },
+    {
+      "cik": "0001712543",
+      "source": "bulk_top",
+      "member": "CIK0001712543.json",
+      "sha256": "4173ab124153d3a682e8b16bf4063c9887f5a364a1d7db8a96704df6fc811b07"
+    }
+  ]
+}

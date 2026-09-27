@@ -1,0 +1,558 @@
+name: AEF SEC 150 Corrected-Sample Retrieval R4
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/aef-sec-150-retrieval-r4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  retrieval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      SEC_USER_AGENT: \${{ secrets.SEC_USER_AGENT }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate protected SEC identification
+        shell: bash
+        run: |
+          if [ -z "$SEC_USER_AGENT" ]; then
+            echo 'SEC_USER_AGENT secret is missing; aborting before network access.' >&2
+            exit 2
+          fi
+
+      - name: Reproduce corrected sample, download primary filings, and run frozen R3 retrieval
+        shell: python
+        run: |
+          import csv, os, json, time, random, hashlib, urllib.request, pathlib, datetime, zipfile, io
+          import re, gzip, html as ihtml, unicodedata, tarfile
+          from collections import defaultdict, Counter
+
+          UA=os.environ['SEC_USER_AGENT'].strip()
+          SEED=20260925
+          SAMPLE_N=150
+          EXCLUDED_SIC={'6189'}
+          EXPECTED_Q_HASHES={
+            1:'1c76fb8af1fd81935e02db2771849fa4bfb49e7344c5f2fadf8c1659fda24bb9',
+            2:'71ad669c60bdefa3a469f653fcf96ca1ea6fdf870ac239b82458edeaa861703a',
+            3:'3bcb79ffbd2a42b26d7ed666a7b3491b9f01265925a41908bf57f952cefd9b00',
+            4:'bfca373df69a64d3a2a5c408c1d01238f408b5a4aa33b2cac542d1af2f69ff69',
+          }
+          EXPECTED_ORIGINAL_FRAME_N=6907
+          EXPECTED_ORIGINAL_FRAME_HASH='c4839c7cb89485c68da1b3417cc45d5033f02a030a389e5751455f1806c3ea12'
+          EXPECTED_BLANK_SIC_N=91
+          EXPECTED_BLANK_SIC_CIK_HASH='42905db9eda4e3a7ff4f74acaa05d1726914b389dd70221539999f36c3f0bc86'
+          EXPECTED_ABS_N=652
+          EXPECTED_ABS_CIK_HASH='3393b963cfc669f3e7070fb40c4d65f65a80e13622f6f27bf7cb86e98fc7ddf6'
+          EXPECTED_ELIGIBLE_N=6255
+          EXPECTED_SAMPLE_CIK_HASH='edaad590bd61266970b20a67b594f2adfa43849f83ec328ce025e746c1ad8e89'
+          FRAME_REBUILD_SAMPLE_LOGICAL_HASH='654798ac74cc2df597b6daf89fe11b2422ea6909f796362d57a533c3c71df2e1'
+          EXPECTED_EXACT_PRIMARY=3039
+          EXPECTED_OBSERVED_ISSUERS=137
+          EXPECTED_YEAR_COUNTS={2019:535,2020:498,2021:492,2022:430,2023:400,2024:355,2025:329}
+
+          ROOT=pathlib.Path('aef_r4_retrieval')
+          DOCROOT=ROOT/'raw_docs'
+          EXTRACT=ROOT/'extract_r3'
+          RESULT=ROOT/'results'
+          for p in (ROOT,DOCROOT,EXTRACT,RESULT): p.mkdir(exist_ok=True,parents=True)
+
+          def sha_bytes(b):
+              return hashlib.sha256(b).hexdigest()
+
+          def sha_file(p):
+              h=hashlib.sha256()
+              with open(p,'rb') as f:
+                  for b in iter(lambda:f.read(1048576),b''): h.update(b)
+              return h.hexdigest()
+
+          def stable_hash(obj):
+              return hashlib.sha256(json.dumps(obj,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode('utf-8')).hexdigest()
+
+          def hash_list(xs):
+              return hashlib.sha256(json.dumps(sorted(xs),separators=(',',':')).encode()).hexdigest()
+
+          def norm_cik(x):
+              return str(x).strip().zfill(10)
+
+          def get_bytes(url,host,pace=0.25,retries=5):
+              last=None
+              for attempt in range(retries):
+                  time.sleep(pace if attempt==0 else min(12,2**attempt))
+                  req=urllib.request.Request(url,headers={'User-Agent':UA,'Accept-Encoding':'identity','Host':host})
+                  try:
+                      with urllib.request.urlopen(req,timeout=180) as r:
+                          status=getattr(r,'status',200); data=r.read()
+                      if not (200 <= status < 300): raise RuntimeError(f'HTTP {status}')
+                      low=data[:5000].lower()
+                      if b'undeclared automated tool' in low or b'rate threshold exceeded' in low:
+                          raise RuntimeError('SEC block page returned')
+                      return data,status
+                  except Exception as e:
+                      last=e
+              raise RuntimeError(f'GET failed after retries: {url}: {last}')
+
+          # Reproduce the original exact-10-K frame and verify byte/hash lineage.
+          all_rows=[]; raw_index_prov=[]
+          for q in range(1,5):
+              url=f'https://www.sec.gov/Archives/edgar/full-index/2018/QTR{q}/master.idx'
+              b,status=get_bytes(url,'www.sec.gov',pace=0.6)
+              h=sha_bytes(b)
+              if h != EXPECTED_Q_HASHES[q]: raise RuntimeError(f'QTR{q} master hash drift: {h}')
+              raw_index_prov.append({'quarter':q,'url':url,'bytes':len(b),'sha256':h,'http_status':status})
+              start=False
+              for line in b.decode('latin-1').splitlines():
+                  if not start:
+                      if line.startswith('CIK|'): start=True
+                      continue
+                  if not line.strip(): continue
+                  s=line.strip()
+                  if s and set(s)=={'-'}: continue
+                  parts=line.split('|')
+                  if len(parts)!=5: raise RuntimeError(f'Unexpected master row: {line[:160]}')
+                  cik,company,form,filed,filename=parts
+                  all_rows.append({'cik':norm_cik(cik),'company_name':company.strip(),'form':form.strip(),'filed':filed.strip(),'filename':filename.strip()})
+
+          exact=[r for r in all_rows if r['form']=='10-K' and r['filed'].startswith('2018-')]
+          amends=[r for r in all_rows if r['form']=='10-K/A' and r['filed'].startswith('2018-')]
+          by=defaultdict(list); am=defaultdict(list)
+          for r in exact: by[r['cik']].append(r)
+          for r in amends: am[r['cik']].append(r)
+          frame=[]
+          for cik in sorted(by,key=int):
+              fs=sorted(by[cik],key=lambda x:(x['filed'],x['filename'])); can=fs[-1]
+              frame.append({
+                'cik':cik,'company_name':can['company_name'],'n_exact_10k_2018':len(fs),
+                'first_exact_10k_filed':fs[0]['filed'],'last_exact_10k_filed':fs[-1]['filed'],
+                'canonical_display_filed':can['filed'],'canonical_display_filename':can['filename'],
+                'n_10k_a_2018':len(am.get(cik,[]))
+              })
+          if len(frame)!=EXPECTED_ORIGINAL_FRAME_N or stable_hash(frame)!=EXPECTED_ORIGINAL_FRAME_HASH:
+              raise RuntimeError('Original 2018 frame lineage mismatch')
+
+          # Current SEC bulk submissions is navigation metadata only. The 91 blank-SIC CIK set and
+          # its no-ABS reporting-regime audit were frozen by the immediately preceding dependency audit.
+          bulk_url='https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip'
+          bulk_bytes,bulk_status=get_bytes(bulk_url,'www.sec.gov',pace=1.0)
+          bulk_sha=sha_bytes(bulk_bytes)
+          z=zipfile.ZipFile(io.BytesIO(bulk_bytes)); names=set(z.namelist())
+
+          def load_top(cik):
+              for name in (f'CIK{cik}.json',f'submissions/CIK{cik}.json'):
+                  if name in names: return json.loads(z.read(name)),name
+              return None,None
+
+          joined=[]
+          for r in frame:
+              data,member=load_top(r['cik'])
+              if data is None: raise RuntimeError(f'Missing bulk top submission JSON: {r["cik"]}')
+              sic=str(data.get('sic','') or '').strip()
+              joined.append({
+                **r,
+                'sec_current_name':data.get('name',''),
+                'sec_sic_for_measurement_eligibility':sic,
+                'sec_current_entity_type':data.get('entityType',''),
+                'sec_bulk_member':member,
+                'sic_measurement_source':('SEC_SUBMISSIONS_BULK_CURRENT' if sic else 'NO_ASSIGNED_SIC_COMPLETE_SEC_FORM_HISTORY_NO_ABS_SPECIFIC_FORM'),
+                'measurement_eligible_excluding_sic6189':int(sic!='6189')
+              })
+
+          blank=[r['cik'] for r in joined if not r['sec_sic_for_measurement_eligibility']]
+          abs_ciks=[r['cik'] for r in joined if r['sec_sic_for_measurement_eligibility']=='6189']
+          if len(blank)!=EXPECTED_BLANK_SIC_N or hash_list(blank)!=EXPECTED_BLANK_SIC_CIK_HASH:
+              raise RuntimeError('Blank-SIC CIK set drift from verified dependency audit')
+          if len(abs_ciks)!=EXPECTED_ABS_N or hash_list(abs_ciks)!=EXPECTED_ABS_CIK_HASH:
+              raise RuntimeError('SIC 6189 exclusion set drift from verified frame rebuild')
+
+          eligible=[r for r in joined if r['measurement_eligible_excluding_sic6189']==1]
+          if len(eligible)!=EXPECTED_ELIGIBLE_N: raise RuntimeError(f'Corrected eligible frame drift: {len(eligible)}')
+          rng=random.Random(SEED)
+          selected=set(rng.sample([r['cik'] for r in eligible],SAMPLE_N))
+          sample=[r for r in eligible if r['cik'] in selected]
+          if len(sample)!=150 or hash_list([r['cik'] for r in sample])!=EXPECTED_SAMPLE_CIK_HASH:
+              raise RuntimeError('Corrected R4 sample CIK identity mismatch')
+
+          # Rebuild exact 2019-2025 filing metadata for corrected sample.
+          records=[]; submission_sources=[]
+          for row in sample:
+              cik=row['cik']; data,member=load_top(cik)
+              chunks=[data.get('filings',{}).get('recent',{})]
+              submission_sources.append({'cik':cik,'source':'bulk_top','member':member,'sha256':sha_bytes(z.read(member))})
+              for hist in data.get('filings',{}).get('files',[]) or []:
+                  name=hist.get('name')
+                  if not name: continue
+                  member_name=name if name in names else (f'submissions/{name}' if f'submissions/{name}' in names else None)
+                  if member_name:
+                      hb=z.read(member_name)
+                      chunks.append(json.loads(hb))
+                      submission_sources.append({'cik':cik,'source':'bulk_history','member':member_name,'sha256':sha_bytes(hb)})
+                  else:
+                      hurl=f'https://data.sec.gov/submissions/{name}'
+                      hb,_=get_bytes(hurl,'data.sec.gov',pace=0.25)
+                      chunks.append(json.loads(hb))
+                      submission_sources.append({'cik':cik,'source':'live_history','url':hurl,'sha256':sha_bytes(hb)})
+              seen=set(); company=data.get('name','')
+              for recent in chunks:
+                  accs=recent.get('accessionNumber',[]) or []
+                  for i,acc in enumerate(accs):
+                      if acc in seen: continue
+                      seen.add(acc)
+                      def at(k,d=''):
+                          arr=recent.get(k,[]) or []
+                          return arr[i] if i<len(arr) else d
+                      form=at('form'); filed=at('filingDate')
+                      if form not in {'10-K','10-Q'}: continue
+                      if not filed or not ('2019-01-01' <= filed <= '2025-12-31'): continue
+                      primary=at('primaryDocument')
+                      if not primary: raise RuntimeError(f'Missing primaryDocument: {cik} {acc}')
+                      accnodash=str(acc).replace('-',''); cikint=str(int(cik))
+                      records.append({
+                        'cik':cik,'company_name':company,'accession':acc,'filing_date':filed,'report_date':at('reportDate'),
+                        'form':form,'primary_document':primary,
+                        'primary_url':f'https://www.sec.gov/Archives/edgar/data/{cikint}/{accnodash}/{primary}'
+                      })
+
+          records.sort(key=lambda r:(r['filing_date'],int(r['cik']),r['form'],r['accession']))
+          if len(records)!=EXPECTED_EXACT_PRIMARY: raise RuntimeError(f'Exact primary count drift: {len(records)}')
+          if len(set(r['cik'] for r in records))!=EXPECTED_OBSERVED_ISSUERS:
+              raise RuntimeError('Observed issuer count drift')
+          year_counts={y:sum(r['filing_date'].startswith(str(y)) for r in records) for y in range(2019,2026)}
+          if year_counts!=EXPECTED_YEAR_COUNTS: raise RuntimeError(f'Year count drift: {year_counts}')
+
+          # Download exact primary documents.
+          successes=[]; failures=[]
+          for n,r in enumerate(records,1):
+              y=int(r['filing_date'][:4]); yd=DOCROOT/f'docs_{y}'; yd.mkdir(exist_ok=True)
+              safe=pathlib.Path(r['primary_document']).name.replace('/','_')
+              fname=f"{r['cik']}_{r['accession'].replace('-','')}_{r['form'].replace('-','')}_{safe}"
+              try:
+                  b,status=get_bytes(r['primary_url'],'www.sec.gov',pace=0.25)
+                  if len(b)<100: raise RuntimeError(f'Implausibly small response: {len(b)}')
+                  (yd/fname).write_bytes(b)
+                  successes.append({**r,'local_name':fname,'http_status':status,'bytes':len(b),'sha256':sha_bytes(b)})
+              except Exception as e:
+                  failures.append({**r,'error':str(e)})
+              if n%300==0: print(json.dumps({'downloaded':n,'total':len(records),'success':len(successes),'failure':len(failures)}))
+          if failures:
+              with (RESULT/'download_failures.json').open('w',encoding='utf-8') as f: json.dump(failures,f,indent=2)
+              raise RuntimeError(f'Primary-document download failures: {len(failures)}')
+
+          # Write per-year manifests and raw archives before extraction.
+          manifest_fields=list(successes[0].keys())
+          for y in range(2019,2026):
+              yrows=[r for r in successes if r['filing_date'].startswith(str(y))]
+              mp=ROOT/f'manifest_{y}.csv'
+              with mp.open('w',newline='',encoding='utf-8') as f:
+                  w=csv.DictWriter(f,fieldnames=manifest_fields); w.writeheader(); w.writerows(yrows)
+              tp=ROOT/f'raw_primary_docs_R4_{y}.tar.gz'
+              with tarfile.open(tp,'w:gz',compresslevel=6) as tar:
+                  tar.add(DOCROOT/f'docs_{y}',arcname=f'docs_{y}')
+                  tar.add(mp,arcname=f'manifest_{y}.csv')
+
+          # Frozen Extractor R3 logic.
+          SCRIPT_RE=re.compile(r'(?is)<(?:script|style|noscript|ix:header|ix:hidden)\b.*?</(?:script|style|noscript|ix:header|ix:hidden)>')
+          TAG_RE=re.compile(r'(?s)<[^>]+>')
+          I9A=re.compile(r'(?i)\bitem\s*9\s*a\b'); I9B=re.compile(r'(?i)\bitem\s*9\s*b\b'); I9C=re.compile(r'(?i)\bitem\s*9\s*c\b')
+          I10=re.compile(r'(?i)\bitem\s*10\b'); I4=re.compile(r'(?i)\bitem\s*4\b'); CTRL=re.compile(r'(?i)\bcontrols?\s+and\s+procedures\b')
+          PARTII=re.compile(r'(?i)\bpart\s*ii\b'); PARTIII=re.compile(r'(?i)\bpart\s*iii\b')
+          S10=[re.compile(x,re.I) for x in [r'evaluation of disclosure controls',r'management.?s annual report on internal control',r'internal control over financial reporting',r'changes in internal control']]
+          S4=[re.compile(x,re.I) for x in [r'evaluation of disclosure controls',r'changes in internal control',r'internal control over financial reporting']]
+          CAP={'10-K':80000,'10-Q':50000}
+
+          def html_text(path):
+              s=pathlib.Path(path).read_bytes().decode('utf-8','ignore')
+              s=SCRIPT_RE.sub(' ',s); s=TAG_RE.sub(' ',s); s=ihtml.unescape(s); s=unicodedata.normalize('NFKC',s)
+              return ' '.join(s.split())
+
+          def bounded(t,start,ends,cap):
+              loc=[]
+              for p in ends:
+                  m=p.search(t,start+1)
+                  if m: loc.append(m.start())
+              natural=min(loc) if loc else None; hard=min(len(t),start+cap)
+              end=min(natural,hard) if natural is not None else hard
+              return t[start:end].strip(), bool(natural is None or natural>hard), natural
+
+          def qscore(sec,form):
+              first=sec[:700]
+              head=2 if (re.search(r'(?i)\bitem\s*9\s*a\b.{0,180}\bcontrols?\s+and\s+procedures\b',first) if form=='10-K' else re.search(r'(?i)\bitem\s*4\b.{0,180}\bcontrols?\s+and\s+procedures\b',first)) else 0
+              structs=S10 if form=='10-K' else S4
+              st=sum(bool(p.search(sec[:15000])) for p in structs)
+              length=2 if 250<=len(sec)<=30000 else (1 if 120<=len(sec)<=CAP[form] else 0)
+              return (head,st,length,min(len(sec),30000))
+
+          def choose(cands,form):
+              usable=[c for c in cands if len(c[0])>=120]; pool=usable or cands
+              if not pool:return ('','NO_HEADING')
+              sec,capped=max(pool,key=lambda z:qscore(z[0],form))
+              if re.search(r'(?i)\bomitted\b',sec[:700]) and len(sec)<1200:return sec,'OMITTED'
+              if len(sec)<120:return sec,'SHORT'
+              return sec,('OK_CAPPED' if capped else 'OK')
+
+          def extract_section(t,form):
+              if form=='10-K':
+                  c=[]
+                  for m in I9A.finditer(t):
+                      if CTRL.search(t,m.end(),min(len(t),m.end()+700)):
+                          sec,cap,_=bounded(t,m.start(),(I9B,I9C,I10,PARTIII),CAP[form]); c.append((sec,cap))
+                  sec,st=choose(c,form)
+                  if st!='NO_HEADING':return sec,st
+                  f=[]
+                  for cm in CTRL.finditer(t):
+                      pre=t[max(0,cm.start()-1200):cm.start()]; ims=list(I9A.finditer(pre))
+                      if ims:
+                          start=max(0,cm.start()-1200)+ims[-1].start()
+                          ss,cap,_=bounded(t,start,(I9B,I9C,I10,PARTIII),CAP[form]); f.append((ss,cap))
+                  sec,st=choose(f,form)
+                  return sec,('OK_FALLBACK_CAPPED' if st=='OK_CAPPED' else ('OK_FALLBACK' if st=='OK' else st))
+              c=[]
+              for m in I4.finditer(t):
+                  if CTRL.search(t,m.end(),min(len(t),m.end()+700)):
+                      sec,cap,_=bounded(t,m.start(),(PARTII,),CAP[form]); c.append((sec,cap))
+              sec,st=choose(c,form)
+              if st!='NO_HEADING':return sec,st
+              f=[]
+              for cm in CTRL.finditer(t):
+                  pre=t[max(0,cm.start()-1200):cm.start()]; ims=list(I4.finditer(pre))
+                  if ims:
+                      start=max(0,cm.start()-1200)+ims[-1].start()
+                      ss,cap,_=bounded(t,start,(PARTII,),CAP[form]); f.append((ss,cap))
+              sec,st=choose(f,form)
+              return sec,('OK_FALLBACK_CAPPED' if st=='OK_CAPPED' else ('OK_FALLBACK' if st=='OK' else st))
+
+          extraction_rows=[]; section_by_acc={}
+          by_acc={r['accession']:r for r in successes}
+          for r in successes:
+              y=int(r['filing_date'][:4])
+              tx=html_text(DOCROOT/f'docs_{y}'/r['local_name'])
+              sec,st=extract_section(tx,r['form'])
+              er={**r,'year':y,'source_sha256':r['sha256'],'section_status':st,'section_len':len(sec)}
+              extraction_rows.append(er); section_by_acc[r['accession']]=sec
+
+          # Frozen Retrieval Screen R3 logic.
+          USABLE={'OK','OK_CAPPED','OK_FALLBACK','OK_FALLBACK_CAPPED'}
+          AUTO_RE=re.compile(r"\b(automat(?:e|ed|es|ing|ion|ions|ic|ically|ized|ization|izations)|robotic process automation|RPA|machine learning|artificial intelligence)\b",re.I)
+          ACCOUNT_RE=re.compile(r"\b(financial reporting|internal control(?:s)?(?: over financial reporting)?|ICFR|journal entr(?:y|ies)|general ledger|ledger system(?:s)?|financial close|close process|consolidation|reconciliation|account reconciliation|procure(?:ment)?|purchase[- ]to[- ]pay|accounts payable|accounts receivable|segregation of duties|ITGC|SOX|financial system(?:s)?|accounting system(?:s)?|financial statements?)\b",re.I)
+          SPEC_SYS_RE=re.compile(r"\b(ERP|enterprise resource planning|financial system(?:s)?|accounting system(?:s)?|general ledger system(?:s)?|SAP|Oracle|Workday|NetSuite|PeopleSoft)\b",re.I)
+          CONTROL_RE=re.compile(r"\b(automated control(?:s)?|application control(?:s)?|system[- ]generated|interface control(?:s)?|automated workflow(?:s)?|approval workflow(?:s)?|IT[- ]dependent control(?:s)?)\b",re.I)
+          CHANGE_RE=re.compile(r"\b(implement(?:ed|ing|ation)?|introduc(?:ed|ing|tion)?|deploy(?:ed|ing|ment)?|put into operation|went live|go live|completed implementation|replac(?:ed|ing|ement)?|configur(?:ed|ing|ation)?|launch(?:ed|ing)?|migrat(?:ed|ing|ion)?|upgrad(?:ed|ing|e)?|roll(?:ed|ing)? out|redesign(?:ed|ing)?|automat(?:e|ed|ing|ion)|transition(?:ed|ing)?|new (?:financial|accounting|ERP|enterprise resource planning|general ledger) system)\b",re.I)
+          PLAN_RE=re.compile(r"\b(plan(?:ned|ning)?|intend(?:ed|ing)?|expect(?:ed|ing)?|design(?:ing|ed)?|in process of|will implement|implementation underway|implementing)\b",re.I)
+          FAIL_RE=re.compile(r"\b(ineffective|deficien(?:cy|cies)|material weakness|did not operate effectively|failed|configuration issue)\b",re.I)
+          GENERIC_SYS_RE=re.compile(r"\b(system(?:s)?|process(?:es)?|workflow(?:s)?)\b",re.I)
+          ACCOUNTING_SOFTWARE_RE=re.compile(r"\b(accounting software|financial reporting software|lease administration software|financial close software|close management software|reconciliation software|journal entr(?:y|ies) software|general ledger software|tax software|payroll software|accounts payable software|accounts receivable software|procurement software|built[- ]in controls?)\b",re.I)
+          WORKFLOW_RE=re.compile(r"\b(workflow(?:s)?|electronic approval(?:s)?|approval routing)\b",re.I)
+
+          def near(s):
+              for m in CHANGE_RE.finditer(s):
+                  w=s[max(0,m.start()-450):min(len(s),m.end()+450)]
+                  if ACCOUNT_RE.search(w) and GENERIC_SYS_RE.search(w): return True
+              return False
+
+          def screen_section(sec,status,form):
+              if status not in USABLE:return (False,[])
+              s=sec[:40000 if form=='10-K' else 30000]
+              auto=bool(AUTO_RE.search(s)); acct=bool(ACCOUNT_RE.search(s)); spec=bool(SPEC_SYS_RE.search(s))
+              ctrl=bool(CONTROL_RE.search(s)); change=bool(CHANGE_RE.search(s)); plan=bool(PLAN_RE.search(s))
+              fail=bool(FAIL_RE.search(s)); prox=near(s); soft=bool(ACCOUNTING_SOFTWARE_RE.search(s)); wf=False
+              for m in WORKFLOW_RE.finditer(s):
+                  w=s[max(0,m.start()-500):min(len(s),m.end()+500)]
+                  if ACCOUNT_RE.search(w) and (CHANGE_RE.search(w) or PLAN_RE.search(w) or CONTROL_RE.search(w)):
+                      wf=True; break
+              comps=[]
+              if auto and acct: comps.append('AUTO+ACCOUNTING')
+              if ctrl and acct: comps.append('CONTROL+ACCOUNTING')
+              if spec and (change or plan or fail): comps.append('SPECIFIC_SYSTEM_CHANGE')
+              if prox: comps.append('SYSTEM_CHANGE_PROXIMITY')
+              if soft: comps.append('ACCOUNTING_SOFTWARE_OR_BUILTIN_CONTROL')
+              if wf: comps.append('ACCOUNTING_WORKFLOW_CHANGE')
+              return bool(comps),comps
+
+          screen_rows=[]
+          for er in extraction_rows:
+              hit,comps=screen_section(section_by_acc[er['accession']],er['section_status'],er['form'])
+              screen_rows.append({
+                'cik':er['cik'],'company_name':er['company_name'],'accession':er['accession'],'filing_date':er['filing_date'],
+                'report_date':er['report_date'],'year':er['year'],'form':er['form'],
+                'section_status':er['section_status'],'section_len':er['section_len'],
+                'candidate_retrieval_hit':int(hit),'retrieval_rule_components':';'.join(comps),
+                'primary_url':er['primary_url'],'source_sha256':er['source_sha256']
+              })
+          screen_rows.sort(key=lambda r:(r['year'],int(r['cik']),r['accession']))
+
+          screen_path=RESULT/'SEC_150_R4_Filing_Retrieval_Screen_R3.csv'
+          with screen_path.open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=list(screen_rows[0].keys())); w.writeheader(); w.writerows(screen_rows)
+
+          candidates=[r for r in screen_rows if r['candidate_retrieval_hit']==1]
+          cand_path=RESULT/'SEC_150_R4_Candidate_Filings_R3.csv'
+          with cand_path.open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=list(candidates[0].keys())); w.writeheader(); w.writerows(candidates)
+
+          with gzip.open(RESULT/'SEC_150_R4_Candidate_Sections_R3.jsonl.gz','wt',encoding='utf-8') as f:
+              for r in candidates:
+                  f.write(json.dumps({**r,'section_text':section_by_acc[r['accession']]},ensure_ascii=False)+'\n')
+
+          unresolved=[r for r in screen_rows if r['section_status'] not in USABLE]
+          if unresolved:
+              with (RESULT/'SEC_150_R4_Unresolved_Filings_R3.csv').open('w',newline='',encoding='utf-8') as f:
+                  w=csv.DictWriter(f,fieldnames=list(unresolved[0].keys())); w.writeheader(); w.writerows(unresolved)
+
+          # Issuer-year coverage grid.
+          groups=defaultdict(list)
+          for r in screen_rows: groups[(r['cik'],r['year'])].append(r)
+          grid=[]
+          for (cik,y),rs in sorted(groups.items(),key=lambda x:(x[0][1],int(x[0][0]))):
+              usable_n=sum(r['section_status'] in USABLE for r in rs)
+              hit_n=sum(r['candidate_retrieval_hit'] for r in rs)
+              grid.append({
+                'cik':cik,'year':y,'n_exact_primary_filings':len(rs),
+                'n_10k':sum(r['form']=='10-K' for r in rs),'n_10q':sum(r['form']=='10-Q' for r in rs),
+                'n_usable_sections':usable_n,'n_unresolved_sections':len(rs)-usable_n,
+                'all_sections_unresolved':int(usable_n==0),'candidate_hit_filings':hit_n,
+                'has_candidate_hit':int(hit_n>0)
+              })
+          grid_path=RESULT/'SEC_150_R4_IssuerYear_Coverage_Grid_R3.csv'
+          with grid_path.open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=list(grid[0].keys())); w.writeheader(); w.writerows(grid)
+
+          status_counts=dict(Counter(r['section_status'] for r in screen_rows))
+          summary={
+            'created_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),
+            'workflow_commit_sha':os.environ.get('GITHUB_SHA'),
+            'frame_rebuild_sample_logical_hash':FRAME_REBUILD_SAMPLE_LOGICAL_HASH,
+            'sample_cik_hash':EXPECTED_SAMPLE_CIK_HASH,'sample_n':150,
+            'excluded_sic6189_n':EXPECTED_ABS_N,'eligible_frame_n':EXPECTED_ELIGIBLE_N,
+            'blank_sic_verified_non_abs_n':EXPECTED_BLANK_SIC_N,
+            'exact_primary_filings':len(screen_rows),'download_successes':len(successes),'download_failures':len(failures),
+            'observed_issuers':len(set(r['cik'] for r in screen_rows)),
+            'observed_issuer_years':len(grid),
+            'section_status_counts':status_counts,
+            'usable_sections':sum(r['section_status'] in USABLE for r in screen_rows),
+            'unresolved_filings':len(unresolved),
+            'fully_unresolved_issuer_years':sum(r['all_sections_unresolved'] for r in grid),
+            'candidate_filings':len(candidates),
+            'candidate_issuers':len(set(r['cik'] for r in candidates)),
+            'candidate_issuer_years':len(set((r['cik'],r['year']) for r in candidates)),
+            'screen_core_sha256':sha_file(screen_path),
+            'candidate_filings_sha256':sha_file(cand_path),
+            'coverage_grid_sha256':sha_file(grid_path),
+            'extractor_rule':'R6_SEC_150_Item9A_Item4_Extractor_R3 unchanged logic',
+            'screen_rule':'R6_SEC_150_Retrieval_Screen_FromCache_R3 unchanged logic',
+            'formal_treatment_created':'NO',
+            'measurement_gate_passed':'NO',
+          }
+          for y in range(2019,2026):
+              tp=ROOT/f'raw_primary_docs_R4_{y}.tar.gz'
+              summary[f'raw_archive_{y}_sha256']=sha_file(tp)
+              summary[f'raw_archive_{y}_bytes']=tp.stat().st_size
+          (RESULT/'SEC_150_R4_Retrieval_Screen_Summary_R3.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
+          (RESULT/'SEC_150_R4_Retrieval_Provenance_R1.json').write_text(json.dumps({
+            **summary,
+            'raw_2018_index_provenance':raw_index_prov,
+            'sec_bulk_submissions_url':bulk_url,
+            'sec_bulk_submissions_http_status':bulk_status,
+            'sec_bulk_submissions_sha256':bulk_sha,
+            'submission_source_count':len(submission_sources),
+          },indent=2),encoding='utf-8')
+          print(json.dumps(summary,indent=2))
+
+      - name: Upload retrieval outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-r4-retrieval-results-\${{ github.run_id }}
+          path: aef_r4_retrieval/results/
+          if-no-files-found: warn
+          retention-days: 5
+          compression-level: 6
+
+      - name: Upload 2019 raw archive
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-r4-primary-2019-\${{ github.run_id }}
+          path: |
+            aef_r4_retrieval/raw_primary_docs_R4_2019.tar.gz
+            aef_r4_retrieval/manifest_2019.csv
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 0
+
+      - name: Upload 2020 raw archive
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-r4-primary-2020-\${{ github.run_id }}
+          path: |
+            aef_r4_retrieval/raw_primary_docs_R4_2020.tar.gz
+            aef_r4_retrieval/manifest_2020.csv
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 0
+
+      - name: Upload 2021 raw archive
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-r4-primary-2021-\${{ github.run_id }}
+          path: |
+            aef_r4_retrieval/raw_primary_docs_R4_2021.tar.gz
+            aef_r4_retrieval/manifest_2021.csv
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 0
+
+      - name: Upload 2022 raw archive
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-r4-primary-2022-\${{ github.run_id }}
+          path: |
+            aef_r4_retrieval/raw_primary_docs_R4_2022.tar.gz
+            aef_r4_retrieval/manifest_2022.csv
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 0
+
+      - name: Upload 2023 raw archive
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-r4-primary-2023-\${{ github.run_id }}
+          path: |
+            aef_r4_retrieval/raw_primary_docs_R4_2023.tar.gz
+            aef_r4_retrieval/manifest_2023.csv
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 0
+
+      - name: Upload 2024 raw archive
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-r4-primary-2024-\${{ github.run_id }}
+          path: |
+            aef_r4_retrieval/raw_primary_docs_R4_2024.tar.gz
+            aef_r4_retrieval/manifest_2024.csv
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 0
+
+      - name: Upload 2025 raw archive
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-r4-primary-2025-\${{ github.run_id }}
+          path: |
+            aef_r4_retrieval/raw_primary_docs_R4_2025.tar.gz
+            aef_r4_retrieval/manifest_2025.csv
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 0
