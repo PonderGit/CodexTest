@@ -174,9 +174,9 @@ jobs:
                   hdr_url='https://www.sec.gov/Archives/' + j['canonical_display_filename'].lstrip('/')
                   hb,_=get_bytes(hdr_url,'www.sec.gov',pace=0.35)
                   txt=hb[:250000].decode('latin-1','ignore')
-                  m=re.search(r'(?im)^STANDARD INDUSTRIAL CLASSIFICATION:\\s*.*?\\[(\\d{4})\\]',txt)
+                  m=re.search(r'(?im)^STANDARD INDUSTRIAL CLASSIFICATION:\s*.*?\[(\d{4})\]',txt)
                   if not m:
-                      m=re.search(r'(?i)<ASSIGNED-SIC>\\s*(\\d{4})',txt)
+                      m=re.search(r'(?i)<ASSIGNED-SIC>\s*(\d{4})',txt)
                   if m:
                       sic=m.group(1)
                       j['sec_sic_for_measurement_eligibility']=sic
