@@ -1,0 +1,50 @@
+{
+  "workflow": "AEF Corrected Raw Archive Slim Persistence Prep R1",
+  "run_id": "36330265926",
+  "job_status": "success",
+  "all_years_success": true,
+  "year_jobs": [
+    {
+      "name": "slim-year (2019, 10934539175, dd8cde431d548dceccf299856f0c737c7027371b9b517cec159d9fa7615f1812)",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 108650725383
+    },
+    {
+      "name": "slim-year (2021, 10935046749, 9c47684aff41f40e6315c891965089599875bfc68bef1fb0a49fd913b8bcb55d)",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 108650725475
+    },
+    {
+      "name": "slim-year (2025, 10935052214, 8b271a1c5e19e6f254cbdab0765236a677a97854d07813c262c2e7204c7786da)",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 108650725500
+    },
+    {
+      "name": "slim-year (2022, 10935122557, 29ed3ab655b362b108df43d78ae196432f23a01a84ba7fb22573cce10f70d327)",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 108650725503
+    },
+    {
+      "name": "slim-year (2020, 10935210953, cfca5df3ab073c241ecf946887d47ad97df9d44c569f769a54617b2fac2b5ceb)",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 108650725510
+    },
+    {
+      "name": "slim-year (2024, 10935446074, 19165ea06810a41dc03e345324ecee420993886251cb318ffa4373a7b1a51a96)",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 108650725530
+    },
+    {
+      "name": "slim-year (2023, 10935810429, d4635827880cdc763270861e88bbebdb2bf7967cda7188fd3374f3eb917d4c78)",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 108650725535
+    }
+  ]
+}
