@@ -1,0 +1,256 @@
+name: AEF Corrected Sample Primary Acquisition R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-corrected-primary-acquisition-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  acquire-year:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        year: [2019, 2020, 2021, 2022, 2023, 2024, 2025]
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+      GH_TOKEN: ${{ github.token }}
+      METADATA_RUN_ID: "36327119755"
+      METADATA_ARTIFACT: "aef-corrected-sample-metadata-r1-36327119755"
+    steps:
+      - name: Validate protected identifiers
+        shell: bash
+        run: |
+          test -n "$SEC_USER_AGENT" || { echo "SEC_USER_AGENT missing" >&2; exit 2; }
+          test -n "$GH_TOKEN" || { echo "GH_TOKEN missing" >&2; exit 2; }
+
+      - name: Download frozen Stage 4 metadata
+        shell: bash
+        run: |
+          mkdir -p metadata_in
+          gh run download "$METADATA_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$METADATA_ARTIFACT" --dir metadata_in
+          test -f metadata_in/SEC_150_CORRECTED_MultiYear_Filing_Metadata_2019_2025_R1.csv
+          test -f metadata_in/SEC_150_CORRECTED_MultiYear_Metadata_Summary_R1.json
+
+      - name: Acquire primary filings for year
+        shell: python
+        env:
+          TARGET_YEAR: ${{ matrix.year }}
+        run: |
+          import csv, hashlib, json, os, pathlib, tarfile, time
+          import urllib.error, urllib.parse, urllib.request
+          from datetime import datetime, timezone
+
+          year=int(os.environ['TARGET_YEAR'])
+          ua=os.environ['SEC_USER_AGENT'].strip()
+          meta=pathlib.Path('metadata_in/SEC_150_CORRECTED_MultiYear_Filing_Metadata_2019_2025_R1.csv')
+          out=pathlib.Path(f'acq_{year}')
+          docs=out/'docs'
+          docs.mkdir(parents=True,exist_ok=True)
+
+          all_rows=list(csv.DictReader(meta.open(encoding='utf-8')))
+          rows=[r for r in all_rows if r['form'] in {'10-K','10-Q'} and r['filing_date'].startswith(str(year))]
+          rows=sorted(rows,key=lambda r:(r['cik'],r['filing_date'],r['accession'],r['form']))
+          expected=len(rows)
+          if expected == 0:
+              raise RuntimeError(f'No expected exact primary rows for {year}')
+
+          def fetch_adaptive(url):
+              attempt=0
+              delay=1.0
+              while True:
+                  attempt += 1
+                  req=urllib.request.Request(url,headers={
+                      'User-Agent':ua,
+                      'Accept-Encoding':'identity',
+                      'Host':'www.sec.gov',
+                  })
+                  try:
+                      with urllib.request.urlopen(req,timeout=90) as resp:
+                          data=resp.read()
+                          status=getattr(resp,'status',200)
+                          if not (200 <= status < 300):
+                              raise RuntimeError(f'HTTP {status}')
+                          return data,status,attempt
+                  except urllib.error.HTTPError as e:
+                      retryable=(e.code==429 or 500 <= e.code < 600)
+                      if (not retryable) or attempt >= 5:
+                          raise
+                      ra=e.headers.get('Retry-After')
+                      wait=float(ra) if ra and ra.isdigit() else delay
+                      time.sleep(min(max(wait,1.0),30.0))
+                      delay=min(delay*2,30.0)
+                  except (urllib.error.URLError, TimeoutError):
+                      if attempt >= 5:
+                          raise
+                      time.sleep(delay)
+                      delay=min(delay*2,30.0)
+
+          manifest=[]
+          failures=[]
+          for idx,r in enumerate(rows,1):
+              cik_norm=r['cik'].strip().zfill(10)
+              cik_path=str(int(cik_norm))
+              acc=r['accession'].strip()
+              acc_clean=acc.replace('-','')
+              primary=r['primary_document'].strip()
+              if not acc or not primary:
+                  failures.append({**r,'error':'MISSING_ACCESSION_OR_PRIMARY_DOCUMENT'})
+                  continue
+              quoted=urllib.parse.quote(primary,safe='._-')
+              url=f'https://www.sec.gov/Archives/edgar/data/{cik_path}/{acc_clean}/{quoted}'
+              try:
+                  data,status,attempts=fetch_adaptive(url)
+                  # Stable local name keyed by accession + primary document.
+                  safe_primary=pathlib.PurePosixPath(primary).name.replace('/','_')
+                  filename=f'{cik_norm}__{acc}__{safe_primary}'
+                  p=docs/filename
+                  p.write_bytes(data)
+                  manifest.append({
+                      **r,
+                      'source_url':url,
+                      'http_status':status,
+                      'attempts':attempts,
+                      'bytes':len(data),
+                      'sha256':hashlib.sha256(data).hexdigest(),
+                      'local_name':filename,
+                  })
+              except Exception as e:
+                  failures.append({**r,'source_url':url,'error':type(e).__name__+': '+str(e)[:300]})
+              # Adaptive pacing: with max-parallel=2, 0.28 s keeps aggregate request rate conservative.
+              time.sleep(0.28)
+
+          manifest_path=out/f'SEC_150_CORRECTED_PrimaryDocs_{year}_Manifest_R1.csv'
+          fields=list(manifest[0].keys()) if manifest else list(rows[0].keys())+['source_url','http_status','attempts','bytes','sha256','local_name']
+          with manifest_path.open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore'); w.writeheader(); w.writerows(manifest)
+
+          fail_path=out/f'SEC_150_CORRECTED_PrimaryDocs_{year}_Failures_R1.csv'
+          fail_fields=sorted({k for x in failures for k in x.keys()}) if failures else ['cik','form','filing_date','accession','error']
+          with fail_path.open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=fail_fields,extrasaction='ignore'); w.writeheader(); w.writerows(failures)
+
+          tar_path=out/f'SEC_150_CORRECTED_PrimaryDocs_{year}_R1.tar.gz'
+          with tarfile.open(tar_path,'w:gz') as tf:
+              for p in sorted(docs.iterdir(),key=lambda x:x.name):
+                  tf.add(p,arcname=p.name)
+
+          summary={
+              'year':year,
+              'expected_exact_primary':expected,
+              'success_n':len(manifest),
+              'failure_n':len(failures),
+              'complete':len(manifest)==expected and len(failures)==0,
+              'total_bytes':sum(int(x['bytes']) for x in manifest),
+              'tar_sha256':hashlib.sha256(tar_path.read_bytes()).hexdigest(),
+              'tar_bytes':tar_path.stat().st_size,
+              'manifest_sha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+              'failures_sha256':hashlib.sha256(fail_path.read_bytes()).hexdigest(),
+              'retrieved_at_utc':datetime.now(timezone.utc).isoformat(),
+              'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),
+          }
+          (out/f'SEC_150_CORRECTED_PrimaryDocs_{year}_Summary_R1.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
+          print(json.dumps(summary,indent=2))
+          if not summary['complete']:
+              raise RuntimeError(f'Year {year} incomplete: {summary}')
+
+      - name: Upload annual acquisition artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-corrected-primary-${{ matrix.year }}-r1-${{ github.run_id }}
+          path: acq_${{ matrix.year }}/
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 0
+
+  finalize:
+    runs-on: ubuntu-latest
+    needs: acquire-year
+    if: always()
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Download annual artifacts
+        shell: bash
+        run: |
+          mkdir -p all_years
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --dir all_years
+
+      - name: Build provenance checkpoint
+        shell: python
+        run: |
+          import hashlib,json,os,pathlib
+          from datetime import datetime,timezone
+
+          root=pathlib.Path('all_years')
+          summaries=[]
+          for p in sorted(root.rglob('SEC_150_CORRECTED_PrimaryDocs_*_Summary_R1.json')):
+              summaries.append(json.loads(p.read_text()))
+          years=sorted(x['year'] for x in summaries)
+          expected_years=[2019,2020,2021,2022,2023,2024,2025]
+          total_expected=sum(x['expected_exact_primary'] for x in summaries)
+          total_success=sum(x['success_n'] for x in summaries)
+          total_failure=sum(x['failure_n'] for x in summaries)
+          annual={str(x['year']):x for x in summaries}
+          complete=(years==expected_years and total_expected==3039 and total_success==3039 and total_failure==0 and all(x['complete'] for x in summaries))
+          checkpoint={
+              'stage':'CORRECTED_SAMPLE_PRIMARY_ACQUISITION_PROVENANCE',
+              'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),
+              'trigger_commit_sha':os.environ.get('GITHUB_SHA'),
+              'years':years,
+              'expected_total':total_expected,
+              'success_total':total_success,
+              'failure_total':total_failure,
+              'complete':complete,
+              'annual':annual,
+              'created_at_utc':datetime.now(timezone.utc).isoformat(),
+          }
+          out=pathlib.Path('checkpoint'); out.mkdir(exist_ok=True)
+          p=out/'SEC_150_CORRECTED_PrimaryDocs_Acquisition_Provenance_R1.json'
+          p.write_text(json.dumps(checkpoint,indent=2),encoding='utf-8')
+          print(json.dumps(checkpoint,indent=2))
+          if not complete:
+              raise RuntimeError('Acquisition checkpoint incomplete')
+
+      - name: Upload final provenance artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-corrected-primary-provenance-r1-${{ github.run_id }}
+          path: checkpoint/
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 6
+
+      - name: Publish restartable acquisition status
+        if: always()
+        shell: python
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          import base64,json,os,pathlib,urllib.request,urllib.error
+          repo=os.environ['GITHUB_REPOSITORY']; run_id=os.environ['GITHUB_RUN_ID']
+          p=pathlib.Path('checkpoint/SEC_150_CORRECTED_PrimaryDocs_Acquisition_Provenance_R1.json')
+          summary=json.loads(p.read_text()) if p.exists() else None
+          obj={'workflow':'AEF Corrected Sample Primary Acquisition R1','run_id':run_id,'job_status':os.environ.get('JOB_STATUS'),'trigger_commit_sha':os.environ.get('GITHUB_SHA'),'provenance_artifact_name':f'aef-corrected-primary-provenance-r1-{run_id}','summary':summary}
+          raw=(json.dumps(obj,indent=2)+'\n').encode()
+          api=f'https://api.github.com/repos/{repo}/contents/aef_acquisition/latest_run.json'
+          headers={'Authorization':f'Bearer {os.environ["GH_TOKEN"]}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'AEF-acquisition-status'}
+          sha=None
+          try:
+              with urllib.request.urlopen(urllib.request.Request(api,headers=headers),timeout=30) as rr:
+                  sha=json.loads(rr.read().decode()).get('sha')
+          except urllib.error.HTTPError as e:
+              if e.code!=404: raise
+          body={'message':f'AEF acquisition status for run {run_id}','content':base64.b64encode(raw).decode()}
+          if sha: body['sha']=sha
+          req=urllib.request.Request(api,data=json.dumps(body).encode(),headers={**headers,'Content-Type':'application/json'},method='PUT')
+          with urllib.request.urlopen(req,timeout=30) as rr: print(rr.status)
