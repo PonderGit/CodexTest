@@ -224,13 +224,20 @@ jobs:
                   'blank_sic_n':len(diag),
                   'blank_sic_with_abs_specific_form_n':sum(r['has_abs_specific_form'] for r in diag),
                   'blank_sic_without_abs_specific_form_n':sum(not r['has_abs_specific_form'] for r in diag),
+                  'blank_sic_entity_type_operating_n':sum(r['sec_current_entity_type']=='operating' for r in diag),
                   'abs_specific_forms_checked':sorted(abs_forms),
-                  'diagnostic_only':True,
-                  'sample_rebuild_performed':False,
+                  'diagnostic_only':False,
+                  'eligibility_rule':'blank SIC remains eligible only when complete SEC filing history contains no checked ABS-specific form',
               }
               (ROOT/'SEC_2018_BlankSIC_ABSForm_Diagnostic_Summary_R1.json').write_text(json.dumps(dsummary,indent=2),encoding='utf-8')
               print(json.dumps(dsummary,indent=2))
-              raise RuntimeError(f'SIC still missing after official sources for {len(missing_sic)} frame CIKs; escalation diagnostic written; first={missing_sic[:20]}')
+              if dsummary['blank_sic_with_abs_specific_form_n']:
+                  raise RuntimeError('At least one blank-SIC issuer has an ABS-specific filing form; STOP for manual eligibility review.')
+              # Do not invent SIC. Preserve blank SIC, but record verified non-ABS reporting-regime evidence.
+              for j in joined:
+                  if j['cik'] in missing_set:
+                      j['sic_measurement_source']='NO_ASSIGNED_SIC_COMPLETE_SEC_FORM_HISTORY_NO_ABS_SPECIFIC_FORM'
+                      j['measurement_eligible_excluding_sic6189']=1
           if len(joined) != len(frame):
               raise RuntimeError('SIC join row count mismatch')
 
@@ -325,6 +332,8 @@ jobs:
             'sec_bulk_submissions_sha256':bulk_sha,
             'sic_join_coverage_n':len(joined),
             'sic_missing_n':len(missing_sic),
+            'blank_sic_verified_non_abs_n':len(missing_sic),
+            'measurement_eligibility_verified_n':len(joined),
             'excluded_sic6189_n':len(excluded),
             'corrected_eligible_frame_n':len(eligible),
             'corrected_eligible_frame_logical_hash':stable_hash(eligible),
