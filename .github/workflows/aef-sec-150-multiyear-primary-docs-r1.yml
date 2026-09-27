@@ -1,0 +1,255 @@
+name: AEF SEC 150 Multi-Year Primary Docs R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-sec-150-multiyear-primary-docs-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acquire-docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+    steps:
+      - name: Validate protected SEC identification
+        shell: bash
+        run: |
+          if [ -z "$SEC_USER_AGENT" ]; then
+            echo 'SEC_USER_AGENT secret is missing; aborting before network access.' >&2
+            exit 2
+          fi
+
+      - name: Reproduce frozen sample and download exact primary filings
+        shell: python
+        run: |
+          import csv, os, json, time, random, hashlib, urllib.request, urllib.error, pathlib, datetime, tarfile
+          from collections import defaultdict, Counter
+
+          UA=os.environ['SEC_USER_AGENT'].strip()
+          SEED=20260925
+          SAMPLE_N=150
+          EXPECTED_SAMPLE_LOGICAL_HASH='2e53f4940f7a79ea570b69efb44aab49f70151313747307a98fda88db8fc55c8'
+          ROOT=pathlib.Path('aef_multiyear_docs')
+          ROOT.mkdir(exist_ok=True)
+
+          def stable_hash(obj):
+              return hashlib.sha256(json.dumps(obj,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+          def norm_cik(x): return str(x).strip().zfill(10)
+          def get_bytes(url, host, pace=0.35, retries=4):
+              last=None
+              for attempt in range(retries):
+                  time.sleep(pace if attempt==0 else min(8,2**attempt))
+                  req=urllib.request.Request(url,headers={'User-Agent':UA,'Accept-Encoding':'identity','Host':host})
+                  try:
+                      with urllib.request.urlopen(req,timeout=120) as r:
+                          status=getattr(r,'status',200); data=r.read()
+                      if not (200 <= status < 300): raise RuntimeError(f'HTTP {status}')
+                      low=data[:5000].lower()
+                      if b'undeclared automated tool' in low or b'rate threshold exceeded' in low:
+                          raise RuntimeError('SEC block page returned')
+                      return data,status
+                  except Exception as e:
+                      last=e
+              raise RuntimeError(f'GET failed after retries: {url}: {last}')
+
+          # Reproduce the stage-frozen 150-CIK transport selector from official 2018 indexes.
+          all_rows=[]
+          for q in range(1,5):
+              b,_=get_bytes(f'https://www.sec.gov/Archives/edgar/full-index/2018/QTR{q}/master.idx','www.sec.gov',pace=0.50)
+              start=False
+              for line in b.decode('latin-1').splitlines():
+                  if not start:
+                      if line.startswith('CIK|'): start=True
+                      continue
+                  if not line.strip(): continue
+                  s=line.strip()
+                  if s and set(s)=={'-'}: continue
+                  parts=line.split('|')
+                  if len(parts)!=5: raise RuntimeError(f'Unexpected master row: {line[:160]}')
+                  cik,company,form,filed,filename=parts
+                  all_rows.append({'cik':norm_cik(cik),'company_name':company.strip(),'form':form.strip(),'filed':filed.strip(),'filename':filename.strip()})
+          exact=[r for r in all_rows if r['form']=='10-K' and r['filed'].startswith('2018-')]
+          amends=[r for r in all_rows if r['form']=='10-K/A' and r['filed'].startswith('2018-')]
+          by=defaultdict(list); am=defaultdict(list)
+          for r in exact: by[r['cik']].append(r)
+          for r in amends: am[r['cik']].append(r)
+          frame=[]
+          for cik in sorted(by,key=int):
+              fs=sorted(by[cik],key=lambda x:(x['filed'],x['filename'])); can=fs[-1]
+              frame.append({'cik':cik,'company_name':can['company_name'],'n_exact_10k_2018':len(fs),'first_exact_10k_filed':fs[0]['filed'],'last_exact_10k_filed':fs[-1]['filed'],'canonical_display_filed':can['filed'],'canonical_display_filename':can['filename'],'n_10k_a_2018':len(am.get(cik,[]))})
+          rng=random.Random(SEED); selected=set(rng.sample([r['cik'] for r in frame],SAMPLE_N)); sample=[r for r in frame if r['cik'] in selected]
+          sample_hash=stable_hash(sample)
+          if sample_hash != EXPECTED_SAMPLE_LOGICAL_HASH: raise RuntimeError(f'Frozen sample hash mismatch: {sample_hash}')
+
+          # SEC submissions metadata for the frozen CIKs.
+          records=[]
+          for row in sample:
+              cik=row['cik']
+              b,_=get_bytes(f'https://data.sec.gov/submissions/CIK{cik}.json','data.sec.gov',pace=0.25)
+              data=json.loads(b); chunks=[data.get('filings',{}).get('recent',{})]
+              for hist in data.get('filings',{}).get('files',[]) or []:
+                  name=hist.get('name')
+                  if name:
+                      hb,_=get_bytes(f'https://data.sec.gov/submissions/{name}','data.sec.gov',pace=0.25)
+                      chunks.append(json.loads(hb))
+              seen=set(); company=data.get('name')
+              for recent in chunks:
+                  for i,acc in enumerate(recent.get('accessionNumber',[]) or []):
+                      if acc in seen: continue
+                      seen.add(acc)
+                      def at(k,d=''):
+                          arr=recent.get(k,[]) or []; return arr[i] if i < len(arr) else d
+                      form=at('form'); filed=at('filingDate')
+                      if form not in {'10-K','10-Q'}: continue
+                      if not filed or not ('2019-01-01' <= filed <= '2025-12-31'): continue
+                      primary=at('primaryDocument')
+                      if not primary: continue
+                      accnodash=str(acc).replace('-',''); cikint=str(int(cik))
+                      records.append({'cik':cik,'company_name':company,'accession':acc,'filing_date':filed,'report_date':at('reportDate'),'form':form,'primary_document':primary,'primary_url':f'https://www.sec.gov/Archives/edgar/data/{cikint}/{accnodash}/{primary}'})
+          records.sort(key=lambda r:(r['filing_date'],int(r['cik']),r['form'],r['accession']))
+
+          successes=[]; failures=[]
+          for n,r in enumerate(records,1):
+              year=r['filing_date'][:4]; yd=ROOT/f'docs_{year}'; yd.mkdir(exist_ok=True)
+              safe_primary=pathlib.Path(r['primary_document']).name.replace('/','_')
+              fname=f"{r['cik']}_{r['accession'].replace('-','')}_{r['form'].replace('-','')}_{safe_primary}"
+              path=yd/fname
+              try:
+                  b,status=get_bytes(r['primary_url'],'www.sec.gov',pace=0.35)
+                  if len(b)<100: raise RuntimeError(f'implausibly small response: {len(b)}')
+                  path.write_bytes(b)
+                  successes.append({**r,'local_name':fname,'http_status':status,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})
+              except Exception as e:
+                  failures.append({**r,'error':str(e)})
+              if n % 250 == 0: print(json.dumps({'processed':n,'total':len(records),'success':len(successes),'failure':len(failures)}))
+
+          fields=list(successes[0].keys()) if successes else []
+          with (ROOT/'download_manifest.csv').open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(successes)
+          if failures:
+              ff=list(failures[0].keys())
+              with (ROOT/'download_failures.csv').open('w',newline='',encoding='utf-8') as f:
+                  w=csv.DictWriter(f,fieldnames=ff); w.writeheader(); w.writerows(failures)
+
+          year_counts={str(y):sum(s['filing_date'].startswith(str(y)) for s in successes) for y in range(2019,2026)}
+          summary={'created_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),'commit_sha':os.environ.get('GITHUB_SHA'),'frozen_sample_logical_hash':sample_hash,'expected_exact_documents':len(records),'download_successes':len(successes),'download_failures':len(failures),'success_year_counts':year_counts,'success_form_counts':dict(Counter(s['form'] for s in successes))}
+          (ROOT/'retrieval_summary.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
+
+          # Per-year compressed raw archives, preserving exact bytes plus year manifest.
+          for y in range(2019,2026):
+              ys=str(y); yrows=[s for s in successes if s['filing_date'].startswith(ys)]
+              ymanifest=ROOT/f'manifest_{ys}.csv'
+              with ymanifest.open('w',newline='',encoding='utf-8') as f:
+                  w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(yrows)
+              tarp=ROOT/f'raw_primary_docs_{ys}.tar.gz'
+              with tarfile.open(tarp,'w:gz',compresslevel=6) as tar:
+                  tar.add(ROOT/f'docs_{ys}',arcname=f'docs_{ys}')
+                  tar.add(ymanifest,arcname=f'manifest_{ys}.csv')
+              summary[f'archive_{ys}_bytes']=tarp.stat().st_size
+              summary[f'archive_{ys}_sha256']=hashlib.sha256(tarp.read_bytes()).hexdigest()
+          (ROOT/'retrieval_summary.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
+          print(json.dumps(summary,indent=2))
+
+      - name: Upload 2019 raw archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-primary-2019-r1-${{ github.run_id }}
+          path: |
+            aef_multiyear_docs/raw_primary_docs_2019.tar.gz
+            aef_multiyear_docs/manifest_2019.csv
+            aef_multiyear_docs/retrieval_summary.json
+            aef_multiyear_docs/download_failures.csv
+          if-no-files-found: warn
+          retention-days: 5
+          compression-level: 0
+      - name: Upload 2020 raw archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-primary-2020-r1-${{ github.run_id }}
+          path: |
+            aef_multiyear_docs/raw_primary_docs_2020.tar.gz
+            aef_multiyear_docs/manifest_2020.csv
+            aef_multiyear_docs/retrieval_summary.json
+            aef_multiyear_docs/download_failures.csv
+          if-no-files-found: warn
+          retention-days: 5
+          compression-level: 0
+      - name: Upload 2021 raw archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-primary-2021-r1-${{ github.run_id }}
+          path: |
+            aef_multiyear_docs/raw_primary_docs_2021.tar.gz
+            aef_multiyear_docs/manifest_2021.csv
+            aef_multiyear_docs/retrieval_summary.json
+            aef_multiyear_docs/download_failures.csv
+          if-no-files-found: warn
+          retention-days: 5
+          compression-level: 0
+      - name: Upload 2022 raw archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-primary-2022-r1-${{ github.run_id }}
+          path: |
+            aef_multiyear_docs/raw_primary_docs_2022.tar.gz
+            aef_multiyear_docs/manifest_2022.csv
+            aef_multiyear_docs/retrieval_summary.json
+            aef_multiyear_docs/download_failures.csv
+          if-no-files-found: warn
+          retention-days: 5
+          compression-level: 0
+      - name: Upload 2023 raw archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-primary-2023-r1-${{ github.run_id }}
+          path: |
+            aef_multiyear_docs/raw_primary_docs_2023.tar.gz
+            aef_multiyear_docs/manifest_2023.csv
+            aef_multiyear_docs/retrieval_summary.json
+            aef_multiyear_docs/download_failures.csv
+          if-no-files-found: warn
+          retention-days: 5
+          compression-level: 0
+      - name: Upload 2024 raw archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-primary-2024-r1-${{ github.run_id }}
+          path: |
+            aef_multiyear_docs/raw_primary_docs_2024.tar.gz
+            aef_multiyear_docs/manifest_2024.csv
+            aef_multiyear_docs/retrieval_summary.json
+            aef_multiyear_docs/download_failures.csv
+          if-no-files-found: warn
+          retention-days: 5
+          compression-level: 0
+      - name: Upload 2025 raw archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-sec-150-primary-2025-r1-${{ github.run_id }}
+          path: |
+            aef_multiyear_docs/raw_primary_docs_2025.tar.gz
+            aef_multiyear_docs/manifest_2025.csv
+            aef_multiyear_docs/retrieval_summary.json
+            aef_multiyear_docs/download_failures.csv
+          if-no-files-found: warn
+          retention-days: 5
+          compression-level: 0
+      - name: Fail if any document download failed
+        shell: python
+        run: |
+          import json
+          s=json.load(open('aef_multiyear_docs/retrieval_summary.json'))
+          if s['download_failures']:
+              raise SystemExit(f"Document download failures: {s['download_failures']}")
