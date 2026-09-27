@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - '.github/workflows/aef-sec-150-measurement-eligible-frame-r2.yml'
+  pull_request:
+    paths:
+      - '.github/workflows/aef-sec-150-measurement-eligible-frame-r2.yml'
   workflow_dispatch:
 
 permissions:
