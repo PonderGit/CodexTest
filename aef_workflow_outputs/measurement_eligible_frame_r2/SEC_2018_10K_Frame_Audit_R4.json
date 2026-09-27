@@ -1,0 +1,75 @@
+{
+  "created_at_utc": "2026-09-27T13:30:36.418373+00:00",
+  "workflow_run_id": "36322533553",
+  "commit_sha": "2b425c38c7b3e2bcf132cdd59fcb9fd35e6f4f82",
+  "authority_correction": "exclude SEC SIC 6189 Asset-Backed Securities for current measurement route",
+  "seed": 20260925,
+  "sample_n": 150,
+  "original_frame_n": 6907,
+  "original_frame_logical_hash": "c4839c7cb89485c68da1b3417cc45d5033f02a030a389e5751455f1806c3ea12",
+  "sec_bulk_submissions_url": "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip",
+  "sec_bulk_submissions_http_status": 200,
+  "sec_bulk_submissions_bytes": 1565742655,
+  "sec_bulk_submissions_sha256": "9fc1f0536567b9ee8aaa59346b00d58a59774d5f2722187fa199a0812a0456f3",
+  "sic_join_coverage_n": 6907,
+  "sic_missing_n": 91,
+  "blank_sic_verified_non_abs_n": 91,
+  "measurement_eligibility_verified_n": 6907,
+  "excluded_sic6189_n": 652,
+  "corrected_eligible_frame_n": 6255,
+  "corrected_eligible_frame_logical_hash": "75f9fce9c9d26f7ae32f3b4757c78e5643f54bc897b7bab488ed4ceb1e32b027",
+  "corrected_sample_logical_hash": "654798ac74cc2df597b6daf89fe11b2422ea6909f796362d57a533c3c71df2e1",
+  "metadata_rows_all_forms": 3181,
+  "metadata_rows_exact_primary_forms": 3039,
+  "form_counts": {
+    "10-Q": 2272,
+    "10-K": 767,
+    "10-K/A": 96,
+    "10-Q/A": 46
+  },
+  "year_counts_exact": {
+    "2019": 535,
+    "2020": 498,
+    "2021": 492,
+    "2022": 430,
+    "2023": 400,
+    "2024": 355,
+    "2025": 329
+  },
+  "issuers_with_any_exact_2019_2025": 137,
+  "excluded_sic_codes": [
+    "6189"
+  ],
+  "sampling_rule": "random.Random(20260925).sample(sorted corrected eligible CIK list, 150)",
+  "raw_2018_index_provenance": [
+    {
+      "quarter": 1,
+      "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR1/master.idx",
+      "bytes": 27208905,
+      "sha256": "1c76fb8af1fd81935e02db2771849fa4bfb49e7344c5f2fadf8c1659fda24bb9",
+      "http_status": 200
+    },
+    {
+      "quarter": 2,
+      "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR2/master.idx",
+      "bytes": 22254945,
+      "sha256": "71ad669c60bdefa3a469f653fcf96ca1ea6fdf870ac239b82458edeaa861703a",
+      "http_status": 200
+    },
+    {
+      "quarter": 3,
+      "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR3/master.idx",
+      "bytes": 17550854,
+      "sha256": "3bcb79ffbd2a42b26d7ed666a7b3491b9f01265925a41908bf57f952cefd9b00",
+      "http_status": 200
+    },
+    {
+      "quarter": 4,
+      "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR4/master.idx",
+      "bytes": 17974263,
+      "sha256": "bfca373df69a64d3a2a5c408c1d01238f408b5a4aa33b2cac542d1af2f69ff69",
+      "http_status": 200
+    }
+  ],
+  "submission_source_count": 229
+}
