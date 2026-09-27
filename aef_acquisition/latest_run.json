@@ -1,7 +1,7 @@
 {
   "workflow": "AEF Corrected Sample Primary Acquisition R1",
   "run_id": "36328607785",
-  "job_status": "failure",
+  "job_status": "success",
   "trigger_commit_sha": "e88ebf48eeed3d175e7c0233d79362bf3110bfd5",
   "provenance_artifact_name": "aef-corrected-primary-provenance-r1-36328607785",
   "summary": {
@@ -18,9 +18,9 @@
       2025
     ],
     "expected_total": 3039,
-    "success_total": 3038,
-    "failure_total": 1,
-    "complete": false,
+    "success_total": 3039,
+    "failure_total": 0,
+    "complete": true,
     "annual": {
       "2019": {
         "year": 2019,
@@ -81,15 +81,15 @@
       "2023": {
         "year": 2023,
         "expected_exact_primary": 400,
-        "success_n": 399,
-        "failure_n": 1,
-        "complete": false,
-        "total_bytes": 1094364747,
-        "tar_sha256": "02551e607300e0daf901e40b79b9e593b18de28041890de342c397771602448c",
-        "tar_bytes": 73080241,
-        "manifest_sha256": "776b45a902a37be2493af68c5099536fbf8b09a53f923a5324d6b254fa51e4c9",
-        "failures_sha256": "e631f6b7346de5d8683562497f5189fde492adb2b62f72f83d6e5639e792967c",
-        "retrieved_at_utc": "2026-09-27T15:22:14.930770+00:00",
+        "success_n": 400,
+        "failure_n": 0,
+        "complete": true,
+        "total_bytes": 1097258354,
+        "tar_sha256": "d4635827880cdc763270861e88bbebdb2bf7967cda7188fd3374f3eb917d4c78",
+        "tar_bytes": 73293694,
+        "manifest_sha256": "f42cc84ef71820ad5c712f280f029423fb275cd5d6779cb79ab9e149bb3c4bb2",
+        "failures_sha256": "8b2c6fade8a5de490c7a56bb04cefc7ee360a0ddc41773e0304bf7ca659abb9f",
+        "retrieved_at_utc": "2026-09-27T15:32:13.924829+00:00",
         "workflow_run_id": "36328607785"
       },
       "2024": {
@@ -121,6 +121,6 @@
         "workflow_run_id": "36328607785"
       }
     },
-    "created_at_utc": "2026-09-27T15:28:03.150298+00:00"
+    "created_at_utc": "2026-09-27T15:36:40.342731+00:00"
   }
 }
