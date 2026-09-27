@@ -1,0 +1,40 @@
+{
+  "workflow": "AEF Corrected Sample Multi-Year Metadata R1",
+  "run_id": "36327119755",
+  "job_status": "success",
+  "trigger_commit_sha": "d0012b157822d2d25a475b1850b5ff5cf572c33e",
+  "artifact_name": "aef-corrected-sample-metadata-r1-36327119755",
+  "summary": {
+    "stage": "S4_CORRECTED_SAMPLE_MULTIYEAR_METADATA",
+    "retrieved_at_utc": "2026-09-27T14:47:05.076087+00:00",
+    "workflow_run_id": "36327119755",
+    "sample_seed": 20260925,
+    "sample_n": 150,
+    "sample_cik_hash": "12bd8611e57f9f4e27d0b8eb9adb758d6854841f62f321e24b79295aa846ee78",
+    "sample_sic6189_n": 0,
+    "sample_current_sic_missing_n": 1,
+    "metadata_rows_four_forms": 3181,
+    "form_counts": {
+      "10-K": 767,
+      "10-K/A": 96,
+      "10-Q": 2272,
+      "10-Q/A": 46
+    },
+    "exact_primary_rows": 3039,
+    "exact_primary_issuers": 137,
+    "year_counts_exact": {
+      "2019": 535,
+      "2020": 498,
+      "2021": 492,
+      "2022": 430,
+      "2023": 400,
+      "2024": 355,
+      "2025": 329
+    },
+    "unique_accession_form_keys": 3181,
+    "duplicate_rows_removed": 0,
+    "source_file_requests_n": 229,
+    "metadata_csv_sha256": "e8b29e58f5b14f6f8ea5a713255aa1905c000e6d511b5c933337bc7db89db654",
+    "sample_csv_sha256": "b800deca30dca4ffda95cf23628c9a7d9307dd60b51789b022210ff9665581de"
+  }
+}
