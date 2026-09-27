@@ -556,3 +556,5 @@ jobs:
           if-no-files-found: error
           retention-days: 5
           compression-level: 0
+
+# clean-observable-trigger-20260927
