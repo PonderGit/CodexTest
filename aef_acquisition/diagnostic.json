@@ -1,0 +1,17 @@
+{
+  "count": 1,
+  "runs": [
+    {
+      "id": 36328607785,
+      "name": "AEF Corrected Sample Primary Acquisition R1",
+      "event": "push",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "e88ebf48eeed3d175e7c0233d79362bf3110bfd5",
+      "run_number": 1,
+      "created_at": "2026-09-27T15:10:57Z",
+      "updated_at": "2026-09-27T15:25:23Z",
+      "html_url": "https://github.com/PonderGit/CodexTest/actions/runs/36328607785"
+    }
+  ]
+}
