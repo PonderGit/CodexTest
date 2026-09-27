@@ -1,0 +1,75 @@
+{
+  "workflow": "AEF SEC Full-Frame SIC R1",
+  "run_id": "36326091348",
+  "job_status": "success",
+  "trigger_commit_sha": "ea68d96cfaa711c1bb6dd76ca95f052b5dcf838c",
+  "artifact_name": "aef-sec-fullframe-sic-r1-36326091348",
+  "summary": {
+    "stage": "S1_FULL_FRAME_SEC_SIC_METADATA",
+    "retrieved_at_utc": "2026-09-27T14:30:23.881732+00:00",
+    "workflow_run_id": "36326091348",
+    "commit_sha": "ea68d96cfaa711c1bb6dd76ca95f052b5dcf838c",
+    "frame_n": 6907,
+    "frame_logical_hash": "c4839c7cb89485c68da1b3417cc45d5033f02a030a389e5751455f1806c3ea12",
+    "expected_frame_logical_hash": "c4839c7cb89485c68da1b3417cc45d5033f02a030a389e5751455f1806c3ea12",
+    "frame_hash_match": true,
+    "submission_json_present_n": 6907,
+    "missing_submission_json_n": 0,
+    "missing_sic_n": 91,
+    "sic6189_n": 652,
+    "distinct_sic_n": 407,
+    "sec_name_mismatch_n": 1488,
+    "bulk_url": "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip",
+    "bulk_bytes": 1565742655,
+    "bulk_sha256": "9fc1f0536567b9ee8aaa59346b00d58a59774d5f2722187fa199a0812a0456f3",
+    "bulk_headers": {
+      "status": 200,
+      "content_length": "1565742655",
+      "last_modified": "Sat, 26 Sep 2026 05:00:39 GMT",
+      "etag": "\"82195df4d60680ea7c37e92dd09c3dae-187\""
+    },
+    "index_provenance": [
+      {
+        "quarter": 1,
+        "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR1/master.idx",
+        "bytes": 27208905,
+        "sha256": "1c76fb8af1fd81935e02db2771849fa4bfb49e7344c5f2fadf8c1659fda24bb9",
+        "status": 200,
+        "content_length": null,
+        "last_modified": "Sat, 26 Sep 2026 06:47:34 GMT",
+        "etag": "\"3a78b588b1d25f3340628dcae5b69393-gzip\""
+      },
+      {
+        "quarter": 2,
+        "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR2/master.idx",
+        "bytes": 22254945,
+        "sha256": "71ad669c60bdefa3a469f653fcf96ca1ea6fdf870ac239b82458edeaa861703a",
+        "status": 200,
+        "content_length": null,
+        "last_modified": "Sat, 26 Sep 2026 06:49:05 GMT",
+        "etag": "\"0eeaba23867bdba98c671375cacef5bd-gzip\""
+      },
+      {
+        "quarter": 3,
+        "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR3/master.idx",
+        "bytes": 17550854,
+        "sha256": "3bcb79ffbd2a42b26d7ed666a7b3491b9f01265925a41908bf57f952cefd9b00",
+        "status": 200,
+        "content_length": null,
+        "last_modified": "Sat, 26 Sep 2026 06:50:10 GMT",
+        "etag": "\"3b3199e2d07d6045312c686c89411347-gzip\""
+      },
+      {
+        "quarter": 4,
+        "url": "https://www.sec.gov/Archives/edgar/full-index/2018/QTR4/master.idx",
+        "bytes": 17974263,
+        "sha256": "bfca373df69a64d3a2a5c408c1d01238f408b5a4aa33b2cac542d1af2f69ff69",
+        "status": 200,
+        "content_length": null,
+        "last_modified": "Sat, 26 Sep 2026 06:51:17 GMT",
+        "etag": "\"f8866e1896eb28c405c7bc5ac5776284-gzip\""
+      }
+    ],
+    "output_csv_sha256": "087b7c9276109bff1e8281f086c75d0080faaa74fed4928957ab99a9edebbaef"
+  }
+}
