@@ -1,0 +1,66 @@
+name: AEF Acquisition Run Diagnostic R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-acquisition-run-diagnostic-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Query acquisition workflow runs
+        shell: bash
+        run: |
+          mkdir -p diag
+          gh api             -H "Accept: application/vnd.github+json"             -H "X-GitHub-Api-Version: 2022-11-28"             "/repos/$GITHUB_REPOSITORY/actions/workflows/aef-corrected-primary-acquisition-r1.yml/runs?per_page=20"             > diag/runs.json
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path("diag/runs.json")
+          obj=json.loads(p.read_text())
+          runs=obj.get("workflow_runs",[])
+          out=[]
+          for r in runs:
+              out.append({
+                  "id":r.get("id"),
+                  "name":r.get("name"),
+                  "event":r.get("event"),
+                  "status":r.get("status"),
+                  "conclusion":r.get("conclusion"),
+                  "head_sha":r.get("head_sha"),
+                  "run_number":r.get("run_number"),
+                  "created_at":r.get("created_at"),
+                  "updated_at":r.get("updated_at"),
+                  "html_url":r.get("html_url"),
+              })
+          pathlib.Path("diag/acquisition_runs_compact.json").write_text(json.dumps({"count":len(out),"runs":out},indent=2))
+          print(json.dumps({"count":len(out),"runs":out[:5]},indent=2))
+          PY
+
+      - name: Publish diagnostic checkpoint
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import base64,json,os,pathlib,urllib.request,urllib.error
+          repo=os.environ['GITHUB_REPOSITORY']
+          content=pathlib.Path('diag/acquisition_runs_compact.json').read_bytes()
+          api=f'https://api.github.com/repos/{repo}/contents/aef_acquisition/diagnostic.json'
+          headers={'Authorization':f'Bearer {os.environ["GH_TOKEN"]}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'AEF-acquisition-diagnostic'}
+          sha=None
+          try:
+              with urllib.request.urlopen(urllib.request.Request(api,headers=headers),timeout=30) as rr:
+                  sha=json.loads(rr.read().decode()).get('sha')
+          except urllib.error.HTTPError as e:
+              if e.code!=404: raise
+          body={'message':'AEF acquisition diagnostic','content':base64.b64encode(content).decode()}
+          if sha: body['sha']=sha
+          req=urllib.request.Request(api,data=json.dumps(body).encode(),headers={**headers,'Content-Type':'application/json'},method='PUT')
+          with urllib.request.urlopen(req,timeout=30) as rr: print(rr.status)
