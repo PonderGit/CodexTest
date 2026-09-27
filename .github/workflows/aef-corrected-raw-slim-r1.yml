@@ -1,0 +1,145 @@
+name: AEF Corrected Raw Archive Slim Persistence Prep R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-corrected-raw-slim-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  slim-year:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - year: 2019
+            artifact_id: 10934539175
+            tar_sha256: dd8cde431d548dceccf299856f0c737c7027371b9b517cec159d9fa7615f1812
+          - year: 2020
+            artifact_id: 10935210953
+            tar_sha256: cfca5df3ab073c241ecf946887d47ad97df9d44c569f769a54617b2fac2b5ceb
+          - year: 2021
+            artifact_id: 10935046749
+            tar_sha256: 9c47684aff41f40e6315c891965089599875bfc68bef1fb0a49fd913b8bcb55d
+          - year: 2022
+            artifact_id: 10935122557
+            tar_sha256: 29ed3ab655b362b108df43d78ae196432f23a01a84ba7fb22573cce10f70d327
+          - year: 2023
+            artifact_id: 10935810429
+            tar_sha256: d4635827880cdc763270861e88bbebdb2bf7967cda7188fd3374f3eb917d4c78
+          - year: 2024
+            artifact_id: 10935446074
+            tar_sha256: 19165ea06810a41dc03e345324ecee420993886251cb318ffa4373a7b1a51a96
+          - year: 2025
+            artifact_id: 10935052214
+            tar_sha256: 8b271a1c5e19e6f254cbdab0765236a677a97854d07813c262c2e7204c7786da
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET_YEAR: ${{ matrix.year }}
+      SOURCE_ARTIFACT_ID: ${{ matrix.artifact_id }}
+      EXPECTED_TAR_SHA256: ${{ matrix.tar_sha256 }}
+    steps:
+      - name: Download source artifact zip by ID
+        shell: bash
+        run: |
+          mkdir -p work
+          gh api             -H "Accept: application/vnd.github+json"             "/repos/$GITHUB_REPOSITORY/actions/artifacts/$SOURCE_ARTIFACT_ID/zip"             > work/source.zip
+          test -s work/source.zip
+
+      - name: Extract only annual tar and verify hash
+        shell: python
+        run: |
+          import hashlib,json,os,pathlib,zipfile
+          year=os.environ['TARGET_YEAR']
+          expected=os.environ['EXPECTED_TAR_SHA256']
+          src=pathlib.Path('work/source.zip')
+          out=pathlib.Path('slim'); out.mkdir(exist_ok=True)
+          target_name=f'SEC_150_CORRECTED_PrimaryDocs_{year}_R1.tar.gz'
+          with zipfile.ZipFile(src) as z:
+              matches=[n for n in z.namelist() if n.endswith(target_name)]
+              if len(matches)!=1:
+                  raise RuntimeError(f'Expected exactly one {target_name}; got {matches[:10]}')
+              with z.open(matches[0]) as rf, (out/target_name).open('wb') as wf:
+                  while True:
+                      chunk=rf.read(1024*1024)
+                      if not chunk: break
+                      wf.write(chunk)
+          p=out/target_name
+          actual=hashlib.sha256(p.read_bytes()).hexdigest()
+          if actual!=expected:
+              raise RuntimeError(f'SHA mismatch for {year}: {actual} != {expected}')
+          meta={
+              'year':int(year),
+              'source_artifact_id':int(os.environ['SOURCE_ARTIFACT_ID']),
+              'tar_name':target_name,
+              'tar_bytes':p.stat().st_size,
+              'tar_sha256':actual,
+              'expected_tar_sha256':expected,
+              'hash_match':True,
+          }
+          (out/f'SEC_150_CORRECTED_PrimaryDocs_{year}_SlimVerify_R1.json').write_text(json.dumps(meta,indent=2),encoding='utf-8')
+          print(json.dumps(meta,indent=2))
+
+      - name: Upload slim artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-corrected-raw-slim-${{ matrix.year }}-r1-${{ github.run_id }}
+          path: slim/
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 0
+
+  finalize:
+    runs-on: ubuntu-latest
+    needs: slim-year
+    if: always()
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Inspect current run jobs
+        shell: bash
+        run: |
+          gh api             -H "Accept: application/vnd.github+json"             "/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100"             > jobs.json
+
+      - name: Publish restartable slim status
+        shell: python
+        run: |
+          import base64,json,os,pathlib,urllib.request,urllib.error
+          jobs=json.loads(pathlib.Path('jobs.json').read_text()).get('jobs',[])
+          year_jobs=[j for j in jobs if j.get('name','').startswith('slim-year (')]
+          compact=[{
+              'name':j.get('name'),
+              'status':j.get('status'),
+              'conclusion':j.get('conclusion'),
+              'id':j.get('id'),
+          } for j in year_jobs]
+          all_success=len(compact)==7 and all(x['conclusion']=='success' for x in compact)
+          obj={
+              'workflow':'AEF Corrected Raw Archive Slim Persistence Prep R1',
+              'run_id':os.environ['GITHUB_RUN_ID'],
+              'job_status':'success' if all_success else 'failure',
+              'all_years_success':all_success,
+              'year_jobs':compact,
+          }
+          raw=(json.dumps(obj,indent=2)+'\n').encode()
+          api=f'https://api.github.com/repos/{os.environ["GITHUB_REPOSITORY"]}/contents/aef_raw_persistence/latest_run.json'
+          headers={'Authorization':f'Bearer {os.environ["GH_TOKEN"]}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'AEF-raw-persistence'}
+          sha=None
+          try:
+              with urllib.request.urlopen(urllib.request.Request(api,headers=headers),timeout=30) as rr:
+                  sha=json.loads(rr.read().decode()).get('sha')
+          except urllib.error.HTTPError as e:
+              if e.code!=404: raise
+          body={'message':f'AEF raw persistence slim status {os.environ["GITHUB_RUN_ID"]}','content':base64.b64encode(raw).decode()}
+          if sha: body['sha']=sha
+          req=urllib.request.Request(api,data=json.dumps(body).encode(),headers={**headers,'Content-Type':'application/json'},method='PUT')
+          with urllib.request.urlopen(req,timeout=30) as rr: print(rr.status)
+          if not all_success:
+              raise SystemExit(1)
