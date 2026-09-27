@@ -1,20 +1,23 @@
 name: AEF SEC 150 Corrected-Sample Retrieval R4
 
 on:
+  push:
+    paths:
+      - '.github/workflows/aef-sec-150-retrieval-r4.yml'
   pull_request:
     paths:
       - '.github/workflows/aef-sec-150-retrieval-r4.yml'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   retrieval:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      SEC_USER_AGENT: \${{ secrets.SEC_USER_AGENT }}
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -467,7 +470,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: aef-sec-150-r4-retrieval-results-\${{ github.run_id }}
+          name: aef-sec-150-r4-retrieval-results-${{ github.run_id }}
           path: aef_r4_retrieval/results/
           if-no-files-found: warn
           retention-days: 5
@@ -477,7 +480,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: aef-sec-150-r4-primary-2019-\${{ github.run_id }}
+          name: aef-sec-150-r4-primary-2019-${{ github.run_id }}
           path: |
             aef_r4_retrieval/raw_primary_docs_R4_2019.tar.gz
             aef_r4_retrieval/manifest_2019.csv
@@ -489,7 +492,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: aef-sec-150-r4-primary-2020-\${{ github.run_id }}
+          name: aef-sec-150-r4-primary-2020-${{ github.run_id }}
           path: |
             aef_r4_retrieval/raw_primary_docs_R4_2020.tar.gz
             aef_r4_retrieval/manifest_2020.csv
@@ -501,7 +504,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: aef-sec-150-r4-primary-2021-\${{ github.run_id }}
+          name: aef-sec-150-r4-primary-2021-${{ github.run_id }}
           path: |
             aef_r4_retrieval/raw_primary_docs_R4_2021.tar.gz
             aef_r4_retrieval/manifest_2021.csv
@@ -513,7 +516,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: aef-sec-150-r4-primary-2022-\${{ github.run_id }}
+          name: aef-sec-150-r4-primary-2022-${{ github.run_id }}
           path: |
             aef_r4_retrieval/raw_primary_docs_R4_2022.tar.gz
             aef_r4_retrieval/manifest_2022.csv
@@ -525,7 +528,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: aef-sec-150-r4-primary-2023-\${{ github.run_id }}
+          name: aef-sec-150-r4-primary-2023-${{ github.run_id }}
           path: |
             aef_r4_retrieval/raw_primary_docs_R4_2023.tar.gz
             aef_r4_retrieval/manifest_2023.csv
@@ -537,7 +540,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: aef-sec-150-r4-primary-2024-\${{ github.run_id }}
+          name: aef-sec-150-r4-primary-2024-${{ github.run_id }}
           path: |
             aef_r4_retrieval/raw_primary_docs_R4_2024.tar.gz
             aef_r4_retrieval/manifest_2024.csv
@@ -549,10 +552,59 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: aef-sec-150-r4-primary-2025-\${{ github.run_id }}
+          name: aef-sec-150-r4-primary-2025-${{ github.run_id }}
           path: |
             aef_r4_retrieval/raw_primary_docs_R4_2025.tar.gz
             aef_r4_retrieval/manifest_2025.csv
           if-no-files-found: error
           retention-days: 5
           compression-level: 0
+
+      - name: Publish restartable Stage 5 status
+        if: always()
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          import base64, json, os, pathlib, urllib.request, urllib.error
+          repo=os.environ['GITHUB_REPOSITORY']
+          run_id=os.environ['GITHUB_RUN_ID']
+          p=pathlib.Path('aef_r4_retrieval/results/SEC_150_R4_Retrieval_Screen_Summary_R3.json')
+          summary=json.loads(p.read_text(encoding='utf-8')) if p.exists() else None
+          obj={
+              'workflow':'AEF SEC 150 Corrected-Sample Retrieval R4',
+              'run_id':run_id,
+              'job_status':os.environ.get('JOB_STATUS'),
+              'trigger_commit_sha':os.environ.get('GITHUB_SHA'),
+              'results_artifact':f'aef-sec-150-r4-retrieval-results-{run_id}',
+              'raw_artifacts':{str(y):f'aef-sec-150-r4-primary-{y}-{run_id}' for y in range(2019,2026)},
+              'summary':summary,
+          }
+          raw=(json.dumps(obj,indent=2,ensure_ascii=False)+'\n').encode('utf-8')
+          api=f'https://api.github.com/repos/{repo}/contents/aef_stage5/latest_run.json'
+          headers={
+              'Authorization':f'Bearer {os.environ["GH_TOKEN"]}',
+              'Accept':'application/vnd.github+json',
+              'X-GitHub-Api-Version':'2022-11-28',
+              'User-Agent':'AEF-stage5-status',
+          }
+          sha=None
+          try:
+              req=urllib.request.Request(api,headers=headers)
+              with urllib.request.urlopen(req,timeout=30) as rr:
+                  sha=json.loads(rr.read().decode('utf-8')).get('sha')
+          except urllib.error.HTTPError as e:
+              if e.code != 404:
+                  raise
+          body={
+              'message':f'AEF Stage 5 status for run {run_id}',
+              'content':base64.b64encode(raw).decode('ascii'),
+          }
+          if sha:
+              body['sha']=sha
+          req=urllib.request.Request(api,data=json.dumps(body).encode('utf-8'),headers={**headers,'Content-Type':'application/json'},method='PUT')
+          with urllib.request.urlopen(req,timeout=30) as rr:
+              result=json.loads(rr.read().decode('utf-8'))
+          print(json.dumps({'published_status':'aef_stage5/latest_run.json','commit':result.get('commit',{}).get('sha'),'job_status':obj['job_status']},indent=2))
+
