@@ -185,7 +185,52 @@ jobs:
               missing_sic=[j['cik'] for j in joined if not j['sec_sic_for_measurement_eligibility']]
 
           if missing_sic:
-              raise RuntimeError(f'SIC still missing after official 2018 10-K header fallback for {len(missing_sic)} frame CIKs; first={missing_sic[:20]}')
+              # Escalation audit only: inspect complete SEC submissions history for ABS-specific forms.
+              missing_set=set(missing_sic)
+              abs_forms={'10-D','10-D/A','ABS-EE','ABS-EE/A','SF-1','SF-1/A','SF-3','SF-3/A'}
+              diag=[]
+              for j in joined:
+                  if j['cik'] not in missing_set:
+                      continue
+                  data,member=load_top(j['cik'])
+                  all_forms=[]
+                  if data is not None:
+                      all_forms.extend(data.get('filings',{}).get('recent',{}).get('form',[]) or [])
+                      for hist in data.get('filings',{}).get('files',[]) or []:
+                          name=hist.get('name')
+                          if not name: continue
+                          member_name=name if name in names else (f'submissions/{name}' if f'submissions/{name}' in names else None)
+                          if member_name:
+                              hb=z.read(member_name)
+                          else:
+                              hb,_=get_bytes(f'https://data.sec.gov/submissions/{name}','data.sec.gov',pace=0.25)
+                          hd=json.loads(hb)
+                          all_forms.extend(hd.get('form',[]) or [])
+                  found=sorted(set(all_forms) & abs_forms)
+                  diag.append({
+                      'cik':j['cik'],
+                      'company_name_2018':j['company_name'],
+                      'sec_current_name':j['sec_current_name'],
+                      'sec_current_entity_type':j['sec_current_entity_type'],
+                      'sic_status':'BLANK_IN_BULK_AND_2018_10K_HEADER',
+                      'has_abs_specific_form':int(bool(found)),
+                      'abs_specific_forms':'|'.join(found),
+                      'unique_form_count':len(set(all_forms)),
+                  })
+              dpath=ROOT/'SEC_2018_BlankSIC_ABSForm_Diagnostic_R1.csv'
+              with dpath.open('w',newline='',encoding='utf-8') as f:
+                  w=csv.DictWriter(f,fieldnames=list(diag[0].keys())); w.writeheader(); w.writerows(diag)
+              dsummary={
+                  'blank_sic_n':len(diag),
+                  'blank_sic_with_abs_specific_form_n':sum(r['has_abs_specific_form'] for r in diag),
+                  'blank_sic_without_abs_specific_form_n':sum(not r['has_abs_specific_form'] for r in diag),
+                  'abs_specific_forms_checked':sorted(abs_forms),
+                  'diagnostic_only':True,
+                  'sample_rebuild_performed':False,
+              }
+              (ROOT/'SEC_2018_BlankSIC_ABSForm_Diagnostic_Summary_R1.json').write_text(json.dumps(dsummary,indent=2),encoding='utf-8')
+              print(json.dumps(dsummary,indent=2))
+              raise RuntimeError(f'SIC still missing after official sources for {len(missing_sic)} frame CIKs; escalation diagnostic written; first={missing_sic[:20]}')
           if len(joined) != len(frame):
               raise RuntimeError('SIC join row count mismatch')
 
@@ -323,6 +368,7 @@ jobs:
           git push
 
       - name: Upload corrected frame and metadata
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: aef-sec-150-measurement-eligible-frame-r2-${{ github.run_id }}
