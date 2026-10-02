@@ -1,0 +1,123 @@
+name: AEF Census ReportDate Recovery R2
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-census-reportdate-recovery-r2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+    steps:
+      - name: Validate protected SEC identification
+        shell: bash
+        run: |
+          if [ -z "$SEC_USER_AGENT" ]; then
+            echo 'SEC_USER_AGENT secret is missing; aborting.' >&2
+            exit 2
+          fi
+
+      - name: Recover reporting periods from official SEC primary filing text
+        shell: python
+        run: |
+          import csv, hashlib, html, json, os, pathlib, re, time, urllib.request
+          from datetime import datetime, timezone
+
+          ua=os.environ['SEC_USER_AGENT'].strip()
+          targets=[
+            {
+              'cik':'0001684506','accession_number':'0001684506-18-000005','form':'10-K',
+              'filing_date':'2018-03-20','primary_document':'folkup.htm',
+              'source_url':'https://www.sec.gov/Archives/edgar/data/1684506/000168450618000005/folkup.htm',
+              'expected_report_date':'2017-11-30'
+            },
+            {
+              'cik':'0001703625','accession_number':'0001703625-18-000013','form':'10-K',
+              'filing_date':'2018-08-13','primary_document':'beliss_10kapril302018.htm',
+              'source_url':'https://www.sec.gov/Archives/edgar/data/1703625/000170362518000013/beliss_10kapril302018.htm',
+              'expected_report_date':'2018-04-30'
+            },
+            {
+              'cik':'0001703625','accession_number':'0001703625-18-000015','form':'10-K/A',
+              'filing_date':'2018-08-14','primary_document':'beliss_10kapril302018.htm',
+              'source_url':'https://www.sec.gov/Archives/edgar/data/1703625/000170362518000015/beliss_10kapril302018.htm',
+              'expected_report_date':'2018-04-30'
+            },
+          ]
+          month_map={m.lower():i for i,m in enumerate(
+              ['January','February','March','April','May','June','July','August','September','October','November','December'],1)}
+          out=pathlib.Path('aef_reportdate_recovery_r2'); out.mkdir(exist_ok=True)
+          rows=[]
+          for t in targets:
+              req=urllib.request.Request(t['source_url'],headers={'User-Agent':ua,'Accept-Encoding':'identity'})
+              with urllib.request.urlopen(req,timeout=90) as resp:
+                  data=resp.read()
+                  status=getattr(resp,'status',200)
+                  last_modified=resp.headers.get('Last-Modified')
+                  etag=resp.headers.get('ETag')
+              raw=data.decode('latin-1','replace')
+              text=re.sub(r'<[^>]+>',' ',raw)
+              text=html.unescape(text)
+              text=re.sub(r'\s+',' ',text)
+              m=re.search(r'For\s+the\s+fiscal\s+year\s+ended\s+([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})',text,re.I)
+              if not m:
+                  raise RuntimeError(f'Fiscal-year-ended phrase not found for {t["accession_number"]}')
+              month=month_map.get(m.group(1).lower())
+              if not month:
+                  raise RuntimeError(f'Unrecognized month {m.group(1)}')
+              recovered=f'{int(m.group(3)):04d}-{month:02d}-{int(m.group(2)):02d}'
+              evidence=m.group(0)
+              row={
+                  **t,
+                  'report_date_sec_submissions':'',
+                  'report_date_recovered':recovered,
+                  'report_date_final':recovered,
+                  'recovery_basis':'OFFICIAL_SEC_PRIMARY_FILING_TEXT_FISCAL_YEAR_ENDED',
+                  'evidence_phrase':evidence,
+                  'source_http_status':status,
+                  'source_bytes':len(data),
+                  'source_sha256':hashlib.sha256(data).hexdigest(),
+                  'source_last_modified':last_modified or '',
+                  'source_etag':etag or '',
+                  'expected_match':recovered==t['expected_report_date'],
+              }
+              rows.append(row)
+              time.sleep(0.35)
+          p=out/'SEC_6255_Missing_ReportDate_Recovery_R2.csv'
+          fields=list(rows[0].keys())
+          with p.open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(rows)
+          summary={
+              'stage':'CENSUS_METADATA_REPORTDATE_RECOVERY_R2',
+              'retrieved_at_utc':datetime.now(timezone.utc).isoformat(),
+              'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),
+              'commit_sha':os.environ.get('GITHUB_SHA'),
+              'target_n':len(targets),
+              'recovered_n':sum(bool(r['report_date_recovered']) for r in rows),
+              'all_recovered':all(bool(r['report_date_recovered']) for r in rows),
+              'all_expected_match':all(r['expected_match'] for r in rows),
+              'source_truth_preserved':all(r['report_date_sec_submissions']=='' for r in rows),
+              'rows':rows,
+              'csv_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+          }
+          (out/'SEC_6255_Missing_ReportDate_Recovery_Summary_R2.json').write_text(
+              json.dumps(summary,indent=2,ensure_ascii=False),encoding='utf-8')
+          print(json.dumps(summary,indent=2,ensure_ascii=False))
+          if not (summary['all_recovered'] and summary['all_expected_match'] and summary['source_truth_preserved']):
+              raise RuntimeError('R2 report-date recovery verification failed.')
+
+      - name: Upload verified recovery overlay
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-census-reportdate-recovery-r2-${{ github.run_id }}
+          path: aef_reportdate_recovery_r2/
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 6
