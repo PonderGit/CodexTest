@@ -1,0 +1,91 @@
+name: AEF Census ReportDate Recovery R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-census-reportdate-recovery-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+    steps:
+      - name: Validate protected SEC identification
+        shell: bash
+        run: |
+          if [ -z "$SEC_USER_AGENT" ]; then
+            echo 'SEC_USER_AGENT secret is missing; aborting.' >&2
+            exit 2
+          fi
+
+      - name: Recover three missing official report periods
+        shell: python
+        run: |
+          import csv, hashlib, json, os, pathlib, re, time, urllib.request
+          from datetime import datetime, timezone
+
+          ua=os.environ['SEC_USER_AGENT'].strip()
+          targets=[
+              {'cik':'0001684506','accession_number':'0001684506-18-000005','form':'10-K','filing_date':'2018-03-20'},
+              {'cik':'0001703625','accession_number':'0001703625-18-000013','form':'10-K','filing_date':'2018-08-13'},
+              {'cik':'0001703625','accession_number':'0001703625-18-000015','form':'10-K/A','filing_date':'2018-08-14'},
+          ]
+          out=pathlib.Path('aef_reportdate_recovery_r1'); out.mkdir(exist_ok=True)
+          rows=[]
+          for t in targets:
+              cik_int=str(int(t['cik']))
+              acc=t['accession_number']
+              url=f'https://www.sec.gov/Archives/edgar/data/{cik_int}/{acc}.txt'
+              req=urllib.request.Request(url,headers={'User-Agent':ua,'Accept-Encoding':'identity'})
+              with urllib.request.urlopen(req,timeout=90) as resp:
+                  data=resp.read()
+                  status=getattr(resp,'status',200)
+                  headers={
+                      'status':status,
+                      'content_length':resp.headers.get('Content-Length'),
+                      'last_modified':resp.headers.get('Last-Modified'),
+                      'etag':resp.headers.get('ETag'),
+                  }
+              head=data[:250000].decode('latin-1','replace')
+              m=re.search(r'CONFORMED PERIOD OF REPORT:\s*(\d{8})',head,re.I)
+              period=m.group(1) if m else ''
+              report_date=f'{period[:4]}-{period[4:6]}-{period[6:8]}' if len(period)==8 else ''
+              rows.append({
+                  **t,'report_date_recovered':report_date,'source_url':url,
+                  'source_bytes':len(data),'source_sha256':hashlib.sha256(data).hexdigest(),
+                  'http_status':status,'last_modified':headers['last_modified'],'etag':headers['etag']
+              })
+              time.sleep(0.4)
+          p=out/'SEC_6255_Missing_ReportDate_Recovery_R1.csv'
+          with p.open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=list(rows[0].keys())); w.writeheader(); w.writerows(rows)
+          summary={
+              'stage':'CENSUS_METADATA_REPORTDATE_RECOVERY_R1',
+              'retrieved_at_utc':datetime.now(timezone.utc).isoformat(),
+              'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),
+              'commit_sha':os.environ.get('GITHUB_SHA'),
+              'target_n':len(targets),
+              'recovered_n':sum(bool(r['report_date_recovered']) for r in rows),
+              'all_recovered':all(bool(r['report_date_recovered']) for r in rows),
+              'rows':rows,
+              'csv_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+          }
+          (out/'SEC_6255_Missing_ReportDate_Recovery_Summary_R1.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
+          print(json.dumps(summary,indent=2))
+          if not summary['all_recovered']:
+              raise RuntimeError('Not all missing report dates recovered from official SEC submission headers.')
+
+      - name: Upload bounded recovery package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-census-reportdate-recovery-r1-${{ github.run_id }}
+          path: aef_reportdate_recovery_r1/
+          if-no-files-found: error
+          retention-days: 5
