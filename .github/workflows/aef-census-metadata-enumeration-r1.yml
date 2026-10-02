@@ -1,0 +1,399 @@
+name: AEF Census Metadata Enumeration R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-census-metadata-enumeration-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  enumerate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+    steps:
+      - name: Validate protected SEC identification
+        shell: bash
+        run: |
+          if [ -z "$SEC_USER_AGENT" ]; then
+            echo 'SEC_USER_AGENT secret is missing; aborting before network access.' >&2
+            exit 2
+          fi
+
+      - name: Enumerate frozen census cohort from official SEC metadata
+        shell: python
+        run: |
+          import csv, hashlib, json, os, pathlib, time, urllib.request, zipfile
+          from collections import defaultdict, Counter
+          from datetime import datetime, timezone
+
+          EXPECTED_DESCRIPTIVE_FRAME_N = 6907
+          EXPECTED_CORRECTED_COHORT_N = 6255
+          EXPECTED_EXCLUDED_SIC6189_N = 652
+          EXPECTED_CIK_HASH = '440f863ad13efe683e512d38dc4464e9370d703e1428b08e287faa3b4d4b5542'
+          TARGET_FORMS = {'10-K','10-Q','10-K/A','10-Q/A'}
+          PRIMARY_FORMS = {'10-K','10-Q'}
+          START_DATE = '2018-01-01'
+          END_DATE = '2025-12-31'
+          ua = os.environ['SEC_USER_AGENT'].strip()
+          if not ua:
+              raise SystemExit('SEC_USER_AGENT is empty')
+
+          out = pathlib.Path('aef_census_metadata_r1')
+          out.mkdir(exist_ok=True)
+
+          def norm(cik):
+              s = str(cik).strip()
+              if not s.isdigit():
+                  raise ValueError(cik)
+              return s.zfill(10)
+
+          def fetch_bytes(url, timeout=180, attempts=4):
+              err=None
+              for attempt in range(1, attempts+1):
+                  try:
+                      req=urllib.request.Request(url, headers={
+                          'User-Agent': ua,
+                          'Accept-Encoding':'identity',
+                      })
+                      with urllib.request.urlopen(req, timeout=timeout) as resp:
+                          status=getattr(resp,'status',200)
+                          if not (200 <= status < 300):
+                              raise RuntimeError(f'HTTP {status} for {url}')
+                          data=resp.read()
+                          headers={
+                              'status':status,
+                              'content_length':resp.headers.get('Content-Length'),
+                              'last_modified':resp.headers.get('Last-Modified'),
+                              'etag':resp.headers.get('ETag'),
+                          }
+                      return data,headers
+                  except Exception as e:
+                      err=e
+                      if attempt == attempts:
+                          raise
+                      time.sleep(min(12, 2**attempt))
+              raise err
+
+          def parse_master(text):
+              rows=[]; start=False
+              for line in text.splitlines():
+                  if not start:
+                      if line.startswith('CIK|'):
+                          start=True
+                      continue
+                  if not line.strip():
+                      continue
+                  stripped=line.strip()
+                  if stripped and set(stripped)=={'-'}:
+                      continue
+                  parts=line.split('|')
+                  if len(parts)!=5:
+                      raise RuntimeError('Unexpected master row: '+line[:160])
+                  cik,company,form,filed,filename=parts
+                  rows.append({
+                      'cik':norm(cik),
+                      'company_name':company.strip(),
+                      'form':form.strip(),
+                      'filing_date':filed.strip(),
+                      'filename':filename.strip(),
+                  })
+              if not start:
+                  raise RuntimeError('master.idx header not found')
+              return rows
+
+          def stable_json_hash(obj):
+              b=json.dumps(obj,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode('utf-8')
+              return hashlib.sha256(b).hexdigest()
+
+          # 1) Reconstruct the historical 2018 exact-10-K descriptive frame from official SEC indexes.
+          all2018=[]; index_provenance=[]
+          for q in range(1,5):
+              url=f'https://www.sec.gov/Archives/edgar/full-index/2018/QTR{q}/master.idx'
+              data,h=fetch_bytes(url,timeout=120)
+              rows=parse_master(data.decode('latin-1'))
+              all2018.extend(rows)
+              index_provenance.append({
+                  'quarter':q,'url':url,'bytes':len(data),
+                  'sha256':hashlib.sha256(data).hexdigest(),**h
+              })
+              time.sleep(0.25)
+
+          exact2018=[r for r in all2018 if r['form']=='10-K' and r['filing_date'].startswith('2018-')]
+          amend2018=[r for r in all2018 if r['form']=='10-K/A' and r['filing_date'].startswith('2018-')]
+          by=defaultdict(list); aby=defaultdict(list)
+          for r in exact2018: by[r['cik']].append(r)
+          for r in amend2018: aby[r['cik']].append(r)
+          frame=[]
+          for cik in sorted(by,key=int):
+              fs=sorted(by[cik],key=lambda x:(x['filing_date'],x['filename']))
+              canonical=fs[-1]
+              frame.append({
+                  'cik':cik,
+                  'company_name':canonical['company_name'],
+                  'n_exact_10k_2018':len(fs),
+                  'first_exact_10k_filed':fs[0]['filing_date'],
+                  'last_exact_10k_filed':fs[-1]['filing_date'],
+                  'canonical_display_filed':canonical['filing_date'],
+                  'canonical_display_filename':canonical['filename'],
+                  'n_10k_a_2018':len(aby.get(cik,[])),
+              })
+          if len(frame) != EXPECTED_DESCRIPTIVE_FRAME_N:
+              raise RuntimeError(f'Descriptive frame count mismatch: {len(frame)} != {EXPECTED_DESCRIPTIVE_FRAME_N}')
+
+          # 2) Obtain official SEC nightly bulk Submissions archive.
+          bulk_url='https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip'
+          bulk_path=out/'submissions.zip'
+          req=urllib.request.Request(bulk_url,headers={'User-Agent':ua,'Accept-Encoding':'identity'})
+          bulk_sha=hashlib.sha256(); bulk_bytes=0
+          with urllib.request.urlopen(req,timeout=240) as resp, bulk_path.open('wb') as f:
+              bulk_headers={
+                  'status':getattr(resp,'status',200),
+                  'content_length':resp.headers.get('Content-Length'),
+                  'last_modified':resp.headers.get('Last-Modified'),
+                  'etag':resp.headers.get('ETag'),
+              }
+              while True:
+                  chunk=resp.read(4*1024*1024)
+                  if not chunk:
+                      break
+                  f.write(chunk); bulk_sha.update(chunk); bulk_bytes += len(chunk)
+
+          # 3) Reconstruct corrected measurement-eligible cohort using the frozen exclusion rule:
+          #    exclude confirmed current SEC SIC 6189 only; retain missing SIC.
+          with zipfile.ZipFile(bulk_path) as z:
+              bad=z.testzip()
+              if bad is not None:
+                  raise RuntimeError(f'Corrupt submissions.zip member: {bad}')
+              members={pathlib.PurePosixPath(n).name:n for n in z.namelist() if n.endswith('.json')}
+              cohort_meta=[]
+              missing_main_json=[]
+              for r in frame:
+                  base=f"CIK{r['cik']}.json"
+                  member=members.get(base)
+                  if not member:
+                      missing_main_json.append(r['cik'])
+                      cohort_meta.append({**r,'submission_json_present':0,'sic':'','sic_description':'','entity_type':'','sec_name':'','category':'','state_of_incorporation':'','fiscal_year_end':''})
+                      continue
+                  obj=json.loads(z.read(member).decode('utf-8'))
+                  cohort_meta.append({
+                      **r,
+                      'submission_json_present':1,
+                      'sic':str(obj.get('sic','') or ''),
+                      'sic_description':obj.get('sicDescription','') or '',
+                      'entity_type':obj.get('entityType','') or '',
+                      'sec_name':obj.get('name','') or '',
+                      'category':obj.get('category','') or '',
+                      'state_of_incorporation':obj.get('stateOfIncorporation','') or '',
+                      'fiscal_year_end':obj.get('fiscalYearEnd','') or '',
+                  })
+
+              excluded=[x for x in cohort_meta if x['sic']=='6189']
+              corrected=[x for x in cohort_meta if x['sic']!='6189']
+              corrected=sorted(corrected,key=lambda x:int(x['cik']))
+              cik_text=''.join(x['cik']+'\n' for x in corrected)
+              cik_hash=hashlib.sha256(cik_text.encode('utf-8')).hexdigest()
+              cohort_match=(
+                  len(corrected)==EXPECTED_CORRECTED_COHORT_N and
+                  len(excluded)==EXPECTED_EXCLUDED_SIC6189_N and
+                  cik_hash==EXPECTED_CIK_HASH and
+                  not missing_main_json
+              )
+
+              # Persist reconstruction diagnostics before fail-closed decision.
+              cohort_fields=list(corrected[0].keys())+['measurement_eligibility_rule','measurement_eligible']
+              cohort_csv=out/'SEC_2018_MeasurementEligible_Frame_Reconstructed_R1.csv'
+              with cohort_csv.open('w',newline='',encoding='utf-8') as f:
+                  w=csv.DictWriter(f,fieldnames=cohort_fields)
+                  w.writeheader()
+                  for x in corrected:
+                      w.writerow({**x,'measurement_eligibility_rule':'EXCLUDE_SEC_SIC_6189_ONLY','measurement_eligible':1})
+
+              reconstruction={
+                  'stage':'CENSUS_METADATA_ENUMERATION_R1_COHORT_RECONSTRUCTION',
+                  'retrieved_at_utc':datetime.now(timezone.utc).isoformat(),
+                  'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),
+                  'commit_sha':os.environ.get('GITHUB_SHA'),
+                  'descriptive_frame_n':len(frame),
+                  'expected_descriptive_frame_n':EXPECTED_DESCRIPTIVE_FRAME_N,
+                  'excluded_sic6189_n':len(excluded),
+                  'expected_excluded_sic6189_n':EXPECTED_EXCLUDED_SIC6189_N,
+                  'corrected_cohort_n':len(corrected),
+                  'expected_corrected_cohort_n':EXPECTED_CORRECTED_COHORT_N,
+                  'current_sic_missing_retained_n':sum(not x['sic'] for x in corrected),
+                  'missing_main_submission_json_n':len(missing_main_json),
+                  'missing_main_submission_json_ciks':missing_main_json,
+                  'corrected_cik_hash':cik_hash,
+                  'expected_corrected_cik_hash':EXPECTED_CIK_HASH,
+                  'cohort_identity_match':cohort_match,
+                  'cohort_csv_sha256':hashlib.sha256(cohort_csv.read_bytes()).hexdigest(),
+                  'bulk_url':bulk_url,
+                  'bulk_bytes':bulk_bytes,
+                  'bulk_sha256':bulk_sha.hexdigest(),
+                  'bulk_headers':bulk_headers,
+                  'index_provenance':index_provenance,
+              }
+              (out/'cohort_reconstruction_summary.json').write_text(json.dumps(reconstruction,indent=2,ensure_ascii=False),encoding='utf-8')
+
+              if not cohort_match:
+                  raise RuntimeError('Frozen 6255-CIK cohort identity did not reproduce exactly; enumeration withheld.')
+
+              # 4) Enumerate exact 10-K/10-Q and amendments for the verified cohort from full SEC submissions history.
+              def arrays_to_rows(arrays, cik, source_segment):
+                  if not isinstance(arrays,dict):
+                      return []
+                  n=len(arrays.get('accessionNumber',[]) or [])
+                  keys=['accessionNumber','filingDate','reportDate','acceptanceDateTime','act','form','fileNumber','filmNumber','items','size','isXBRL','isInlineXBRL','primaryDocument','primaryDocDescription']
+                  outrows=[]
+                  for i in range(n):
+                      def get(k):
+                          a=arrays.get(k,[]) or []
+                          return a[i] if i < len(a) else ''
+                      form=str(get('form') or '')
+                      filing_date=str(get('filingDate') or '')
+                      if form not in TARGET_FORMS or not (START_DATE <= filing_date <= END_DATE):
+                          continue
+                      accession=str(get('accessionNumber') or '')
+                      outrows.append({
+                          'cik':cik,
+                          'accession_number':accession,
+                          'form':form,
+                          'filing_date':filing_date,
+                          'report_date':str(get('reportDate') or ''),
+                          'acceptance_datetime':str(get('acceptanceDateTime') or ''),
+                          'act':str(get('act') or ''),
+                          'file_number':str(get('fileNumber') or ''),
+                          'film_number':str(get('filmNumber') or ''),
+                          'items':str(get('items') or ''),
+                          'size':str(get('size') or ''),
+                          'is_xbrl':str(get('isXBRL') or ''),
+                          'is_inline_xbrl':str(get('isInlineXBRL') or ''),
+                          'primary_document':str(get('primaryDocument') or ''),
+                          'primary_doc_description':str(get('primaryDocDescription') or ''),
+                          'source_segment':source_segment,
+                      })
+                  return outrows
+
+              manifest=[]
+              missing_history_files=[]
+              for pos,x in enumerate(corrected,1):
+                  cik=x['cik']
+                  main_name=f'CIK{cik}.json'
+                  main_member=members.get(main_name)
+                  if not main_member:
+                      raise RuntimeError(f'Missing main submissions JSON after cohort verification: {cik}')
+                  obj=json.loads(z.read(main_member).decode('utf-8'))
+                  filings=obj.get('filings',{}) or {}
+                  manifest.extend(arrays_to_rows(filings.get('recent',{}) or {},cik,'recent'))
+                  for fm in filings.get('files',[]) or []:
+                      nm=str(fm.get('name','') or '')
+                      if not nm:
+                          continue
+                      member=members.get(pathlib.PurePosixPath(nm).name)
+                      if not member:
+                          missing_history_files.append({'cik':cik,'name':nm})
+                          continue
+                      old=json.loads(z.read(member).decode('utf-8'))
+                      manifest.extend(arrays_to_rows(old,cik,nm))
+
+              # deterministic de-duplication by public filing identity
+              dedup={}
+              duplicate_records=0
+              for r in manifest:
+                  key=(r['cik'],r['accession_number'],r['form'])
+                  if key in dedup:
+                      duplicate_records += 1
+                      # prefer the row with nonblank report_date, otherwise keep first deterministically
+                      if (not dedup[key]['report_date']) and r['report_date']:
+                          dedup[key]=r
+                  else:
+                      dedup[key]=r
+              manifest=sorted(dedup.values(),key=lambda r:(int(r['cik']),r['filing_date'],r['accession_number'],r['form']))
+
+              fields=['cik','accession_number','form','filing_date','report_date','acceptance_datetime','act','file_number','film_number','items','size','is_xbrl','is_inline_xbrl','primary_document','primary_doc_description','source_segment']
+              all_csv=out/'SEC_6255_Census_Filing_Metadata_2018_2025_R1.csv'
+              with all_csv.open('w',newline='',encoding='utf-8') as f:
+                  w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(manifest)
+
+              primary=[r for r in manifest if r['form'] in PRIMARY_FORMS]
+              primary_csv=out/'SEC_6255_Census_Primary_10K10Q_Metadata_2018_2025_R1.csv'
+              with primary_csv.open('w',newline='',encoding='utf-8') as f:
+                  w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(primary)
+
+              amendments=[r for r in manifest if r['form'] not in PRIMARY_FORMS]
+              amend_csv=out/'SEC_6255_Census_Amendment_Metadata_2018_2025_R1.csv'
+              with amend_csv.open('w',newline='',encoding='utf-8') as f:
+                  w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(amendments)
+
+              def year(r): return r['filing_date'][:4]
+              counts_year_form=Counter((year(r),r['form']) for r in manifest)
+              primary_counts_year=Counter(year(r) for r in primary)
+              summary={
+                  'stage':'CENSUS_METADATA_ENUMERATION_AND_MANIFEST_VERIFICATION_R1',
+                  'retrieved_at_utc':datetime.now(timezone.utc).isoformat(),
+                  'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),
+                  'commit_sha':os.environ.get('GITHUB_SHA'),
+                  'cohort_n':len(corrected),
+                  'cohort_cik_hash':cik_hash,
+                  'cohort_identity_match':cohort_match,
+                  'window':'2018-2025',
+                  'primary_analysis_window':'2019-2025',
+                  'target_forms':sorted(TARGET_FORMS),
+                  'primary_forms':sorted(PRIMARY_FORMS),
+                  'all_target_filing_rows':len(manifest),
+                  'primary_10k_10q_rows':len(primary),
+                  'amendment_10k_a_10q_a_rows':len(amendments),
+                  'unique_ciks_with_any_target_filing':len({r['cik'] for r in manifest}),
+                  'unique_ciks_with_primary_filing':len({r['cik'] for r in primary}),
+                  'primary_rows_by_year':dict(sorted(primary_counts_year.items())),
+                  'rows_by_year_form':[
+                      {'year':y,'form':form,'rows':n}
+                      for (y,form),n in sorted(counts_year_form.items())
+                  ],
+                  'missing_report_date_all_target':sum(not r['report_date'] for r in manifest),
+                  'missing_report_date_primary':sum(not r['report_date'] for r in primary),
+                  'missing_history_file_references_n':len(missing_history_files),
+                  'missing_history_file_references':missing_history_files[:1000],
+                  'deduplicated_duplicate_records_n':duplicate_records,
+                  'all_manifest_sha256':hashlib.sha256(all_csv.read_bytes()).hexdigest(),
+                  'primary_manifest_sha256':hashlib.sha256(primary_csv.read_bytes()).hexdigest(),
+                  'amendment_manifest_sha256':hashlib.sha256(amend_csv.read_bytes()).hexdigest(),
+                  'cohort_reconstruction_summary_sha256':hashlib.sha256((out/'cohort_reconstruction_summary.json').read_bytes()).hexdigest(),
+                  'bulk_url':bulk_url,
+                  'bulk_bytes':bulk_bytes,
+                  'bulk_sha256':bulk_sha.hexdigest(),
+                  'bulk_headers':bulk_headers,
+                  'verification':{
+                      'cohort_exact_6255':len(corrected)==EXPECTED_CORRECTED_COHORT_N,
+                      'cohort_hash_match':cik_hash==EXPECTED_CIK_HASH,
+                      'no_missing_main_submission_json':not missing_main_json,
+                      'no_missing_history_file_references':not missing_history_files,
+                      'manifest_nonempty':len(manifest)>0,
+                      'primary_manifest_nonempty':len(primary)>0,
+                  },
+              }
+              summary['manifest_verification_pass']=all(summary['verification'].values())
+              (out/'SEC_6255_Census_Metadata_Enumeration_Summary_R1.json').write_text(json.dumps(summary,indent=2,ensure_ascii=False),encoding='utf-8')
+              if missing_history_files:
+                  with (out/'missing_history_file_references.csv').open('w',newline='',encoding='utf-8') as f:
+                      w=csv.DictWriter(f,fieldnames=['cik','name']); w.writeheader(); w.writerows(missing_history_files)
+
+          # bulk ZIP is official transient metadata transport; persist its hash/provenance, not the 1.5GB ZIP itself.
+          bulk_path.unlink()
+          print(json.dumps(summary,indent=2,ensure_ascii=False))
+          if not summary['manifest_verification_pass']:
+              raise RuntimeError('Manifest verification failed; downstream raw collection remains withheld.')
+
+      - name: Upload verified enumeration package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-census-metadata-enumeration-r1-${{ github.run_id }}
+          path: aef_census_metadata_r1/
+          if-no-files-found: error
+          retention-days: 5
+          compression-level: 6
