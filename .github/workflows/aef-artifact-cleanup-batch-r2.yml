@@ -1,0 +1,50 @@
+name: AEF Artifact Cleanup Batch R2
+
+on:
+  push:
+    paths:
+      - 'aef_cleanup/request_batch.json'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate and batch-delete persisted checkpoint artifacts
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import json, os, pathlib, subprocess
+          req=json.loads(pathlib.Path('aef_cleanup/request_batch.json').read_text())
+          if req.get('drive_crypto_readback') != 'PASS':
+              raise SystemExit('Drive cryptographic readback is not PASS')
+          items=req.get('artifacts',[])
+          if not items:
+              raise SystemExit('No artifacts requested')
+          repo=os.environ['GITHUB_REPOSITORY']
+          checked=[]
+          for item in items:
+              aid=int(item['artifact_id'])
+              expected=str(item['expected_name'])
+              try:
+                  got=json.loads(subprocess.check_output(
+                      ['gh','api',f'/repos/{repo}/actions/artifacts/{aid}'], text=True
+                  ))
+              except subprocess.CalledProcessError as e:
+                  raise SystemExit(f'Artifact lookup failed for {aid}: {e}')
+              if got.get('name') != expected:
+                  raise SystemExit(f'Artifact name mismatch for {aid}: {got.get("name")} != {expected}')
+              checked.append((aid,expected))
+          # All identities must verify before the first delete.
+          deleted=[]
+          for aid,expected in checked:
+              subprocess.check_call(['gh','api','--method','DELETE',f'/repos/{repo}/actions/artifacts/{aid}'])
+              deleted.append({'artifact_id':aid,'name':expected})
+          print(json.dumps({'deleted':deleted,'count':len(deleted)},indent=2))
