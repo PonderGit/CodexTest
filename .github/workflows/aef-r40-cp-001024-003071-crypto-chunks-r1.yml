@@ -1,0 +1,95 @@
+name: AEF R40 CP 001024-003071 Crypto Chunks R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-r40-cp-001024-003071-crypto-chunks-r1.yml'
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  chunk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: "37103880792"
+      SOURCE_ARTIFACT: "aef-r40-cp-001024-003071-formal-r1-37103880792"
+    steps:
+      - name: Download verified formal artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source chunks
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$SOURCE_ARTIFACT" --dir source
+
+      - name: Split permanent bundle and create reconstruction manifest
+        shell: python
+        run: |
+          import hashlib,json,pathlib
+          srcs=list(pathlib.Path('source').glob('*_Permanent_Bundle_R1.zip'))
+          if len(srcs)!=1: raise SystemExit(f'permanent bundle cardinality={len(srcs)}')
+          src=srcs[0]
+          def sha(p):
+              h=hashlib.sha256()
+              with open(p,'rb') as f:
+                  for b in iter(lambda:f.read(1048576),b''): h.update(b)
+              return h.hexdigest()
+          chunk_size=24*1024*1024
+          parts=[]
+          with open(src,'rb') as f:
+              i=0
+              while True:
+                  data=f.read(chunk_size)
+                  if not data: break
+                  p=pathlib.Path('chunks')/f'AEF_R40_CP_001024_003071_Permanent_Bundle_R1.part{i:03d}'
+                  p.write_bytes(data)
+                  parts.append({'order':i,'file':p.name,'bytes':len(data),'sha256':sha(p)})
+                  i+=1
+          manifest={
+              'checkpoint':'001024-003071',
+              'source_permanent_bundle_file':src.name,
+              'source_permanent_bundle_bytes':src.stat().st_size,
+              'source_permanent_bundle_sha256':sha(src),
+              'chunk_size_bytes':chunk_size,
+              'chunk_count':len(parts),
+              'parts':parts,
+              'reconstruction':'concatenate parts in ascending order; resulting SHA-256 must equal source_permanent_bundle_sha256'
+          }
+          pathlib.Path('chunks/AEF_R40_CP_001024_003071_Crypto_Chunk_Manifest_R1.json').write_text(json.dumps(manifest,indent=2))
+          if len(parts)<2: raise SystemExit('chunking did not occur')
+          print(json.dumps(manifest,indent=2))
+
+      - name: Upload chunk 000
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-r40-cp-001024-003071-chunk-000
+          path: chunks/AEF_R40_CP_001024_003071_Permanent_Bundle_R1.part000
+          retention-days: 1
+          compression-level: 0
+
+      - name: Upload chunk 001
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-r40-cp-001024-003071-chunk-001
+          path: chunks/AEF_R40_CP_001024_003071_Permanent_Bundle_R1.part001
+          retention-days: 1
+          compression-level: 0
+
+      - name: Upload chunk 002
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-r40-cp-001024-003071-chunk-002
+          path: chunks/AEF_R40_CP_001024_003071_Permanent_Bundle_R1.part002
+          retention-days: 1
+          compression-level: 0
+
+      - name: Upload reconstruction manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-r40-cp-001024-003071-chunk-manifest
+          path: chunks/AEF_R40_CP_001024_003071_Crypto_Chunk_Manifest_R1.json
+          retention-days: 1
+          compression-level: 0
