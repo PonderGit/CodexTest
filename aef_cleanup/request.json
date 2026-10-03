@@ -1,8 +1,10 @@
 {
-  "artifact_id": 11264350702,
-  "expected_name": "aef-selective-streaming-preflight-r1-37095091892",
-  "drive_persistence_verified": true,
-  "drive_file_id": "16RII4KdpV7zdXMp_xtrzvJR0TnBN5znv",
-  "drive_readback_sha256": "5c58ecf7c0f9a397d879bbb67184717c075a6839be45288c1fee848f9552c2e4",
-  "note": "Delete transient-containing validated preflight artifact only after Drive formal package readback PASS"
+  "artifact_id": 11263980677,
+  "expected_name": "aef-selective-streaming-preflight-r1-37094838212",
+  "invalidated_run": true,
+  "invalidation_reason": "Permanent bundle SHA was recorded before ZIP mutation; run rejected by independent readback",
+  "replacement_verified_run_id": 37095091892,
+  "replacement_drive_file_id": "16RII4KdpV7zdXMp_xtrzvJR0TnBN5znv",
+  "replacement_drive_readback_sha256": "5c58ecf7c0f9a397d879bbb67184717c075a6839be45288c1fee848f9552c2e4",
+  "note": "Delete rejected run-2 artifact containing transient raw after valid run-3 formal persistence"
 }
