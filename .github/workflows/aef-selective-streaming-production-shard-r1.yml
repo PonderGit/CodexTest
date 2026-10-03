@@ -1,10 +1,6 @@
 name: AEF Selective Streaming Production Shard R1
 
 on:
-  push:
-    paths:
-      - 'aef_production/request.json'
-      - '.github/workflows/aef-selective-streaming-production-shard-r1.yml'
   workflow_dispatch:
 
 permissions:
