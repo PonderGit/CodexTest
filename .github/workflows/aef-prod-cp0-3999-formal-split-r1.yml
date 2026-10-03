@@ -1,0 +1,228 @@
+name: AEF Production CP0-3999 Formal Split Packaging R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-prod-cp0-3999-formal-split-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: "37097143817"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download four production checkpoint artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source
+          for label in 000000-000999 001000-001999 002000-002999 003000-003999; do
+            mkdir -p "source/$label"
+            gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "aef-prod-cp-$label-$SOURCE_RUN_ID" --dir "source/$label"
+          done
+
+      - name: Independently verify and build permanent-only formal package
+        shell: python
+        run: |
+          import csv,gzip,hashlib,json,os,pathlib,tarfile,zipfile,shutil
+          from collections import Counter
+          from datetime import datetime,timezone
+
+          root=pathlib.Path('source'); formal=pathlib.Path('formal'); formal.mkdir(exist_ok=True)
+          labels=['000000-000999','001000-001999','002000-002999','003000-003999']
+          expected_ranges={
+            '000000-000999':(0,999),
+            '001000-001999':(1000,1999),
+            '002000-002999':(2000,2999),
+            '003000-003999':(3000,3999),
+          }
+          def sha(p):
+              h=hashlib.sha256()
+              with open(p,'rb') as f:
+                  for b in iter(lambda:f.read(1048576),b''): h.update(b)
+              return h.hexdigest()
+          audits=[]
+          for label in labels:
+              d=root/label
+              perm=d/f'AEF_PROD_CP_{label}_Permanent_Bundle_R1.zip'
+              trans=d/f'AEF_PROD_CP_{label}_Transient_All_Raw_R1.tar.gz'
+              summ=d/f'AEF_PROD_CP_{label}_Summary_R1.json'
+              man=d/f'AEF_PROD_CP_{label}_Bundle_Manifest_R1.json'
+              for p in (perm,trans,summ,man):
+                  if not p.exists(): raise RuntimeError(f'missing {p}')
+              s=json.loads(summ.read_text()); m=json.loads(man.read_text())
+              start,end=expected_ranges[label]
+              checks={
+                'label_match':s.get('checkpoint_label')==label,
+                'range_match':s.get('start_index')==start and s.get('end_index')==end,
+                'expected_n_1000':s.get('expected_n')==1000,
+                'success_n_1000':s.get('success_n')==1000,
+                'failure_n_0':s.get('failure_n')==0,
+                'acceptance_ready':s.get('checkpoint_acceptance_ready') is True,
+                'permanent_sha_match':sha(perm)==m.get('permanent_bundle_sha256')==s.get('permanent_bundle_sha256'),
+                'summary_sha_match':sha(summ)==m.get('summary_sha256'),
+                'transient_sha_match':sha(trans)==m.get('transient_raw_archive_sha256')==s.get('transient_raw_archive_sha256'),
+                'transient_release_prohibited':m.get('transient_raw_release_status')=='PROHIBITED_PENDING_GOOGLE_DRIVE_READBACK',
+              }
+              unpack=pathlib.Path('unpack')/label; unpack.mkdir(parents=True,exist_ok=True)
+              with zipfile.ZipFile(perm) as z: z.extractall(unpack)
+              def one(globpat):
+                  xs=list(unpack.glob(globpat))
+                  if len(xs)!=1: raise RuntimeError(f'{label} expected one {globpat}, got {len(xs)}')
+                  return xs[0]
+              provp=one('*_Provenance_R1.csv'); ledp=one('*_Retention_Ledger_R1.csv'); derp=one('*_Derived_Evidence_R1.jsonl.gz'); failp=one('*_Failures_R1.csv'); retainedp=one('*_Retained_Raw_R1.tar.gz')
+              prov=list(csv.DictReader(provp.open(encoding='utf-8')))
+              led=list(csv.DictReader(ledp.open(encoding='utf-8')))
+              with gzip.open(derp,'rt',encoding='utf-8') as f: der=[json.loads(line) for line in f]
+              fails=list(csv.DictReader(failp.open(encoding='utf-8')))
+              key=lambda r:(int(r['global_index']),r['cik'],r['accession_number'],r['form'])
+              pk={key(r) for r in prov}; lk={key(r) for r in led}; dk={(int(r['global_index']),r['cik'],r['accession_number'],r['form']) for r in der}
+              rc=Counter(r['retention_decision_state'] for r in led)
+              hold_rows=[r for r in led if r['retention_decision_state'].startswith('HOLD_')]
+              hold_idx={int(r['global_index']) for r in hold_rows}
+              clear_rows=[r for r in led if r['retention_decision_state']=='TRANSIENT_RELEASE_ELIGIBLE_PENDING_DRIVE_READBACK']
+              with tarfile.open(retainedp,'r:gz') as tf:
+                  retained_names=[x.name for x in tf.getmembers() if x.isfile()]
+              with tarfile.open(trans,'r:gz') as tf:
+                  transient_names=[x.name for x in tf.getmembers() if x.isfile()]
+              retained_idx={int(x.split('__',1)[0]) for x in retained_names}
+              transient_idx={int(x.split('__',1)[0]) for x in transient_names}
+              checks.update({
+                'provenance_rows_1000':len(prov)==1000,
+                'retention_rows_1000':len(led)==1000,
+                'derived_rows_1000':len(der)==1000,
+                'failure_rows_0':len(fails)==0,
+                'keysets_exact':pk==lk==dk,
+                'index_range_exact':{k[0] for k in pk}==set(range(start,end+1)),
+                'transient_members_1000':len(transient_names)==1000 and transient_idx==set(range(start,end+1)),
+                'retained_members_equal_hold':retained_idx==hold_idx and len(retained_names)==len(hold_rows),
+                'raw_hashes_present_all':all(bool(r.get('raw_sha256')) for r in prov),
+                'section_hashes_present_all':all(bool(r.get('section_sha256')) for r in prov),
+              })
+              if not all(checks.values()):
+                  raise RuntimeError(f'{label} verification failed: '+json.dumps({k:v for k,v in checks.items() if not v}))
+              audit={
+                'checkpoint_label':label,'start_index':start,'end_index':end,
+                'success_n':1000,'failure_n':0,
+                'hold_candidate_n':rc.get('HOLD_UNRESOLVED_CANDIDATE',0),
+                'hold_unresolved_extraction_n':rc.get('HOLD_UNRESOLVED_EXTRACTION',0),
+                'clear_nohit_pending_readback_n':rc.get('TRANSIENT_RELEASE_ELIGIBLE_PENDING_DRIVE_READBACK',0),
+                'retained_raw_n':len(retained_names),
+                'permanent_bundle_sha256':sha(perm),
+                'summary_sha256':sha(summ),
+                'bundle_manifest_sha256':sha(man),
+                'transient_raw_sha256':sha(trans),
+                'checks':checks
+              }
+              auditp=formal/f'AEF_PROD_CP_{label}_Independent_Audit_R1.json'
+              auditp.write_text(json.dumps(audit,indent=2),encoding='utf-8')
+              pkg=formal/f'AEF_PROD_CP_{label}_Formal_Persistence_Package_R1.zip'
+              with zipfile.ZipFile(pkg,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+                  z.write(perm,perm.name); z.write(summ,summ.name); z.write(man,man.name); z.write(auditp,auditp.name)
+              audit['formal_package_sha256']=sha(pkg); audit['formal_package_bytes']=pkg.stat().st_size
+              auditp.write_text(json.dumps(audit,indent=2),encoding='utf-8')
+              audits.append(audit)
+
+          agg={
+            'stage':'SELECTIVE_STREAMING_ACQUISITION_EXECUTION',
+            'source_run_id':int(os.environ['SOURCE_RUN_ID']),
+            'checkpoint_labels':labels,
+            'covered_index_start':0,'covered_index_end':3999,
+            'expected_n':4000,
+            'success_n':sum(a['success_n'] for a in audits),
+            'failure_n':sum(a['failure_n'] for a in audits),
+            'hold_candidate_n':sum(a['hold_candidate_n'] for a in audits),
+            'hold_unresolved_extraction_n':sum(a['hold_unresolved_extraction_n'] for a in audits),
+            'clear_nohit_pending_readback_n':sum(a['clear_nohit_pending_readback_n'] for a in audits),
+            'retained_raw_n':sum(a['retained_raw_n'] for a in audits),
+            'transient_release_status':'PROHIBITED_PENDING_GOOGLE_DRIVE_READBACK',
+            'checkpoints':audits,
+            'verified_at_utc':datetime.now(timezone.utc).isoformat(),
+          }
+          agg['aggregate_acceptance_ready']=agg['success_n']==4000 and agg['failure_n']==0 and all(a['checks'] and all(a['checks'].values()) for a in audits)
+          aggp=formal/'AEF_PROD_CP_000000_003999_Aggregate_Audit_R1.json'
+          aggp.write_text(json.dumps(agg,indent=2),encoding='utf-8')
+          master=formal/'AEF_PROD_CP_000000_003999_Formal_Persistence_Master_R1.zip'
+          with zipfile.ZipFile(master,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+              for label in labels:
+                  z.write(formal/f'AEF_PROD_CP_{label}_Formal_Persistence_Package_R1.zip')
+              z.write(aggp,aggp.name)
+          agg['master_formal_package_sha256']=sha(master); agg['master_formal_package_bytes']=master.stat().st_size
+          aggp.write_text(json.dumps(agg,indent=2),encoding='utf-8')
+          manifest=formal/'AEF_PROD_CP_000000_003999_Formal_Master_Manifest_R1.json'
+          manifest.write_text(json.dumps({
+              'master_file':master.name,
+              'master_sha256':agg['master_formal_package_sha256'],
+              'master_bytes':agg['master_formal_package_bytes'],
+              'aggregate_audit_file':aggp.name,
+              'aggregate_audit_sha256':sha(aggp),
+              'transient_raw_included':False,
+              'source_run_id':int(os.environ['SOURCE_RUN_ID'])
+          },indent=2),encoding='utf-8')
+          if sha(master)!=agg['master_formal_package_sha256']: raise RuntimeError('master package mutated')
+          if not agg['aggregate_acceptance_ready']: raise RuntimeError('aggregate acceptance not ready')
+          print(json.dumps(agg,indent=2))
+
+      - name: Upload checkpoint 000000-000999 formal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-prod-cp-000000-000999-formal-r1-${{ github.run_id }}
+          path: |
+            formal/AEF_PROD_CP_000000-000999_Formal_Persistence_Package_R1.zip
+            formal/AEF_PROD_CP_000000-000999_Independent_Audit_R1.json
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+      - name: Upload checkpoint 001000-001999 formal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-prod-cp-001000-001999-formal-r1-${{ github.run_id }}
+          path: |
+            formal/AEF_PROD_CP_001000-001999_Formal_Persistence_Package_R1.zip
+            formal/AEF_PROD_CP_001000-001999_Independent_Audit_R1.json
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+      - name: Upload checkpoint 002000-002999 formal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-prod-cp-002000-002999-formal-r1-${{ github.run_id }}
+          path: |
+            formal/AEF_PROD_CP_002000-002999_Formal_Persistence_Package_R1.zip
+            formal/AEF_PROD_CP_002000-002999_Independent_Audit_R1.json
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+      - name: Upload checkpoint 003000-003999 formal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-prod-cp-003000-003999-formal-r1-${{ github.run_id }}
+          path: |
+            formal/AEF_PROD_CP_003000-003999_Formal_Persistence_Package_R1.zip
+            formal/AEF_PROD_CP_003000-003999_Independent_Audit_R1.json
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+      - name: Upload aggregate audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-prod-cp-000000-003999-aggregate-audit-r1-${{ github.run_id }}
+          path: |
+            formal/AEF_PROD_CP_000000_003999_Aggregate_Audit_R1.json
+            formal/AEF_PROD_CP_000000_003999_Formal_Master_Manifest_R1.json
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
