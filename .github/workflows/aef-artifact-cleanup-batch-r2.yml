@@ -30,21 +30,26 @@ jobs:
               raise SystemExit('No artifacts requested')
           repo=os.environ['GITHUB_REPOSITORY']
           checked=[]
+          already_absent=[]
           for item in items:
               aid=int(item['artifact_id'])
               expected=str(item['expected_name'])
-              try:
-                  got=json.loads(subprocess.check_output(
-                      ['gh','api',f'/repos/{repo}/actions/artifacts/{aid}'], text=True
-                  ))
-              except subprocess.CalledProcessError as e:
-                  raise SystemExit(f'Artifact lookup failed for {aid}: {e}')
+              p=subprocess.run(
+                  ['gh','api',f'/repos/{repo}/actions/artifacts/{aid}'],
+                  text=True,capture_output=True
+              )
+              if p.returncode != 0:
+                  if 'HTTP 404' in (p.stderr or '') or 'Not Found' in (p.stderr or ''):
+                      already_absent.append({'artifact_id':aid,'name':expected,'status':'ALREADY_ABSENT'})
+                      continue
+                  raise SystemExit(f'Artifact lookup failed for {aid}: {p.stderr}')
+              got=json.loads(p.stdout)
               if got.get('name') != expected:
                   raise SystemExit(f'Artifact name mismatch for {aid}: {got.get("name")} != {expected}')
               checked.append((aid,expected))
-          # All identities must verify before the first delete.
+          # All extant identities verify before the first delete.
           deleted=[]
           for aid,expected in checked:
               subprocess.check_call(['gh','api','--method','DELETE',f'/repos/{repo}/actions/artifacts/{aid}'])
-              deleted.append({'artifact_id':aid,'name':expected})
-          print(json.dumps({'deleted':deleted,'count':len(deleted)},indent=2))
+              deleted.append({'artifact_id':aid,'name':expected,'status':'DELETED'})
+          print(json.dumps({'deleted':deleted,'already_absent':already_absent,'requested_count':len(items)},indent=2))
