@@ -1,0 +1,14 @@
+{
+  "authorized_action": "SELECTIVE_STREAMING_ACQUISITION_EXECUTION",
+  "authority_version": "R7",
+  "control_at_launch": "R37",
+  "primary_manifest_rows": 151931,
+  "primary_manifest_sha256": "81943987487538619adbeb95ee26ed61dadc5fc638d61e6c577a4e2be06371b1",
+  "start_index": 0,
+  "shard_size": 1000,
+  "shard_count": 4,
+  "pacing_seconds": 0.55,
+  "transient_release_barrier": "GOOGLE_DRIVE_READBACK_REQUIRED",
+  "formal_treatment_construction": "NOT_AUTHORIZED",
+  "formal_stata": "NOT_AUTHORIZED"
+}
