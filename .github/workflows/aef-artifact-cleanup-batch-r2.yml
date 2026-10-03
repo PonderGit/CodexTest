@@ -25,31 +25,27 @@ jobs:
           req=json.loads(pathlib.Path('aef_cleanup/request_batch.json').read_text())
           if req.get('drive_crypto_readback') != 'PASS':
               raise SystemExit('Drive cryptographic readback is not PASS')
-          items=req.get('artifacts',[])
-          if not items:
-              raise SystemExit('No artifacts requested')
           repo=os.environ['GITHUB_REPOSITORY']
-          checked=[]
-          already_absent=[]
-          for item in items:
-              aid=int(item['artifact_id'])
-              expected=str(item['expected_name'])
-              p=subprocess.run(
-                  ['gh','api',f'/repos/{repo}/actions/artifacts/{aid}'],
-                  text=True,capture_output=True
-              )
-              if p.returncode != 0:
-                  if 'HTTP 404' in (p.stderr or '') or 'Not Found' in (p.stderr or ''):
-                      already_absent.append({'artifact_id':aid,'name':expected,'status':'ALREADY_ABSENT'})
-                      continue
-                  raise SystemExit(f'Artifact lookup failed for {aid}: {p.stderr}')
-              got=json.loads(p.stdout)
-              if got.get('name') != expected:
-                  raise SystemExit(f'Artifact name mismatch for {aid}: {got.get("name")} != {expected}')
-              checked.append((aid,expected))
-          # All extant identities verify before the first delete.
+          run_id=int(req['source_run_id'])
+          allowed_prefixes=req.get('allowed_name_prefixes',['aef-production-r2-'])
+          page=json.loads(subprocess.check_output(
+              ['gh','api',f'/repos/{repo}/actions/runs/{run_id}/artifacts?per_page=100'],
+              text=True
+          ))
+          artifacts=page.get('artifacts',[])
+          bad=[a['name'] for a in artifacts if not any(a['name'].startswith(p) for p in allowed_prefixes)]
+          if bad:
+              raise SystemExit('Unexpected artifact names for accepted run: '+json.dumps(bad))
+          # Discovery is run-derived: no hand-copied artifact IDs.
           deleted=[]
-          for aid,expected in checked:
-              subprocess.check_call(['gh','api','--method','DELETE',f'/repos/{repo}/actions/artifacts/{aid}'])
-              deleted.append({'artifact_id':aid,'name':expected,'status':'DELETED'})
-          print(json.dumps({'deleted':deleted,'already_absent':already_absent,'requested_count':len(items)},indent=2))
+          for a in artifacts:
+              subprocess.check_call(['gh','api','--method','DELETE',f"/repos/{repo}/actions/artifacts/{a['id']}"])
+              deleted.append({'artifact_id':a['id'],'name':a['name'],'status':'DELETED'})
+          # Read back run artifact list; acceptance requires zero remaining.
+          after=json.loads(subprocess.check_output(
+              ['gh','api',f'/repos/{repo}/actions/runs/{run_id}/artifacts?per_page=100'],
+              text=True
+          )).get('artifacts',[])
+          if after:
+              raise SystemExit('Artifacts remain after cleanup: '+json.dumps([a['name'] for a in after]))
+          print(json.dumps({'source_run_id':run_id,'deleted':deleted,'remaining_count':0},indent=2))
