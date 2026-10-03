@@ -1,7 +1,8 @@
 {
-  "artifact_id": 11261827915,
-  "expected_name": "aef-census-2018-streaming-canary-r1-37090046837",
+  "artifact_id": 11264350702,
+  "expected_name": "aef-selective-streaming-preflight-r1-37095091892",
   "drive_persistence_verified": true,
-  "drive_file_id": "1lGpiD_pCZeSKtcv3kGTD4hf5K-yOMYCn",
-  "drive_readback_sha256": "330d45026247dabccad8fc17a8dbc3e0864cde85f7aeb8d6d9c5ab2e339fd93e"
+  "drive_file_id": "16RII4KdpV7zdXMp_xtrzvJR0TnBN5znv",
+  "drive_readback_sha256": "5c58ecf7c0f9a397d879bbb67184717c075a6839be45288c1fee848f9552c2e4",
+  "note": "Delete transient-containing validated preflight artifact only after Drive formal package readback PASS"
 }
