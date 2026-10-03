@@ -35,5 +35,7 @@
       "artifact_id": 11273673150,
       "expected_name": "aef-production-r2-transient-37122618345"
     }
-  ]
+  ],
+  "cleanup_attempt": 2,
+  "cleanup_semantics": "IDEMPOTENT_DELETE_OR_ALREADY_ABSENT"
 }
