@@ -1,8 +1,7 @@
 {
-  "artifact_id": 11267885140,
-  "expected_name": "aef-r40-cp-001024-003071-formal-r1-37103880792",
+  "artifact_id": 11268115885,
+  "expected_name": "aef-r40-cp-001024-003071-chunk-000",
   "drive_persistence_verified": true,
-  "drive_file_id": "1plWVDfYHKJi0dlREOmvtuRl2D2KadGFG",
-  "drive_crypto_readback": "PASS_VIA_CHUNK_MIRROR",
-  "note": "Delete formal transport artifact after Drive persistence and cryptographic chunk mirror PASS"
+  "drive_file_id": "1QdiE7BdlKw7lDXWKSyJJ2gT7X2AJR_Is",
+  "drive_crypto_readback": "PASS_SHA256_9a70be22a921715acef70814b4499baa7513d7b1f96a74cf21ea93c8b848035b"
 }
