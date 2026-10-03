@@ -3,6 +3,6 @@
   "expected_name": "aef-r40-cp-001024-003071-formal-r1-37103880792",
   "drive_persistence_verified": true,
   "drive_file_id": "1plWVDfYHKJi0dlREOmvtuRl2D2KadGFG",
-  "drive_crypto_readback": "PASS_SHA256_MATCH",
-  "note": "Delete permanent formal transport artifact after Drive persistence and crypto mirror PASS"
+  "drive_crypto_readback": "PASS_VIA_CHUNK_MIRROR",
+  "note": "Delete formal transport artifact after Drive persistence and cryptographic chunk mirror PASS"
 }
