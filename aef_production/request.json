@@ -1,14 +1,15 @@
 {
-  "authorized_action": "SELECTIVE_STREAMING_ACQUISITION_EXECUTION",
+  "execution": "SELECTIVE_STREAMING_ACQUISITION_EXECUTION",
   "authority_version": "R7",
-  "control_at_launch": "R37",
-  "primary_manifest_rows": 151931,
-  "primary_manifest_sha256": "81943987487538619adbeb95ee26ed61dadc5fc638d61e6c577a4e2be06371b1",
+  "control": "R38",
   "start_index": 0,
-  "shard_size": 1000,
-  "shard_count": 4,
-  "pacing_seconds": 0.55,
+  "count": 1024,
+  "total_manifest_rows": 151931,
+  "manifest_sha256": "81943987487538619adbeb95ee26ed61dadc5fc638d61e6c577a4e2be06371b1",
+  "adaptive_checkpoint": true,
+  "sec_pacing_seconds": 0.2,
   "transient_release_barrier": "GOOGLE_DRIVE_READBACK_REQUIRED",
   "formal_treatment_construction": "NOT_AUTHORIZED",
-  "formal_stata": "NOT_AUTHORIZED"
+  "formal_stata": "NOT_AUTHORIZED",
+  "authorization_date": "2026-10-03"
 }
