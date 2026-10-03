@@ -1,0 +1,136 @@
+name: AEF Production Checkpoint Formal Package R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-production-checkpoint-formal-package-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: "37099602302"
+      SOURCE_ARTIFACT: "aef-production-shard-r1-37099602302"
+      EXPECTED_ARTIFACT_DIGEST: "2f55b58d00adf38d103aac3c85e54e38e462535caa812214a74838bdb2b41cab"
+      EXPECTED_START: "0"
+      EXPECTED_END_EXCLUSIVE: "1024"
+      EXPECTED_N: "1024"
+      EXPECTED_PROVENANCE_SHA256: "a6b66fd20bd70c863995fdc88d20b69ba5f8c0227b3bb9e1a3dd7cbcb8334ea8"
+      EXPECTED_DERIVED_SHA256: "c83e9e842672f72a4b5af919d8f15f446821f92c10a887fdc3bab7a006072324"
+      EXPECTED_RETENTION_LEDGER_SHA256: "360a67438f0a3554337eb08c10b3fb3457da3532ddd74aceeb8ef0407af59c91"
+      EXPECTED_TRANSIENT_SHA256: "d11dfe893ee975f7cd442213235e7fce09d64a7a756f614412f507914210d16c"
+      EXPECTED_RETAINED_SHA256: "9b1a89a7b2d7f70441bd6b3b933957de9212459443a912338aa708ac837e8b40"
+
+    steps:
+      - name: Download source checkpoint artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source formal
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$SOURCE_ARTIFACT" --dir source
+          ls -lh source
+
+      - name: Independently verify checkpoint and retention barrier inputs
+        shell: python
+        run: |
+          import json,hashlib,os,pathlib,tarfile,zipfile,csv,gzip
+          root=pathlib.Path('source')
+          sums=list(root.glob('*_Summary_R1.json'))
+          mans=list(root.glob('*_Bundle_Manifest_R1.json'))
+          per=list(root.glob('*_Permanent_Bundle_R1.zip'))
+          trans=list(root.glob('*_Transient_All_Raw_R1.tar.gz'))
+          if not (len(sums)==len(mans)==len(per)==len(trans)==1):
+              raise SystemExit(f'unexpected source file cardinality summary={len(sums)} manifest={len(mans)} permanent={len(per)} transient={len(trans)}')
+          summary=json.loads(sums[0].read_text())
+          manifest=json.loads(mans[0].read_text())
+          def sha(p):
+              h=hashlib.sha256()
+              with open(p,'rb') as f:
+                  for b in iter(lambda:f.read(1048576),b''): h.update(b)
+              return h.hexdigest()
+          checks={
+            'start':summary['start_index']==int(os.environ['EXPECTED_START']),
+            'end':summary['end_index_exclusive']==int(os.environ['EXPECTED_END_EXCLUSIVE']),
+            'count':summary['count']==int(os.environ['EXPECTED_N']),
+            'success':summary['success_n']==int(os.environ['EXPECTED_N']),
+            'failure_zero':summary['failure_n']==0,
+            'complete':summary['complete'] is True,
+            'provenance':summary['provenance_sha256']==os.environ['EXPECTED_PROVENANCE_SHA256'],
+            'derived':summary['derived_evidence_sha256']==os.environ['EXPECTED_DERIVED_SHA256'],
+            'ledger':summary['retention_ledger_sha256']==os.environ['EXPECTED_RETENTION_LEDGER_SHA256'],
+            'transient_hash_summary':summary['transient_raw_sha256']==os.environ['EXPECTED_TRANSIENT_SHA256'],
+            'retained_hash_summary':summary['retained_raw_sha256']==os.environ['EXPECTED_RETAINED_SHA256'],
+            'transient_hash_actual':sha(trans[0])==os.environ['EXPECTED_TRANSIENT_SHA256'],
+            'retained_mapping':summary['retained_raw_archive_members']==summary['retention_counts'].get('HOLD_CANDIDATE',0)+summary['retention_counts'].get('HOLD_UNRESOLVED_EXTRACTION',0),
+            'transient_members':summary['transient_raw_archive_members']==int(os.environ['EXPECTED_N']),
+            'clear_count':summary['retention_counts'].get('TRANSIENT_RELEASE_ELIGIBLE_PENDING_DRIVE_READBACK',0)==908,
+            'candidate_count':summary['retention_counts'].get('HOLD_CANDIDATE',0)==84,
+            'unresolved_count':summary['retention_counts'].get('HOLD_UNRESOLVED_EXTRACTION',0)==32,
+            'barrier':manifest['retention_barrier']=='TRANSIENT_RAW_MUST_NOT_BE_DELETED_UNTIL_GOOGLE_DRIVE_PERMANENT_PACKAGE_READBACK_PASS',
+            'permanent_hash_actual':sha(per[0])==manifest['permanent_bundle_sha256'],
+            'transient_hash_manifest':manifest['transient_raw_sha256']==os.environ['EXPECTED_TRANSIENT_SHA256'],
+          }
+          if not all(checks.values()):
+              raise SystemExit('checkpoint verification failure: '+json.dumps(checks,indent=2))
+          # Inspect permanent bundle internal cardinalities/hashes.
+          work=pathlib.Path('verify_bundle'); work.mkdir(exist_ok=True)
+          with zipfile.ZipFile(per[0]) as z: z.extractall(work)
+          prov=list(work.glob('*_Provenance_R1.csv'))[0]
+          led=list(work.glob('*_Retention_Ledger_R1.csv'))[0]
+          der=list(work.glob('*_Derived_Evidence_R1.jsonl.gz'))[0]
+          retained=list(work.glob('*_Retained_Raw_R1.tar.gz'))[0]
+          with prov.open(encoding='utf-8') as f: prov_n=sum(1 for _ in csv.DictReader(f))
+          with led.open(encoding='utf-8') as f: led_n=sum(1 for _ in csv.DictReader(f))
+          with gzip.open(der,'rt',encoding='utf-8') as f: der_n=sum(1 for line in f if line.strip())
+          with tarfile.open(retained,'r:gz') as tf: retained_n=len(tf.getmembers())
+          inner={
+            'prov_n':prov_n,'ledger_n':led_n,'derived_n':der_n,'retained_n':retained_n,
+            'prov_sha':sha(prov),'ledger_sha':sha(led),'derived_sha':sha(der),'retained_sha':sha(retained)
+          }
+          if not (prov_n==led_n==der_n==1024 and retained_n==116):
+              raise SystemExit('internal cardinality failure '+json.dumps(inner))
+          if inner['prov_sha']!=os.environ['EXPECTED_PROVENANCE_SHA256'] or inner['ledger_sha']!=os.environ['EXPECTED_RETENTION_LEDGER_SHA256'] or inner['derived_sha']!=os.environ['EXPECTED_DERIVED_SHA256'] or inner['retained_sha']!=os.environ['EXPECTED_RETAINED_SHA256']:
+              raise SystemExit('internal hash failure '+json.dumps(inner))
+          out={
+            'verification':'PASS',
+            'source_run_id':int(os.environ['SOURCE_RUN_ID']),
+            'start_index':0,'end_index_exclusive':1024,'success_n':1024,'failure_n':0,
+            'retention_counts':summary['retention_counts'],
+            'permanent_bundle_file':per[0].name,
+            'permanent_bundle_sha256':manifest['permanent_bundle_sha256'],
+            'transient_raw_sha256':os.environ['EXPECTED_TRANSIENT_SHA256'],
+            'transient_raw_in_formal_package':False,
+            'drive_readback_required_before_transient_release':True,
+            'internal':inner
+          }
+          pathlib.Path('formal/AEF_R39_CP_000000_001023_Verification_R1.json').write_text(json.dumps(out,indent=2))
+          for p in [per[0],sums[0],mans[0]]:
+              (pathlib.Path('formal')/p.name).write_bytes(p.read_bytes())
+          pathlib.Path('formal/AEF_R39_CP_000000_001023_Formal_Readme_R1.txt').write_text(
+              'SOURCE_RUN_ID=37099602302\n'
+              'CHECKPOINT=000000-001023\n'
+              'SUCCESS_N=1024\nFAILURE_N=0\n'
+              'CLEAR_NOHIT_PENDING_DRIVE_READBACK=908\n'
+              'HOLD_CANDIDATE=84\nHOLD_UNRESOLVED_EXTRACTION=32\n'
+              'TRANSIENT_RAW_INCLUDED=NO\n'
+              'TRANSIENT_RAW_RELEASE_REQUIRES_DRIVE_READBACK=YES\n'
+          )
+          if any('Transient_All_Raw' in p.name for p in pathlib.Path('formal').iterdir()):
+              raise SystemExit('transient raw leaked into formal package')
+          print(json.dumps(out,indent=2))
+
+      - name: Upload permanent formal checkpoint only
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-r39-cp-000000-001023-formal-r1-${{ github.run_id }}
+          path: formal/
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
