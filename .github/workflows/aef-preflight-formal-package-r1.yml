@@ -1,0 +1,55 @@
+name: AEF Preflight Formal Persistence Package R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-preflight-formal-package-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_RUN_ID: "37095091892"
+      SOURCE_ARTIFACT: "aef-selective-streaming-preflight-r1-37095091892"
+      EXPECTED_PERMANENT_BUNDLE_SHA256: "2883497a0a09c21fb774ba7e7ff68bf46c736d5339c752eb9ed1fae4cdf4ce0e"
+      EXPECTED_SUMMARY_SHA256: "f45517a7e33d22d3f3595212758b889bdf5316b7fb1d6e6afe114b5d95c1cd49"
+      EXPECTED_BUNDLE_MANIFEST_SHA256: "b584843737f1562d0779306d9b2d74137375f0adcb76932effee52cd716c7cd1"
+    steps:
+      - name: Download independently verified source artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source formal
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$SOURCE_ARTIFACT" --dir source
+          test -f source/AEF_R37_Preflight_Permanent_Bundle_R1.zip
+          test -f source/AEF_R37_Preflight_Summary_R1.json
+          test -f source/AEF_R37_Preflight_Bundle_Manifest_R1.json
+
+      - name: Verify exact immutable formal files
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "$EXPECTED_PERMANENT_BUNDLE_SHA256  source/AEF_R37_Preflight_Permanent_Bundle_R1.zip" | sha256sum -c -
+          echo "$EXPECTED_SUMMARY_SHA256  source/AEF_R37_Preflight_Summary_R1.json" | sha256sum -c -
+          echo "$EXPECTED_BUNDLE_MANIFEST_SHA256  source/AEF_R37_Preflight_Bundle_Manifest_R1.json" | sha256sum -c -
+          cp source/AEF_R37_Preflight_Permanent_Bundle_R1.zip formal/
+          cp source/AEF_R37_Preflight_Summary_R1.json formal/
+          cp source/AEF_R37_Preflight_Bundle_Manifest_R1.json formal/
+          test ! -e formal/AEF_R37_Preflight_Transient_All_Raw_R1.tar.gz
+          printf '%s\n'             "SOURCE_RUN_ID=$SOURCE_RUN_ID"             "SOURCE_ARTIFACT=$SOURCE_ARTIFACT"             "PERMANENT_BUNDLE_SHA256=$EXPECTED_PERMANENT_BUNDLE_SHA256"             "SUMMARY_SHA256=$EXPECTED_SUMMARY_SHA256"             "BUNDLE_MANIFEST_SHA256=$EXPECTED_BUNDLE_MANIFEST_SHA256"             "TRANSIENT_RAW_INCLUDED=NO"             > formal/AEF_R37_Preflight_Formal_Persistence_Readme_R1.txt
+
+      - name: Upload formal persistence package only
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-r37-preflight-formal-persistence-r1-${{ github.run_id }}
+          path: formal/
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
