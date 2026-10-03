@@ -277,10 +277,22 @@ jobs:
           summary['permanent_bundle_sha256']=sha_file(permanent)
           summary['permanent_bundle_bytes']=permanent.stat().st_size
           summary['transient_raw_archive_bytes']=transient_path.stat().st_size
+          summary['bundle_hash_location']='EXTERNAL_BUNDLE_MANIFEST_NOT_SELF_EMBEDDED'
           summary_path.write_text(json.dumps(summary,indent=2),encoding='utf-8')
-          with zipfile.ZipFile(permanent,'a',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
-              z.writestr('AEF_R37_Preflight_Summary_Final_R1.json',json.dumps(summary,indent=2))
+          bundle_manifest=OUT/'AEF_R37_Preflight_Bundle_Manifest_R1.json'
+          bundle_manifest.write_text(json.dumps({
+              'permanent_bundle_file':permanent.name,
+              'permanent_bundle_sha256':summary['permanent_bundle_sha256'],
+              'permanent_bundle_bytes':summary['permanent_bundle_bytes'],
+              'external_summary_file':summary_path.name,
+              'external_summary_sha256':sha_file(summary_path),
+              'transient_raw_archive_file':transient_path.name,
+              'transient_raw_archive_sha256':summary['transient_raw_archive_sha256'],
+              'transient_raw_release_at_workflow_stage':summary['transient_raw_release_at_workflow_stage']
+          },indent=2),encoding='utf-8')
 
+          if sha_file(permanent) != summary['permanent_bundle_sha256']:
+              raise RuntimeError('Permanent bundle mutated after final hash')
           print(json.dumps(summary,indent=2))
           if not summary['complete']:
               raise RuntimeError('Selective-streaming preflight acceptance test failed')
@@ -294,6 +306,7 @@ jobs:
             preflight_out/AEF_R37_Preflight_Permanent_Bundle_R1.zip
             preflight_out/AEF_R37_Preflight_Transient_All_Raw_R1.tar.gz
             preflight_out/AEF_R37_Preflight_Summary_R1.json
+            preflight_out/AEF_R37_Preflight_Bundle_Manifest_R1.json
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
