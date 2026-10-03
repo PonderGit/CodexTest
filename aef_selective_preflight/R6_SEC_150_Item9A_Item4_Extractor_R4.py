@@ -48,6 +48,7 @@ def extract(t,form):
                 sec,cap,_=bounded(t,m.start(),(I9B,I9C,I10,PARTIII),CAP[form]); c.append((sec,cap))
         sec,st=choose(c,form)
         if st!='NO_HEADING':return sec,st
+        # constrained fallback: controls phrase with nearby Item 9 A
         f=[]
         for cm in CTRL.finditer(t):
             pre=t[max(0,cm.start()-1200):cm.start()]; ims=list(I9A.finditer(pre))
