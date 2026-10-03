@@ -1,7 +1,7 @@
 {
-  "artifact_id": 11268115885,
-  "expected_name": "aef-r40-cp-001024-003071-chunk-000",
+  "artifact_id": 11267151906,
+  "expected_name": "aef-r40-cp-001024-003071-chunk-001",
   "drive_persistence_verified": true,
-  "drive_file_id": "1QdiE7BdlKw7lDXWKSyJJ2gT7X2AJR_Is",
-  "drive_crypto_readback": "PASS_SHA256_9a70be22a921715acef70814b4499baa7513d7b1f96a74cf21ea93c8b848035b"
+  "drive_file_id": "1INwaPLv_89UrIO4d41sIWGlF2JUauDFV",
+  "drive_crypto_readback": "PASS_SHA256_02199052e6171349451bdb6b06e8c70b799f8672bc4b272c69c2bdbf6adda5c8"
 }
