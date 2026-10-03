@@ -1,0 +1,39 @@
+{
+  "checkpoint": "003072-005119",
+  "source_run_id": 37122618345,
+  "drive_crypto_readback": "PASS",
+  "drive_formal_core_id": "1uFZJi-8wRZ631neB-Y-AOcGlM6LFTPML",
+  "drive_part_ids": [
+    "1ArMJLUF8w5glEUg-xbC7PXgina3J8coy",
+    "1y5FqPFVAPBVJFeaWInYofivnsS8UIe26",
+    "1DOkEWlmOSjptwVOkZgdcNXEFBgoxlBpX",
+    "1EDDiuK03mlk4qbmMpzn7QDUH8sSR7-J-"
+  ],
+  "reconstructed_bundle_sha256": "3eea03bb827d52d7f2c5f929fa148e3fb47d65ccd4adf10cda7d759aab067c5b",
+  "artifacts": [
+    {
+      "artifact_id": 11273673095,
+      "expected_name": "aef-production-r2-formal-core-37122618345"
+    },
+    {
+      "artifact_id": 11273792772,
+      "expected_name": "aef-production-r2-part-000-37122618345"
+    },
+    {
+      "artifact_id": 11273656364,
+      "expected_name": "aef-production-r2-part-001-37122618345"
+    },
+    {
+      "artifact_id": 11273363916,
+      "expected_name": "aef-production-r2-part-002-37122618345"
+    },
+    {
+      "artifact_id": 11273538370,
+      "expected_name": "aef-production-r2-part-003-37122618345"
+    },
+    {
+      "artifact_id": 11273673150,
+      "expected_name": "aef-production-r2-transient-37122618345"
+    }
+  ]
+}
