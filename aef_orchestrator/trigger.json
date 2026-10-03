@@ -1,0 +1,6 @@
+{
+  "mode": "TEST_ONLY",
+  "reason": "BOUNDED_ORCHESTRATOR_VALIDATION_AFTER_CHATGPT_SCHEDULER_DISPATCH_GAP",
+  "expected_next_start_index": 7168,
+  "expected_next_count": 2048
+}
