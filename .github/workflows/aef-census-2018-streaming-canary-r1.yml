@@ -1,0 +1,197 @@
+name: AEF Census 2018 Streaming Canary R1
+
+on:
+  push:
+    paths:
+      - '.github/workflows/aef-census-2018-streaming-canary-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+      GH_TOKEN: ${{ github.token }}
+      ENUM_RUN_ID: "37043849127"
+      ENUM_ARTIFACT: "aef-census-metadata-enumeration-r1-37043849127"
+      EXPECTED_PRIMARY_SHA256: "81943987487538619adbeb95ee26ed61dadc5fc638d61e6c577a4e2be06371b1"
+      EXPECTED_CIK_HASH: "440f863ad13efe683e512d38dc4464e9370d703e1428b08e287faa3b4d4b5542"
+    steps:
+      - name: Validate protected identifiers
+        shell: bash
+        run: |
+          test -n "$SEC_USER_AGENT" || { echo "SEC_USER_AGENT missing" >&2; exit 2; }
+          test -n "$GH_TOKEN" || { echo "GH_TOKEN missing" >&2; exit 2; }
+
+      - name: Download verified census metadata artifact
+        shell: bash
+        run: |
+          mkdir -p meta_in
+          gh run download "$ENUM_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$ENUM_ARTIFACT" --dir meta_in
+          test -f meta_in/SEC_6255_Census_Primary_10K10Q_Metadata_2018_2025_R1.csv
+
+      - name: Run deterministic 2018 streaming canary
+        shell: python
+        run: |
+          import csv, hashlib, io, json, os, pathlib, random, tarfile, time
+          import urllib.error, urllib.parse, urllib.request
+          from datetime import datetime, timezone
+
+          meta=pathlib.Path('meta_in/SEC_6255_Census_Primary_10K10Q_Metadata_2018_2025_R1.csv')
+          got=hashlib.sha256(meta.read_bytes()).hexdigest()
+          exp=os.environ['EXPECTED_PRIMARY_SHA256']
+          if got != exp:
+              raise RuntimeError(f'Primary manifest hash mismatch: {got} != {exp}')
+
+          rows=list(csv.DictReader(meta.open(encoding='utf-8')))
+          ciks=sorted({r['cik'].strip().zfill(10) for r in rows}, key=int)
+          cik_hash=hashlib.sha256((''.join(c+'\n' for c in ciks)).encode()).hexdigest()
+          if len(ciks)!=6255 or cik_hash!=os.environ['EXPECTED_CIK_HASH']:
+              raise RuntimeError(f'Cohort identity mismatch n={len(ciks)} hash={cik_hash}')
+          if len(rows)!=151931:
+              raise RuntimeError(f'Primary row count mismatch: {len(rows)}')
+
+          yrows=[r for r in rows if r['filing_date'].startswith('2018-') and r['form'] in {'10-K','10-Q'}]
+          counts={f:sum(r['form']==f for r in yrows) for f in ['10-K','10-Q']}
+          if counts != {'10-K':6386,'10-Q':18379}:
+              raise RuntimeError(f'2018 count mismatch: {counts}')
+
+          rng=random.Random(20261003)
+          selected=[]
+          for form,n in [('10-K',256),('10-Q',256)]:
+              pool=sorted([r for r in yrows if r['form']==form],
+                          key=lambda r:(r['cik'],r['filing_date'],r['accession_number']))
+              idxs=sorted(rng.sample(range(len(pool)), n))
+              for i in idxs:
+                  selected.append(pool[i])
+          selected=sorted(selected,key=lambda r:(r['form'],r['cik'],r['filing_date'],r['accession_number']))
+
+          out=pathlib.Path('canary_out'); out.mkdir(exist_ok=True)
+          ua=os.environ['SEC_USER_AGENT'].strip()
+
+          def fetch_adaptive(url):
+              attempt=0; delay=1.0
+              while True:
+                  attempt += 1
+                  req=urllib.request.Request(url,headers={
+                      'User-Agent':ua,
+                      'Accept-Encoding':'identity',
+                      'Host':'www.sec.gov',
+                  })
+                  try:
+                      with urllib.request.urlopen(req,timeout=90) as resp:
+                          data=resp.read()
+                          status=getattr(resp,'status',200)
+                          if not (200 <= status < 300):
+                              raise RuntimeError(f'HTTP {status}')
+                          return data,status,attempt
+                  except urllib.error.HTTPError as e:
+                      retryable=(e.code==429 or 500 <= e.code < 600)
+                      if (not retryable) or attempt>=5: raise
+                      ra=e.headers.get('Retry-After')
+                      wait=float(ra) if ra and ra.isdigit() else delay
+                      time.sleep(min(max(wait,1.0),30.0)); delay=min(delay*2,30.0)
+                  except (urllib.error.URLError,TimeoutError):
+                      if attempt>=5: raise
+                      time.sleep(delay); delay=min(delay*2,30.0)
+
+          manifest=[]; failures=[]
+          tar_paths={f:out/f'AEF_2018_Canary_{f.replace("-","")}_R1.tar.gz' for f in ['10-K','10-Q']}
+          tar_handles={f:tarfile.open(tar_paths[f],'w:gz',compresslevel=6) for f in tar_paths}
+          try:
+              for i,r in enumerate(selected,1):
+                  cik=r['cik'].strip().zfill(10)
+                  acc=r['accession_number'].strip()
+                  acc_clean=acc.replace('-','')
+                  primary=r['primary_document'].strip()
+                  if not acc or not primary:
+                      failures.append({**r,'error':'MISSING_ACCESSION_OR_PRIMARY_DOCUMENT'}); continue
+                  url=f'https://www.sec.gov/Archives/edgar/data/{int(cik)}/{acc_clean}/{urllib.parse.quote(primary,safe="._-")}'
+                  try:
+                      data,status,attempts=fetch_adaptive(url)
+                      safe=pathlib.PurePosixPath(primary).name.replace('/','_')
+                      name=f'{cik}__{acc}__{safe}'
+                      ti=tarfile.TarInfo(name)
+                      ti.size=len(data); ti.mtime=0; ti.mode=0o644
+                      tar_handles[r['form']].addfile(ti,io.BytesIO(data))
+                      manifest.append({
+                          'cik':cik,'accession_number':acc,'form':r['form'],
+                          'filing_date':r['filing_date'],'report_date':r.get('report_date',''),
+                          'metadata_submission_size':r.get('size',''),
+                          'primary_document':primary,'source_url':url,
+                          'http_status':status,'attempts':attempts,
+                          'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),
+                          'tar_local_name':name
+                      })
+                  except Exception as e:
+                      failures.append({**r,'source_url':url,'error':type(e).__name__+': '+str(e)[:300]})
+                  time.sleep(0.16)
+          finally:
+              for tf in tar_handles.values(): tf.close()
+
+          mp=out/'AEF_2018_Canary_Manifest_R1.csv'
+          fields=['cik','accession_number','form','filing_date','report_date','metadata_submission_size','primary_document','source_url','http_status','attempts','bytes','sha256','tar_local_name']
+          with mp.open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(manifest)
+          fp=out/'AEF_2018_Canary_Failures_R1.csv'
+          fail_fields=sorted({k for x in failures for k in x}) if failures else ['cik','accession_number','form','error']
+          with fp.open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=fail_fields,extrasaction='ignore'); w.writeheader(); w.writerows(failures)
+
+          byform={}
+          for form in ['10-K','10-Q']:
+              xs=[x for x in manifest if x['form']==form]
+              p=tar_paths[form]
+              byform[form]={
+                  'population_n_2018':counts[form],
+                  'sample_n':len(xs),
+                  'raw_bytes':sum(int(x['bytes']) for x in xs),
+                  'mean_raw_bytes':sum(int(x['bytes']) for x in xs)/len(xs) if xs else None,
+                  'tar_gz_bytes':p.stat().st_size,
+                  'compressed_bytes_per_doc':p.stat().st_size/len(xs) if xs else None,
+                  'compression_ratio':p.stat().st_size/sum(int(x['bytes']) for x in xs) if xs else None,
+                  'tar_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+              }
+          projected_raw=sum(byform[f]['mean_raw_bytes']*counts[f] for f in byform)
+          projected_tar=sum(byform[f]['compressed_bytes_per_doc']*counts[f] for f in byform)
+          summary={
+              'stage':'RAW_FULL_COLLECTION_2018_STREAMING_CANARY_R1',
+              'retrieved_at_utc':datetime.now(timezone.utc).isoformat(),
+              'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),
+              'commit_sha':os.environ.get('GITHUB_SHA'),
+              'manifest_sha256_verified':got,
+              'cohort_n':len(ciks),
+              'cohort_cik_hash':cik_hash,
+              'population_2018_primary_n':len(yrows),
+              'selected_n':len(selected),
+              'success_n':len(manifest),
+              'failure_n':len(failures),
+              'seed':20261003,
+              'pacing_seconds':0.16,
+              'by_form':byform,
+              'projected_2018_raw_bytes':projected_raw,
+              'projected_2018_tar_gz_bytes':projected_tar,
+              'manifest_sha256':hashlib.sha256(mp.read_bytes()).hexdigest(),
+              'complete':len(manifest)==len(selected) and not failures,
+              'streaming_archive_design':True,
+              'raw_docs_persisted_individually_on_runner':False,
+          }
+          (out/'AEF_2018_Canary_Summary_R1.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
+          print(json.dumps(summary,indent=2))
+          if not summary['complete']:
+              raise RuntimeError('2018 streaming canary incomplete')
+
+      - name: Upload canary package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-census-2018-streaming-canary-r1-${{ github.run_id }}
+          path: canary_out/
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
