@@ -1,0 +1,36 @@
+name: AEF Artifact Cleanup R1
+
+on:
+  push:
+    paths:
+      - 'aef_cleanup/request.json'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate and delete persisted acquisition artifact
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import json, os, pathlib, subprocess
+          req=json.loads(pathlib.Path('aef_cleanup/request.json').read_text())
+          aid=int(req['artifact_id'])
+          expected=str(req['expected_name'])
+          repo=os.environ['GITHUB_REPOSITORY']
+          got=json.loads(subprocess.check_output(
+              ['gh','api',f'/repos/{repo}/actions/artifacts/{aid}'],
+              text=True
+          ))
+          if got.get('name') != expected:
+              raise SystemExit(f'Artifact name mismatch: {got.get("name")} != {expected}')
+          subprocess.check_call(['gh','api','--method','DELETE',f'/repos/{repo}/actions/artifacts/{aid}'])
+          print(json.dumps({'deleted_artifact_id':aid,'deleted_name':expected},indent=2))
