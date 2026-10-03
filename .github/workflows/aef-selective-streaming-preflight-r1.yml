@@ -47,6 +47,12 @@ jobs:
         shell: bash
         run: python -m pip install --quiet pandas
 
+      - name: Prepare frozen source import sandbox
+        shell: bash
+        run: |
+          sudo mkdir -p /mnt/data/aef_s3_extract_r4corrected /mnt/data/aef_primary_docs_all
+          sudo chown -R "$USER":"$USER" /mnt/data
+
       - name: Execute bounded selective-streaming production preflight
         shell: python
         run: |
