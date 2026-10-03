@@ -1,0 +1,235 @@
+name: AEF Selective Streaming Production Checkpoint R1
+
+on:
+  push:
+    paths:
+      - 'aef_production/request.json'
+      - '.github/workflows/aef-selective-streaming-production-checkpoint-r1.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      pacing: ${{ steps.plan.outputs.pacing }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: plan
+        shell: python
+        run: |
+          import json, pathlib, os
+          p=json.loads(pathlib.Path('aef_production/request.json').read_text())
+          start=int(p['start_index']); size=int(p['shard_size']); count=int(p['shard_count']); pacing=float(p['pacing_seconds'])
+          if start < 0 or size < 1 or count < 1 or count > 8: raise SystemExit('invalid shard plan')
+          if start + size*count > 151931: raise SystemExit('plan exceeds manifest rows')
+          if count/pacing > 9.0: raise SystemExit(f'aggregate nominal SEC rate too high: {count/pacing}')
+          inc=[]
+          for j in range(count):
+              s=start+j*size; e=s+size-1
+              inc.append({'shard':j,'start':s,'end':e,'label':f'{s:06d}-{e:06d}'})
+          matrix=json.dumps({'include':inc},separators=(',',':'))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('matrix='+matrix+'\n')
+              f.write('pacing='+str(pacing)+'\n')
+          print(json.dumps({'matrix':inc,'pacing':pacing},indent=2))
+
+  acquire:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+      GH_TOKEN: ${{ github.token }}
+      ENUM_RUN_ID: "37043849127"
+      ENUM_ARTIFACT: "aef-census-metadata-enumeration-r1-37043849127"
+      EXPECTED_PRIMARY_SHA256: "81943987487538619adbeb95ee26ed61dadc5fc638d61e6c577a4e2be06371b1"
+      EXPECTED_CIK_HASH: "440f863ad13efe683e512d38dc4464e9370d703e1428b08e287faa3b4d4b5542"
+      EXPECTED_EXTRACTOR_SHA256: "955c17cfccb43b77172309827cc279a8453c93a95942a5171344586a09ef07ed"
+      EXPECTED_RETRIEVAL_SHA256: "5ed124ec9b96a827db262b0483be4f2ed4217c2321976fb948108e571b3c8509"
+      SHARD_START: "${{ matrix.start }}"
+      SHARD_END: "${{ matrix.end }}"
+      SHARD_LABEL: "${{ matrix.label }}"
+      PACING_SECONDS: "${{ needs.prepare.outputs.pacing }}"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate frozen code and identifiers
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SEC_USER_AGENT"
+          echo "$EXPECTED_EXTRACTOR_SHA256  aef_selective_preflight/R6_SEC_150_Item9A_Item4_Extractor_R4.py" | sha256sum -c -
+          echo "$EXPECTED_RETRIEVAL_SHA256  aef_selective_preflight/R6_SEC_150_Retrieval_Screen_FromCache_R3.py" | sha256sum -c -
+
+      - name: Download frozen census manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p meta_in
+          gh run download "$ENUM_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$ENUM_ARTIFACT" --dir meta_in
+          test -f meta_in/SEC_6255_Census_Primary_10K10Q_Metadata_2018_2025_R1.csv
+
+      - name: Prepare runtime
+        shell: bash
+        run: |
+          python -m pip install --quiet pandas
+          sudo mkdir -p /mnt/data/aef_s3_extract_r4corrected /mnt/data/aef_primary_docs_all
+          sudo chown -R "$USER":"$USER" /mnt/data
+
+      - name: Execute production checkpoint
+        shell: python
+        run: |
+          import csv,gzip,hashlib,importlib.util,io,json,os,pathlib,tarfile,time,urllib.error,urllib.parse,urllib.request,zipfile
+          from collections import Counter
+          from datetime import datetime,timezone
+
+          ROOT=pathlib.Path('.'); OUT=ROOT/'prod_out'; OUT.mkdir(exist_ok=True); TMP=ROOT/'prod_tmp'; TMP.mkdir(exist_ok=True)
+          meta=ROOT/'meta_in/SEC_6255_Census_Primary_10K10Q_Metadata_2018_2025_R1.csv'
+          start=int(os.environ['SHARD_START']); end=int(os.environ['SHARD_END']); label=os.environ['SHARD_LABEL']; pacing=float(os.environ['PACING_SECONDS'])
+
+          def sha_bytes(b): return hashlib.sha256(b).hexdigest()
+          def sha_file(p):
+              h=hashlib.sha256()
+              with open(p,'rb') as f:
+                  for chunk in iter(lambda:f.read(1048576),b''): h.update(chunk)
+              return h.hexdigest()
+
+          if sha_file(meta)!=os.environ['EXPECTED_PRIMARY_SHA256']: raise RuntimeError('manifest hash mismatch')
+          rows=list(csv.DictReader(meta.open(encoding='utf-8')))
+          if len(rows)!=151931: raise RuntimeError(f'manifest row count {len(rows)}')
+          ciks=sorted({r['cik'].strip().zfill(10) for r in rows},key=int)
+          cik_hash=hashlib.sha256((''.join(c+'\n' for c in ciks)).encode()).hexdigest()
+          if len(ciks)!=6255 or cik_hash!=os.environ['EXPECTED_CIK_HASH']: raise RuntimeError('cohort identity mismatch')
+          selected=rows[start:end+1]
+          if len(selected)!=(end-start+1): raise RuntimeError('checkpoint selection length mismatch')
+
+          def load_module(name,path):
+              spec=importlib.util.spec_from_file_location(name,path); mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); return mod
+          ext=load_module('frozen_extractor','aef_selective_preflight/R6_SEC_150_Item9A_Item4_Extractor_R4.py')
+          ret=load_module('frozen_retrieval','aef_selective_preflight/R6_SEC_150_Retrieval_Screen_FromCache_R3.py')
+
+          ua=os.environ['SEC_USER_AGENT'].strip()
+          def fetch_adaptive(url):
+              attempt=0; delay=1.0
+              while True:
+                  attempt+=1
+                  req=urllib.request.Request(url,headers={'User-Agent':ua,'Accept-Encoding':'identity','Host':'www.sec.gov'})
+                  try:
+                      with urllib.request.urlopen(req,timeout=90) as resp:
+                          data=resp.read(); status=getattr(resp,'status',200)
+                          if not 200<=status<300: raise RuntimeError(f'HTTP {status}')
+                          return data,status,attempt
+                  except urllib.error.HTTPError as e:
+                      retryable=(e.code==429 or 500<=e.code<600)
+                      if (not retryable) or attempt>=5: raise
+                      ra=e.headers.get('Retry-After'); wait=float(ra) if ra and ra.isdigit() else delay
+                      time.sleep(min(max(wait,1.0),30.0)); delay=min(delay*2,30.0)
+                  except (urllib.error.URLError,TimeoutError):
+                      if attempt>=5: raise
+                      time.sleep(delay); delay=min(delay*2,30.0)
+
+          prov=[]; derived=[]; ledger=[]; failures=[]
+          transient=OUT/f'AEF_PROD_CP_{label}_Transient_All_Raw_R1.tar.gz'
+          retained=OUT/f'AEF_PROD_CP_{label}_Retained_Raw_R1.tar.gz'
+          ta=tarfile.open(transient,'w:gz',compresslevel=6); tk=tarfile.open(retained,'w:gz',compresslevel=6)
+          try:
+              for local_i,r in enumerate(selected):
+                  global_i=start+local_i
+                  cik=r['cik'].strip().zfill(10); acc=r['accession_number'].strip(); primary=r['primary_document'].strip()
+                  acc_clean=acc.replace('-',''); url=f'https://www.sec.gov/Archives/edgar/data/{int(cik)}/{acc_clean}/{urllib.parse.quote(primary,safe="._-")}'
+                  tmp=TMP/f'{global_i:06d}.raw'
+                  t_req=time.time()
+                  try:
+                      data,status,attempts=fetch_adaptive(url); tmp.write_bytes(data)
+                      raw_sha=sha_bytes(data); safe=pathlib.PurePosixPath(primary).name.replace('/','_'); tar_name=f'{global_i:06d}__{cik}__{acc}__{safe}'
+                      ti=tarfile.TarInfo(tar_name); ti.size=len(data); ti.mtime=0; ti.mode=0o644; ta.addfile(ti,io.BytesIO(data))
+                      text=ext.html_text(tmp); section,section_status=ext.extract(text,r['form']); hit,components=ret.screen(section,section_status,r['form'])
+                      if section_status not in ret.USABLE:
+                          retention_state='HOLD_UNRESOLVED_EXTRACTION'; release='NOT_ELIGIBLE'
+                      elif hit:
+                          retention_state='HOLD_UNRESOLVED_CANDIDATE'; release='NOT_ELIGIBLE'
+                      else:
+                          retention_state='TRANSIENT_RELEASE_ELIGIBLE_PENDING_DRIVE_READBACK'; release='PENDING_DRIVE_READBACK'
+                      if retention_state.startswith('HOLD_'):
+                          ti2=tarfile.TarInfo(tar_name); ti2.size=len(data); ti2.mtime=0; ti2.mode=0o644; tk.addfile(ti2,io.BytesIO(data))
+                      sec_sha=sha_bytes(section.encode('utf-8'))
+                      now=datetime.now(timezone.utc).isoformat()
+                      base={'global_index':global_i,'cik':cik,'accession_number':acc,'form':r['form'],'filing_date':r['filing_date'],'report_date':r.get('report_date',''),'primary_document':primary,'source_url':url}
+                      prov.append({**base,'retrieval_utc':now,'http_status':status,'attempts':attempts,'raw_bytes':len(data),'raw_sha256':raw_sha,'extractor_sha256':os.environ['EXPECTED_EXTRACTOR_SHA256'],'retrieval_rule_sha256':os.environ['EXPECTED_RETRIEVAL_SHA256'],'section_status':section_status,'section_len':len(section),'section_sha256':sec_sha,'candidate_retrieval_hit':int(hit),'retrieval_rule_components':';'.join(components),'retention_decision_state':retention_state,'transient_release_status':release})
+                      derived.append({**base,'section_status':section_status,'section_sha256':sec_sha,'section_text':section,'candidate_retrieval_hit':int(hit),'retrieval_rule_components':components,'retention_decision_state':retention_state})
+                      ledger.append({**base,'raw_sha256':raw_sha,'section_sha256':sec_sha,'retention_decision_state':retention_state,'transient_release_status':release})
+                  except Exception as e:
+                      failures.append({'global_index':global_i,'cik':cik,'accession_number':acc,'form':r['form'],'filing_date':r['filing_date'],'source_url':url,'error':type(e).__name__+': '+str(e)[:500]})
+                  finally:
+                      try: tmp.unlink(missing_ok=True)
+                      except Exception: pass
+                  elapsed=time.time()-t_req
+                  if elapsed<pacing: time.sleep(pacing-elapsed)
+          finally:
+              ta.close(); tk.close()
+
+          def write_csv(path,arr,defaults):
+              fields=list(arr[0].keys()) if arr else defaults
+              with path.open('w',newline='',encoding='utf-8') as f:
+                  w=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore'); w.writeheader(); w.writerows(arr)
+
+          provp=OUT/f'AEF_PROD_CP_{label}_Provenance_R1.csv'; write_csv(provp,prov,['global_index'])
+          ledp=OUT/f'AEF_PROD_CP_{label}_Retention_Ledger_R1.csv'; write_csv(ledp,ledger,['global_index'])
+          failp=OUT/f'AEF_PROD_CP_{label}_Failures_R1.csv'; write_csv(failp,failures,['global_index','error'])
+          derp=OUT/f'AEF_PROD_CP_{label}_Derived_Evidence_R1.jsonl.gz'
+          with gzip.open(derp,'wt',encoding='utf-8') as f:
+              for x in derived: f.write(json.dumps(x,ensure_ascii=False)+'\n')
+
+          counts=Counter(x['retention_decision_state'] for x in ledger); statuses=Counter(x['section_status'] for x in prov)
+          with tarfile.open(transient,'r:gz') as tf: transient_n=len(tf.getmembers())
+          with tarfile.open(retained,'r:gz') as tf: retained_n=len(tf.getmembers())
+          hold_n=counts.get('HOLD_UNRESOLVED_CANDIDATE',0)+counts.get('HOLD_UNRESOLVED_EXTRACTION',0)
+          summary={'stage':'SELECTIVE_STREAMING_ACQUISITION_EXECUTION','checkpoint_label':label,'start_index':start,'end_index':end,'expected_n':len(selected),'success_n':len(prov),'failure_n':len(failures),'manifest_sha256':os.environ['EXPECTED_PRIMARY_SHA256'],'cohort_cik_hash':os.environ['EXPECTED_CIK_HASH'],'extractor_sha256':os.environ['EXPECTED_EXTRACTOR_SHA256'],'retrieval_rule_sha256':os.environ['EXPECTED_RETRIEVAL_SHA256'],'pacing_seconds':pacing,'retention_counts':dict(counts),'section_status_counts':dict(statuses),'transient_raw_archive_members':transient_n,'retained_raw_archive_members':retained_n,'provenance_sha256':sha_file(provp),'derived_evidence_sha256':sha_file(derp),'retention_ledger_sha256':sha_file(ledp),'transient_raw_archive_sha256':sha_file(transient),'retained_raw_archive_sha256':sha_file(retained),'retrieval_hit_is_not_treatment':True,'unusable_extraction_is_not_negative':True,'transient_raw_release_at_workflow_stage':'PROHIBITED_PENDING_GOOGLE_DRIVE_PERSISTENCE_AND_READBACK','complete_data_acquisition':len(prov)==len(selected) and not failures,'hold_mapping_pass':retained_n==hold_n,'transient_member_count_pass':transient_n==len(prov),'created_at_utc':datetime.now(timezone.utc).isoformat()}
+          summary['checkpoint_acceptance_ready']=summary['complete_data_acquisition'] and summary['hold_mapping_pass'] and summary['transient_member_count_pass']
+          sump=OUT/f'AEF_PROD_CP_{label}_Summary_R1.json'; sump.write_text(json.dumps(summary,indent=2),encoding='utf-8')
+          codep=OUT/f'AEF_PROD_CP_{label}_Code_Hashes_R1.json'; codep.write_text(json.dumps({'extractor_sha256':os.environ['EXPECTED_EXTRACTOR_SHA256'],'retrieval_rule_sha256':os.environ['EXPECTED_RETRIEVAL_SHA256']},indent=2),encoding='utf-8')
+
+          permanent=OUT/f'AEF_PROD_CP_{label}_Permanent_Bundle_R1.zip'
+          with zipfile.ZipFile(permanent,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+              for p in [provp,ledp,derp,failp,retained,sump,codep]: z.write(p,p.name)
+              z.write('aef_selective_preflight/R6_SEC_150_Item9A_Item4_Extractor_R4.py','frozen_code/R6_SEC_150_Item9A_Item4_Extractor_R4.py')
+              z.write('aef_selective_preflight/R6_SEC_150_Retrieval_Screen_FromCache_R3.py','frozen_code/R6_SEC_150_Retrieval_Screen_FromCache_R3.py')
+          summary['permanent_bundle_sha256']=sha_file(permanent); summary['permanent_bundle_bytes']=permanent.stat().st_size; summary['transient_raw_archive_bytes']=transient.stat().st_size; summary['bundle_hash_location']='EXTERNAL_BUNDLE_MANIFEST_NOT_SELF_EMBEDDED'; sump.write_text(json.dumps(summary,indent=2),encoding='utf-8')
+          manp=OUT/f'AEF_PROD_CP_{label}_Bundle_Manifest_R1.json'
+          manp.write_text(json.dumps({'checkpoint_label':label,'permanent_bundle_file':permanent.name,'permanent_bundle_sha256':summary['permanent_bundle_sha256'],'permanent_bundle_bytes':summary['permanent_bundle_bytes'],'summary_file':sump.name,'summary_sha256':sha_file(sump),'transient_raw_archive_file':transient.name,'transient_raw_archive_sha256':summary['transient_raw_archive_sha256'],'transient_raw_release_status':'PROHIBITED_PENDING_GOOGLE_DRIVE_READBACK'},indent=2),encoding='utf-8')
+          if sha_file(permanent)!=summary['permanent_bundle_sha256']: raise RuntimeError('permanent bundle mutated')
+          print(json.dumps(summary,indent=2))
+
+      - name: Upload checkpoint transport artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aef-prod-cp-${{ matrix.label }}-${{ github.run_id }}
+          path: |
+            prod_out/AEF_PROD_CP_${{ matrix.label }}_Permanent_Bundle_R1.zip
+            prod_out/AEF_PROD_CP_${{ matrix.label }}_Transient_All_Raw_R1.tar.gz
+            prod_out/AEF_PROD_CP_${{ matrix.label }}_Summary_R1.json
+            prod_out/AEF_PROD_CP_${{ matrix.label }}_Bundle_Manifest_R1.json
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+      - name: Enforce checkpoint acceptance
+        if: always()
+        shell: python
+        run: |
+          import json,os,pathlib,sys
+          label=os.environ['SHARD_LABEL']
+          p=pathlib.Path('prod_out')/f'AEF_PROD_CP_{label}_Summary_R1.json'
+          if not p.exists(): raise SystemExit('summary missing')
+          s=json.loads(p.read_text())
+          if not s.get('checkpoint_acceptance_ready'): raise SystemExit('checkpoint acceptance not ready')
