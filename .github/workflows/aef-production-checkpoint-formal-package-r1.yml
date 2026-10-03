@@ -16,17 +16,17 @@ jobs:
     timeout-minutes: 15
     env:
       GH_TOKEN: ${{ github.token }}
-      SOURCE_RUN_ID: "37099602302"
-      SOURCE_ARTIFACT: "aef-production-shard-r1-37099602302"
-      EXPECTED_ARTIFACT_DIGEST: "2f55b58d00adf38d103aac3c85e54e38e462535caa812214a74838bdb2b41cab"
-      EXPECTED_START: "0"
-      EXPECTED_END_EXCLUSIVE: "1024"
-      EXPECTED_N: "1024"
-      EXPECTED_PROVENANCE_SHA256: "a6b66fd20bd70c863995fdc88d20b69ba5f8c0227b3bb9e1a3dd7cbcb8334ea8"
-      EXPECTED_DERIVED_SHA256: "c83e9e842672f72a4b5af919d8f15f446821f92c10a887fdc3bab7a006072324"
-      EXPECTED_RETENTION_LEDGER_SHA256: "360a67438f0a3554337eb08c10b3fb3457da3532ddd74aceeb8ef0407af59c91"
-      EXPECTED_TRANSIENT_SHA256: "d11dfe893ee975f7cd442213235e7fce09d64a7a756f614412f507914210d16c"
-      EXPECTED_RETAINED_SHA256: "9b1a89a7b2d7f70441bd6b3b933957de9212459443a912338aa708ac837e8b40"
+      SOURCE_RUN_ID: "37103138902"
+      SOURCE_ARTIFACT: "aef-production-shard-r1-37103138902"
+      EXPECTED_ARTIFACT_DIGEST: "c5c2f632731f35abf1e6c3fef3d42047cea60e9405b5701926cb25cd42be256c"
+      EXPECTED_START: "1024"
+      EXPECTED_END_EXCLUSIVE: "3072"
+      EXPECTED_N: "2048"
+      EXPECTED_PROVENANCE_SHA256: "1a34b6a9b753918e99ee88901416868ad48a980029153854c4876cf7d67be8ec"
+      EXPECTED_DERIVED_SHA256: "3bb486d52940802a1de5884ef27da634d8bcffd412206521b3b4a3bba475e307"
+      EXPECTED_RETENTION_LEDGER_SHA256: "d0f8bbdc42460f589ef8146777b37d458e2ca95ab5e7df1e913f9e0df949e968"
+      EXPECTED_TRANSIENT_SHA256: "da58867639eaf44e1e36b8ee461e0bf8067d428bbb2fcf119f68d73d4c484fe2"
+      EXPECTED_RETAINED_SHA256: "da0115e4c0bbff537779412bbbfec4ee0727d4ee093681c68dfdeffb07ab74d6"
 
     steps:
       - name: Download source checkpoint artifact
@@ -70,9 +70,9 @@ jobs:
             'transient_hash_actual':sha(trans[0])==os.environ['EXPECTED_TRANSIENT_SHA256'],
             'retained_mapping':summary['retained_raw_archive_members']==summary['retention_counts'].get('HOLD_CANDIDATE',0)+summary['retention_counts'].get('HOLD_UNRESOLVED_EXTRACTION',0),
             'transient_members':summary['transient_raw_archive_members']==int(os.environ['EXPECTED_N']),
-            'clear_count':summary['retention_counts'].get('TRANSIENT_RELEASE_ELIGIBLE_PENDING_DRIVE_READBACK',0)==908,
-            'candidate_count':summary['retention_counts'].get('HOLD_CANDIDATE',0)==84,
-            'unresolved_count':summary['retention_counts'].get('HOLD_UNRESOLVED_EXTRACTION',0)==32,
+            'clear_count':summary['retention_counts'].get('TRANSIENT_RELEASE_ELIGIBLE_PENDING_DRIVE_READBACK',0)==1770,
+            'candidate_count':summary['retention_counts'].get('HOLD_CANDIDATE',0)==218,
+            'unresolved_count':summary['retention_counts'].get('HOLD_UNRESOLVED_EXTRACTION',0)==60,
             'barrier':manifest['retention_barrier']=='TRANSIENT_RAW_MUST_NOT_BE_DELETED_UNTIL_GOOGLE_DRIVE_PERMANENT_PACKAGE_READBACK_PASS',
             'permanent_hash_actual':sha(per[0])==manifest['permanent_bundle_sha256'],
             'transient_hash_manifest':manifest['transient_raw_sha256']==os.environ['EXPECTED_TRANSIENT_SHA256'],
@@ -94,14 +94,14 @@ jobs:
             'prov_n':prov_n,'ledger_n':led_n,'derived_n':der_n,'retained_n':retained_n,
             'prov_sha':sha(prov),'ledger_sha':sha(led),'derived_sha':sha(der),'retained_sha':sha(retained)
           }
-          if not (prov_n==led_n==der_n==1024 and retained_n==116):
+          if not (prov_n==led_n==der_n==2048 and retained_n==278):
               raise SystemExit('internal cardinality failure '+json.dumps(inner))
           if inner['prov_sha']!=os.environ['EXPECTED_PROVENANCE_SHA256'] or inner['ledger_sha']!=os.environ['EXPECTED_RETENTION_LEDGER_SHA256'] or inner['derived_sha']!=os.environ['EXPECTED_DERIVED_SHA256'] or inner['retained_sha']!=os.environ['EXPECTED_RETAINED_SHA256']:
               raise SystemExit('internal hash failure '+json.dumps(inner))
           out={
             'verification':'PASS',
             'source_run_id':int(os.environ['SOURCE_RUN_ID']),
-            'start_index':0,'end_index_exclusive':1024,'success_n':1024,'failure_n':0,
+            'start_index':1024,'end_index_exclusive':3072,'success_n':2048,'failure_n':0,
             'retention_counts':summary['retention_counts'],
             'permanent_bundle_file':per[0].name,
             'permanent_bundle_sha256':manifest['permanent_bundle_sha256'],
@@ -110,15 +110,15 @@ jobs:
             'drive_readback_required_before_transient_release':True,
             'internal':inner
           }
-          pathlib.Path('formal/AEF_R39_CP_000000_001023_Verification_R1.json').write_text(json.dumps(out,indent=2))
+          pathlib.Path('formal/AEF_R40_CP_001024_003071_Verification_R1.json').write_text(json.dumps(out,indent=2))
           for p in [per[0],sums[0],mans[0]]:
               (pathlib.Path('formal')/p.name).write_bytes(p.read_bytes())
-          pathlib.Path('formal/AEF_R39_CP_000000_001023_Formal_Readme_R1.txt').write_text(
-              'SOURCE_RUN_ID=37099602302\n'
-              'CHECKPOINT=000000-001023\n'
-              'SUCCESS_N=1024\nFAILURE_N=0\n'
-              'CLEAR_NOHIT_PENDING_DRIVE_READBACK=908\n'
-              'HOLD_CANDIDATE=84\nHOLD_UNRESOLVED_EXTRACTION=32\n'
+          pathlib.Path('formal/AEF_R40_CP_001024_003071_Formal_Readme_R1.txt').write_text(
+              'SOURCE_RUN_ID=37103138902\n'
+              'CHECKPOINT=001024-003071\n'
+              'SUCCESS_N=2048\nFAILURE_N=0\n'
+              'CLEAR_NOHIT_PENDING_DRIVE_READBACK=1770\n'
+              'HOLD_CANDIDATE=218\nHOLD_UNRESOLVED_EXTRACTION=60\n'
               'TRANSIENT_RAW_INCLUDED=NO\n'
               'TRANSIENT_RAW_RELEASE_REQUIRES_DRIVE_READBACK=YES\n'
           )
@@ -129,7 +129,7 @@ jobs:
       - name: Upload permanent formal checkpoint only
         uses: actions/upload-artifact@v4
         with:
-          name: aef-r39-cp-000000-001023-formal-r1-${{ github.run_id }}
+          name: aef-r40-cp-001024-003071-formal-r1-${{ github.run_id }}
           path: formal/
           if-no-files-found: error
           retention-days: 1
