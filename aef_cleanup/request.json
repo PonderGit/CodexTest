@@ -1,14 +1,8 @@
 {
-  "artifact_id": 11267210198,
-  "expected_name": "aef-production-shard-r1-37103138902",
+  "artifact_id": 11267885140,
+  "expected_name": "aef-r40-cp-001024-003071-formal-r1-37103880792",
   "drive_persistence_verified": true,
-  "drive_formal_package_id": "1plWVDfYHKJi0dlREOmvtuRl2D2KadGFG",
-  "drive_crypto_chunk_ids": [
-    "1QdiE7BdlKw7lDXWKSyJJ2gT7X2AJR_Is",
-    "1INwaPLv_89UrIO4d41sIWGlF2JUauDFV",
-    "1TQJMApiMdNY8TUaefF7CKWdV9t9tSPve",
-    "1AtiUzg7_XmAW_X5GyEddyZqqwyrQ3XxO"
-  ],
-  "drive_crypto_readback": "PASS_ALL_4_ARTIFACT_SHA256_MATCH",
-  "note": "Delete transient-containing production checkpoint artifact only after Drive permanent evidence cryptographic readback PASS"
+  "drive_file_id": "1plWVDfYHKJi0dlREOmvtuRl2D2KadGFG",
+  "drive_crypto_readback": "PASS_SHA256_MATCH",
+  "note": "Delete permanent formal transport artifact after Drive persistence and crypto mirror PASS"
 }
