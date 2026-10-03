@@ -1,18 +1,16 @@
 {
-  "checkpoint": "003072-005119",
-  "source_run_id": 37122618345,
+  "checkpoint": "005120-007167",
+  "source_run_id": 37128130480,
   "drive_crypto_readback": "PASS",
   "allowed_name_prefixes": [
     "aef-production-r2-"
   ],
-  "drive_formal_core_id": "1uFZJi-8wRZ631neB-Y-AOcGlM6LFTPML",
+  "drive_formal_core_id": "1m0PFdWdzjk6Z0fCRB1Z8ATdGhQtTBA22",
   "drive_part_ids": [
-    "1ArMJLUF8w5glEUg-xbC7PXgina3J8coy",
-    "1y5FqPFVAPBVJFeaWInYofivnsS8UIe26",
-    "1DOkEWlmOSjptwVOkZgdcNXEFBgoxlBpX",
-    "1EDDiuK03mlk4qbmMpzn7QDUH8sSR7-J-"
+    "1ERHimHGqOnQLq9MGOZfwmrUt63EjPpfu",
+    "1apdNcpHKtbVPX055_Bs33xAOU_QGiCh4",
+    "1LM4WXp2jC5cBA4G7Kcp9T06qVe-JjDGr"
   ],
-  "reconstructed_bundle_sha256": "3eea03bb827d52d7f2c5f929fa148e3fb47d65ccd4adf10cda7d759aab067c5b",
-  "cleanup_mode": "DISCOVER_ALL_BY_SOURCE_RUN_AND_PREFIX",
-  "cleanup_attempt": 3
+  "reconstructed_bundle_sha256": "8fa724eaf91596b3e72a5a1d12528b897cd82a518b3a3aad04e7c3aa1b80eb9a",
+  "cleanup_mode": "DISCOVER_ALL_BY_SOURCE_RUN_AND_PREFIX"
 }
