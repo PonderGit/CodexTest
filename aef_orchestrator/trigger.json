@@ -1,6 +1,5 @@
 {
   "mode": "TEST_ONLY",
-  "reason": "BOUNDED_ORCHESTRATOR_VALIDATION_AFTER_CHATGPT_SCHEDULER_DISPATCH_GAP",
-  "expected_next_start_index": 7168,
-  "expected_next_count": 2048
+  "purpose": "VALIDATE_NON_LAUNCH_ORCHESTRATOR_BOUNDARY_AFTER_R3_HARDENING",
+  "production_launch_authorized": false
 }
