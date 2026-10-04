@@ -1,15 +1,18 @@
 name: AEF Selective Streaming Production Shard R2
 
+# R3 execution hardening: request-file push is the sole production launch path.
 on:
   push:
     paths:
       - 'aef_production/request_r2.json'
-      - '.github/workflows/aef-selective-streaming-production-shard-r2.yml'
-  workflow_dispatch:
 
 permissions:
   actions: read
   contents: read
+
+concurrency:
+  group: aef-selective-streaming-production-r2
+  cancel-in-progress: false
 
 jobs:
   production_shard:
@@ -66,8 +69,16 @@ jobs:
           meta=ROOT/'meta_in/SEC_6255_Census_Primary_10K10Q_Metadata_2018_2025_R1.csv'
           req=json.loads((ROOT/'aef_production/request_r2.json').read_text())
           start=int(req['start_index']); count=int(req['count']); end=start+count
+          pacing=float(req.get('sec_pacing_seconds',0.20))
+          declared_rate=float(req.get('max_nominal_request_rate_single_job',5.0))
           if start < 0 or count <= 0 or end > 151931:
               raise RuntimeError(f'Invalid shard range start={start} count={count} end={end}')
+          if pacing < 0.20 or pacing > 1.00:
+              raise RuntimeError(f'Unsafe sec_pacing_seconds={pacing}; allowed range is 0.20..1.00')
+          if declared_rate <= 0 or declared_rate > 5.0:
+              raise RuntimeError(f'Unsafe max_nominal_request_rate_single_job={declared_rate}; allowed maximum is 5.0')
+          if (1.0/pacing) > declared_rate + 1e-9:
+              raise RuntimeError(f'Pacing/rate mismatch: pacing={pacing} implies {1.0/pacing:.3f} req/s > declared {declared_rate}')
 
           def sha_bytes(b): return hashlib.sha256(b).hexdigest()
           def sha_file(p):
@@ -185,7 +196,7 @@ jobs:
                   finally:
                       try: tmp.unlink(missing_ok=True)
                       except Exception: pass
-                  time.sleep(0.20)
+                  time.sleep(pacing)
           finally:
               t_all.close(); t_keep.close()
 
@@ -220,7 +231,7 @@ jobs:
               'success_n':success,'failure_n':len(failures),'retention_counts':dict(counts),'section_status_counts':dict(statuses),
               'transient_raw_archive_members':transient_members,'retained_raw_archive_members':retained_members,
               'extractor_sha256':os.environ['EXPECTED_EXTRACTOR_SHA256'],'retrieval_rule_sha256':os.environ['EXPECTED_RETRIEVAL_SHA256'],
-              'sec_pacing_seconds':0.20,'max_nominal_request_rate_single_job':5.0,
+              'sec_pacing_seconds':pacing,'max_nominal_request_rate_single_job':declared_rate,
               'provenance_sha256':sha_file(prov_path),'derived_evidence_sha256':sha_file(der_path),'retention_ledger_sha256':sha_file(ret_path),
               'transient_raw_sha256':sha_file(transient_path),'retained_raw_sha256':sha_file(retained_path),
               'clear_nohit_release_state':'PENDING_GOOGLE_DRIVE_PERSISTENCE_AND_READBACK',
