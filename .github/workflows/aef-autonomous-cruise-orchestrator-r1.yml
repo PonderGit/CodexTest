@@ -1,5 +1,9 @@
-name: AEF Autonomous Cruise Orchestrator R1
+name: AEF Autonomous Cruise Orchestrator R1 - Validation Only
 
+# R3 execution hardening:
+# This workflow is intentionally non-launching. Real production execution must be
+# grounded in a fresh Google Drive Final Acceptance Manifest by the external
+# connector-mediated executor, which updates aef_production/request_r2.json.
 on:
   push:
     paths:
@@ -7,175 +11,65 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  actions: write
+  contents: read
+  actions: read
 
 concurrency:
   group: aef-autonomous-cruise-orchestrator
   cancel-in-progress: false
 
 jobs:
-  orchestrate:
+  validate_non_launch_boundary:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Derive safe next action
+      - name: Enforce validation-only boundary
         shell: python
         run: |
-          import json, os, pathlib, sys, datetime
+          import json, pathlib
 
           root=pathlib.Path('.')
-          accepted_path=root/'aef_orchestrator/accepted_state.json'
-          pending_path=root/'aef_orchestrator/pending_state.json'
           trigger_path=root/'aef_orchestrator/trigger.json'
+          accepted_path=root/'aef_orchestrator/accepted_state.json'
           out_path=root/'aef_orchestrator/orchestrator_result.json'
-
-          if not accepted_path.exists():
-              raise SystemExit('accepted_state.json missing')
-          accepted=json.loads(accepted_path.read_text())
-
-          required={
-              'final_decision':'ACCEPT',
-              'drive_crypto_readback':'PASS',
-              'cleanup':'PASS',
-              'advance_allowed':True
-          }
-          for k,v in required.items():
-              if accepted.get(k)!=v:
-                  raise SystemExit(f'accepted_state invalid: {k}={accepted.get(k)!r}, expected {v!r}')
 
           trigger={'mode':'TEST_ONLY'}
           if trigger_path.exists():
               trigger=json.loads(trigger_path.read_text())
+
           mode=trigger.get('mode','TEST_ONLY')
-          if mode not in ('TEST_ONLY','LAUNCH'):
-              raise SystemExit(f'Unsupported mode {mode}')
+          if mode != 'TEST_ONLY':
+              raise SystemExit(
+                  'LAUNCH is disabled in this workflow. '
+                  'Production must be launched only by a fresh Drive-grounded executor '
+                  'that updates aef_production/request_r2.json; the request-file push is '
+                  'the sole production trigger.'
+              )
 
-          if pending_path.exists():
-              pending=json.loads(pending_path.read_text())
-              result={
-                  'result':'BLOCKED_PENDING',
-                  'mode':mode,
-                  'pending':pending,
-                  'accepted_next_start_index':accepted['next_start_index']
-              }
-              out_path.write_text(json.dumps(result,indent=2)+'\n')
-              print(json.dumps(result,indent=2))
-              sys.exit(0)
-
-          start=int(accepted['next_start_index'])
-          count=int(accepted['next_count'])
-          total=int(accepted['total_manifest_rows'])
-          remaining=int(accepted['remaining_rows'])
-          if start<0 or count<=0 or total<=0 or remaining<0:
-              raise SystemExit('invalid accepted-state numeric values')
-          if start+remaining!=total:
-              raise SystemExit(f'accepted-state arithmetic mismatch: start {start} + remaining {remaining} != total {total}')
-          count=min(count,remaining)
-          end=start+count
+          accepted_cache=None
+          if accepted_path.exists():
+              accepted_cache=json.loads(accepted_path.read_text())
 
           result={
-              'result':'TEST_PASS' if mode=='TEST_ONLY' else 'LAUNCH_PREPARED',
-              'mode':mode,
-              'start_index':start,
-              'end_index_exclusive':end,
-              'count':count,
-              'remaining_before':remaining,
-              'accepted_manifest_drive_id':accepted['source_manifest_drive_id'],
-              'adaptive_decision':accepted.get('adaptive_decision'),
-              'control_for_governance':accepted['control_for_governance']
+              'schema':'AEF_ORCHESTRATOR_VALIDATION_ONLY_R1',
+              'result':'TEST_PASS',
+              'mode':'TEST_ONLY',
+              'production_launch_permitted':False,
+              'production_trigger':'PUSH_OF_AEF_PRODUCTION_REQUEST_R2_JSON_ONLY',
+              'checkpoint_source_of_truth':'GOOGLE_DRIVE_LATEST_AEF_CP_FINAL_ACCEPTANCE_MANIFEST_R1',
+              'accepted_state_role':'NON_AUTHORITATIVE_CACHE_ONLY',
+              'accepted_state_present':accepted_cache is not None,
+              'requires_fresh_drive_read_for_real_launch':True
           }
-
-          if mode=='LAUNCH':
-              request={
-                  'execution':'SELECTIVE_STREAMING_ACQUISITION_EXECUTION',
-                  'process_version':'R2_CORRECTNESS_FIRST_SELF_VERIFYING',
-                  'authority_version':accepted['authority_version'],
-                  'control':accepted['control_for_governance'],
-                  'execution_engine':accepted['execution_engine'],
-                  'start_index':start,
-                  'count':count,
-                  'total_manifest_rows':total,
-                  'manifest_sha256':accepted['manifest_sha256'],
-                  'adaptive_checkpoint':True,
-                  'adaptation_decision':accepted.get('adaptive_decision','KEEP'),
-                  'adaptation_basis':'ACCEPTED_STATE_FROM_DRIVE_VERIFIED_FINAL_MANIFEST',
-                  'prior_acceptance_record_drive_id':accepted['source_manifest_drive_id'],
-                  'sec_pacing_seconds':0.20,
-                  'max_nominal_request_rate_single_job':5.0,
-                  'retention_barrier':'GOOGLE_DRIVE_CRYPTOGRAPHIC_PERSISTENCE_READBACK_REQUIRED',
-                  'auto_advance':False,
-                  'next_checkpoint_must_derive_from_accepted_resume_token':True,
-                  'formal_treatment_construction':'NOT_AUTHORIZED',
-                  'formal_stata':'NOT_AUTHORIZED'
-              }
-              pending={
-                  'schema':'AEF_AUTONOMOUS_PENDING_STATE_R1',
-                  'status':'PENDING_GITHUB_PRODUCTION',
-                  'orchestrator_run_id':os.environ.get('GITHUB_RUN_ID'),
-                  'created_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                  'start_index':start,
-                  'end_index_exclusive':end,
-                  'count':count,
-                  'accepted_state_source_manifest_drive_id':accepted['source_manifest_drive_id'],
-                  'control_for_governance':accepted['control_for_governance'],
-                  'request_file':'aef_production/request_r2.json',
-                  'production_workflow':'.github/workflows/aef-selective-streaming-production-shard-r2.yml'
-              }
-              (root/'aef_production/request_r2.json').write_text(json.dumps(request,indent=2)+'\n')
-              pending_path.write_text(json.dumps(pending,indent=2)+'\n')
-
           out_path.write_text(json.dumps(result,indent=2)+'\n')
           print(json.dumps(result,indent=2))
 
-      - name: Commit launch state if requested
-        shell: bash
-        run: |
-          set -euo pipefail
-          MODE="$(python -c 'import json; print(json.load(open("aef_orchestrator/trigger.json")).get("mode","TEST_ONLY"))' 2>/dev/null || echo TEST_ONLY)"
-          if [ "$MODE" != "LAUNCH" ]; then
-            echo "TEST_ONLY; no launch-state commit."
-            exit 0
-          fi
-          if [ ! -f aef_orchestrator/pending_state.json ]; then
-            echo "No pending state; nothing to launch."
-            exit 0
-          fi
-          git config user.name "AEF Autonomous Orchestrator"
-          git config user.email "actions@users.noreply.github.com"
-          git add aef_production/request_r2.json aef_orchestrator/pending_state.json
-          if git diff --cached --quiet; then
-            echo "No launch-state changes."
-            exit 0
-          fi
-          git commit -m "AEF autonomous launch from accepted state"
-          git push origin HEAD:main
-
-      - name: Dispatch R2 production if requested
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          MODE="$(python -c 'import json; print(json.load(open("aef_orchestrator/trigger.json")).get("mode","TEST_ONLY"))' 2>/dev/null || echo TEST_ONLY)"
-          if [ "$MODE" != "LAUNCH" ]; then
-            echo "TEST_ONLY; production dispatch skipped."
-            exit 0
-          fi
-          if [ ! -f aef_orchestrator/pending_state.json ]; then
-            echo "No pending state; dispatch skipped."
-            exit 0
-          fi
-          gh workflow run aef-selective-streaming-production-shard-r2.yml --ref main
-
-      - name: Upload orchestrator result
+      - name: Upload validation result
         uses: actions/upload-artifact@v4
         with:
-          name: aef-orchestrator-r1-${{ github.run_id }}
+          name: aef-orchestrator-validation-r1-${{ github.run_id }}
           path: aef_orchestrator/orchestrator_result.json
           if-no-files-found: error
           retention-days: 1
