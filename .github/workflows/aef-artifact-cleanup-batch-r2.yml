@@ -16,17 +16,29 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Validate and batch-delete persisted checkpoint artifacts
+      - name: Validate external Drive-attested cleanup request and batch-delete source artifacts
         shell: python
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          import json, os, pathlib, subprocess
+          import json, os, pathlib, re, subprocess
           req=json.loads(pathlib.Path('aef_cleanup/request_batch.json').read_text())
+          # The GitHub runner does not independently access Google Drive.
+          # These fields are an execution attestation produced only after the
+          # external connector-mediated Drive read-back/reconstruction has passed.
           if req.get('drive_crypto_readback') != 'PASS':
-              raise SystemExit('Drive cryptographic readback is not PASS')
+              raise SystemExit('External Drive cryptographic readback attestation is not PASS')
+          formal_core_id=str(req.get('drive_formal_core_id','')).strip()
+          part_ids=req.get('drive_part_ids',[])
+          bundle_sha=str(req.get('reconstructed_bundle_sha256','')).strip().lower()
+          if not formal_core_id or not isinstance(part_ids,list) or not part_ids:
+              raise SystemExit('Missing persisted Drive object identities')
+          if not re.fullmatch(r'[0-9a-f]{64}',bundle_sha):
+              raise SystemExit('Invalid reconstructed bundle SHA-256 attestation')
           repo=os.environ['GITHUB_REPOSITORY']
           run_id=int(req['source_run_id'])
+          if run_id <= 0:
+              raise SystemExit('Invalid source_run_id')
           allowed_prefixes=req.get('allowed_name_prefixes',['aef-production-r2-'])
           page=json.loads(subprocess.check_output(
               ['gh','api',f'/repos/{repo}/actions/runs/{run_id}/artifacts?per_page=100'],
