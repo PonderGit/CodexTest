@@ -1,0 +1,196 @@
+name: TID R389 Ansible 01 V2 One-Case Official Verifier
+on:
+  push:
+    branches:
+      - tid-r389-ansible01-v2-singlecase-20261111
+    paths:
+      - .github/workflows/tid-r389-ansible01-v2-onecase.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tid-r389-ansible01-onecase
+  cancel-in-progress: false
+
+jobs:
+  official_onecase:
+    name: official-verifier-${{ matrix.arm }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [baseline, candidate, gold]
+    env:
+      ARM: ${{ matrix.arm }}
+      SOURCE_REV: 66f92766bba642462d4bbe5479e83f91f9211862
+      TASK_ID: instance_ansible__ansible-0ea40e09d1b35bcb69ff4d9cecf3d0defa4b36e8-v30a923fb5c164d6cd18280c02422f75e611e8fb2
+    steps:
+      - name: Enforce public zero-paid standard-runner boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          event=json.load(open(os.environ["GITHUB_EVENT_PATH"]))
+          assert event["repository"]["private"] is False, "STOP: repository is private"
+          assert event["repository"]["full_name"] == "PonderGit/CodexTest"
+          assert os.environ["ARM"] in ("baseline", "candidate", "gold")
+          print("FREE_ONLY_PUBLIC_REPOSITORY_STANDARD_RUNNER=PASS")
+          PY
+      - name: Get exact original V2 task directory and verify source blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet source
+          git -C source remote add origin https://github.com/scaleapi/SWE-bench_Pro-os.git
+          git -C source sparse-checkout init --cone
+          git -C source sparse-checkout set "v2/tasks/$TASK_ID"
+          git -C source -c protocol.version=2 fetch --depth=1 origin "$SOURCE_REV"
+          git -C source checkout --detach FETCH_HEAD
+          test "$(git -C source rev-parse HEAD)" = "$SOURCE_REV"
+          task="v2/tasks/$TASK_ID"
+          check_blob () {
+            actual=$(git -C source hash-object "$task/$1")
+            test "$actual" = "$2" || { echo "SOURCE_MISMATCH $1 $actual"; exit 42; }
+            printf 'BLOB_OK %s %s\n' "$1" "$actual"
+          }
+          check_blob instruction.md f4b0acc2656b658e5425358a4ff1a7a5d2ae04b4
+          check_blob task.toml 556644e0b143addb99921c7a5520e0337db00a2e
+          check_blob tests/config.json 8976fc0a5bdd58db6f41ea59920804724f1a7ad3
+          check_blob tests/test_patch.patch 173960d787f4ab3baf6eff40c4b55c4a4a2d1464
+          check_blob tests/run_script.sh 5fd2e457c25e801559f505126c57823b5066946d
+          check_blob tests/parser.py 50ea2903f9ef3428910fdae9901ad42af00ac550
+          check_blob solution/gold_patch.diff 5d6053a6a1d4d5da5c6f5fe46528bafd821122e7
+      - name: Create immutable hypothetical single-method candidate patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > candidate.patch <<'PATCH'
+          diff --git a/lib/ansible/vars/manager.py b/lib/ansible/vars/manager.py
+          --- a/lib/ansible/vars/manager.py
+          +++ b/lib/ansible/vars/manager.py
+          @@ -786,3 +786,10 @@ class VarsWithSources(MutableMapping):
+           
+               def copy(self):
+                   return VarsWithSources.new_vars_with_sources(self.data.copy(), self.sources.copy())
+          +
+          +    def __ror__(self, other):
+          +        if isinstance(other, MutableMapping):
+          +            merged = dict(other)
+          +            merged.update(self.data)
+          +            return merged
+          +        return NotImplemented
+          PATCH
+          printf '%s  %s\n' 3699498d6d2aa2238f487d067114f396f969a5fb60bf1524c0712534756a7914 candidate.patch | sha256sum -c -
+      - name: Pull public task image and capture actual image digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          task="$GITHUB_WORKSPACE/source/v2/tasks/$TASK_ID"
+          image=$(awk -F'"' '/^docker_image =/{print $2}' "$task/task.toml")
+          expected="ghcr.io/scaleapi/swe-bench_pro-v2:$TASK_ID"
+          test "$image" = "$expected"
+          mkdir -p out
+          printf '%s\n' "$image" > out/task_image.txt
+          timeout 900 docker pull "$image"
+          docker image inspect --format '{{.Id}}' "$image" > out/image_id.txt
+          docker image inspect --format '{{json .RepoDigests}}' "$image" > out/image_repo_digests.json
+      - name: Run pinned original V2 test.sh in fresh official image
+        shell: bash
+        run: |
+          set -euo pipefail
+          task="$GITHUB_WORKSPACE/source/v2/tasks/$TASK_ID"
+          image=$(cat out/task_image.txt)
+          if [ "$ARM" = gold ]; then
+            patch="$task/solution/gold_patch.diff"
+          else
+            patch="$GITHUB_WORKSPACE/candidate.patch"
+          fi
+          set +e
+          timeout 1400 docker run --rm --cpus=1 --memory=4096m --network=bridge \
+            -v "$task/tests:/tests:ro" \
+            -v "$GITHUB_WORKSPACE/out:/logs/verifier" \
+            -v "$patch:/tmp/tid_selected.patch:ro" \
+            --env ARM="$ARM" --entrypoint /bin/bash "$image" -lc '
+              set -euo pipefail
+              cd /app
+              export PYTHONPATH=/app
+              echo "ARM=$ARM"
+              echo "PYTHON=$(python3 --version 2>&1)"
+              manager_blob=$(git hash-object lib/ansible/vars/manager.py)
+              utils_blob=$(git hash-object lib/ansible/utils/vars.py)
+              printf "%s\n" "$manager_blob" > /logs/verifier/upstream_manager_blob.txt
+              printf "%s\n" "$utils_blob" > /logs/verifier/upstream_utils_blob.txt
+              test "$manager_blob" = 93a1b9ad382d9e9f2d880de8ccbbac27b150f9ab
+              test "$utils_blob" = 66f872f4f4e7cf8f7d47598dd1d5ab90f8bbd32e
+              if [ "$ARM" != baseline ]; then
+                git apply --check /tmp/tid_selected.patch
+                git apply /tmp/tid_selected.patch
+                echo "PATCH_APPLY=PASS"
+              else
+                echo "PATCH_APPLY=BASELINE_UNCHANGED"
+              fi
+              set +e
+              bash /tests/test.sh
+              grade_rc=$?
+              set -e
+              printf "%s\n" "$grade_rc" > /logs/verifier/test_sh_exit.txt
+              python3 - <<'"'"'PY'"'"' > /logs/verifier/independent_operator_oracle.txt 2>&1
+          from ansible.vars.manager import VarsWithSources
+          v=VarsWithSources({"b":2})
+          for name, fn in (
+              ("dict_left",lambda: {"a":1}|v),
+              ("vars_left",lambda: v|{"a":1}),
+          ):
+              try: print(name,"SUCCEEDS",dict(fn()))
+              except Exception as e: print(name,"FAILS",type(e).__name__,str(e))
+          try:
+              w=VarsWithSources({"b":2})
+              w|={"c":3}
+              print("augmented_union","SUCCEEDS",dict(w))
+          except Exception as e: print("augmented_union","FAILS",type(e).__name__,str(e))
+          PY
+              cat /logs/verifier/independent_operator_oracle.txt
+              echo "OFFICIAL_TEST_SH_EXIT=$grade_rc"
+              exit "$grade_rc"
+            ' > out/docker_run_stdout.txt 2>&1
+          rc=$?
+          set -e
+          printf '%s\n' "$rc" > out/docker_run_exit.txt
+          printf 'DOCKER_RUN_EXIT=%s\n' "$rc"
+          if [ -f out/reward.txt ]; then
+            printf 'OFFICIAL_REWARD='
+            cat out/reward.txt
+          else
+            echo 'OFFICIAL_REWARD=MISSING'
+          fi
+          tail -70 out/docker_run_stdout.txt || true
+      - name: Record fail-closed verification status
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p out
+          python3 - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path("out")
+          def val(name):
+              q=p/name
+              return q.read_text().strip() if q.exists() else None
+          d={"arm":os.environ.get("ARM"),"task_id":os.environ.get("TASK_ID"),"source_revision":os.environ.get("SOURCE_REV"),
+             "image":val("task_image.txt"),"image_id":val("image_id.txt"),"digest":val("image_repo_digests.json"),
+             "reward":val("reward.txt"),"test_sh_exit":val("test_sh_exit.txt"),"docker_run_exit":val("docker_run_exit.txt"),
+             "evidence_type":"OFFICIAL_VERIFIER_ONLY_IF_test_sh_exit=0_AND_reward=1_AND_docker_run_exit=0"}
+          d["grade_usable"]=d["test_sh_exit"] is not None and d["reward"] in ("0","1") and d["docker_run_exit"] in ("0","1")
+          (p/"result_summary.json").write_text(json.dumps(d,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+          print(json.dumps(d,sort_keys=True))
+          PY
+      - name: Upload bounded single-arm logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tid-r389-ansible01-${{ matrix.arm }}
+          path: out/
+          if-no-files-found: warn
+          retention-days: 14
