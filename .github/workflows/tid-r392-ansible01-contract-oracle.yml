@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [v1, v2]
+        release: [v2]
     env:
       RELEASE: ${{ matrix.release }}
       TASK_ID: instance_ansible__ansible-0ea40e09d1b35bcb69ff4d9cecf3d0defa4b36e8-v30a923fb5c164d6cd18280c02422f75e611e8fb2
@@ -249,7 +249,7 @@ jobs:
           set -euo pipefail
           IMAGE="$(cat evidence/image_uri.txt)"
           for ARM in baseline ror_correct ror_badprecedence or_only independent_full gold; do
-            mkdir -p "evidence/$ARM"
+            mkdir -p "evidence/$ARM" "evidence/$ARM/verifier"
             cp evidence/issue81659.yml "evidence/$ARM/issue81659.yml"
             cp evidence/probe_contract.py "evidence/$ARM/probe_contract.py"
             cp evidence/create_patch.py "evidence/$ARM/create_patch.py"
@@ -317,6 +317,7 @@ jobs:
               timeout 380 docker run --rm --cpus=1 --memory=4096m --network=bridge -e "ARM=$ARM" -e "RELEASE=$RELEASE" \
                 -v "$GITHUB_WORKSPACE/evidence/$ARM:/workspace" \
                 -v "$GITHUB_WORKSPACE/upstream/v2/tasks/$TASK_ID/tests:/tests:ro" \
+                -v "$GITHUB_WORKSPACE/evidence/$ARM/verifier:/logs/verifier" \
                 --entrypoint /bin/bash "$IMAGE" -lc "bash /workspace/run_case.sh" > "evidence/$ARM/docker_console.txt" 2>&1
             fi
             rc=$?
