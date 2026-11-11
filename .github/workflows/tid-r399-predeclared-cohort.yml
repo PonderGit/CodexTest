@@ -222,6 +222,8 @@ jobs:
           pathlib.Path("evidence/R399_source_recovery.json").write_text(json.dumps(output,indent=2,sort_keys=True)+"\n")
           PY
       - uses: actions/checkout@v4
+        with:
+          clean: false
       - name: Scoped predeclared original Sphinx and Pylint issue/PR behavior pilot
         shell: bash
         run: bash research/tid_r399_two_pilots.sh
