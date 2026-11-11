@@ -1,0 +1,116 @@
+name: TID R399 Predeclared Four-Task Real-Agent Selection
+on:
+  push:
+    branches: [tid-r399-predeclared-matched-cohort-20261111]
+    paths: [".github/workflows/tid-r399-predeclared-cohort.yml"]
+permissions:
+  contents: read
+jobs:
+  bounded_selection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Deterministic source-pinned selection BEFORE inspecting any task outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          cat > /tmp/select_r399.py <<'PY'
+          import hashlib,json,pathlib,urllib.request
+          S="TID_R399_OUTCOME_INDEPENDENT_WITHIN_STRATUM_20261111_V1"
+          repo_commit="0a8ed608f9f19396e1bb3f6f3dd88b0fb88b49d6"
+          score_commit="40f164d5b8f1d249bf95a6df8b74b577fd8e519d"
+          source="https://raw.githubusercontent.com/ZJU-CTAG/PatchDiff/"+repo_commit+"/data/tool_results/20241221_codestory_midwit_claude-3-5-sonnet_swe-search/all_preds.jsonl"
+          result="https://raw.githubusercontent.com/SWE-bench/experiments/"+score_commit+"/evaluation/verified/20241221_codestory_midwit_claude-3-5-sonnet_swe-search/results/results.json"
+          def get(url,limit=3000000):
+              r=urllib.request.Request(url,headers={"User-Agent":"TID-R399-bound-science-one-archive/1.0"})
+              with urllib.request.urlopen(r,timeout=60) as resp:
+                  data=resp.read(limit+1)
+                  assert len(data)<=limit,"Refuse unbounded download"
+                  return data
+          source_bytes=get(source,2100000)
+          score_bytes=get(result,300000)
+          rows=[json.loads(line) for line in source_bytes.decode().splitlines() if line.strip()]
+          scores=json.loads(score_bytes)
+          assert len(rows)==455 and len(set(x["instance_id"] for x in rows))==455
+          resolved=set(scores.get("resolved",[]))
+          nogeneration=set(scores.get("no_generation",[]))
+          nologs=set(scores.get("no_logs",[]))
+          assert resolved.isdisjoint(nogeneration)
+          eligible={"HISTORICAL_RESOLVED":[],"HISTORICAL_NOT_RESOLVED":[]}
+          rejected={}
+          for x in rows:
+              id=x["instance_id"]
+              why=[]
+              if id=="pytest-dev__pytest-7490":why.append("R398_already_studied")
+              if id in nogeneration:why.append("NO_GENERATION")
+              if id in nologs:why.append("NO_LOGS")
+              if x.get("model_name_or_path")!="codestory-midwit":why.append("model_not_exact")
+              patch=x.get("model_patch","")
+              if not isinstance(patch,str) or not 100<=len(patch)<=8000:why.append("patch_length")
+              paths=[t.split(" b/")[-1] for t in patch.splitlines() if t.startswith("diff --git ")]
+              actual=[t for t in paths if t not in ("reproduce_error.py","reproduction.py")]
+              if not 1<=len(actual)<=3 or not all(t.endswith(".py") for t in actual):why.append("changed_files")
+              if "{" in id or id.count("__")!=1:why.append("instance_id_format")
+              repo=id.split("__")[0]
+              if repo not in {"astropy","django","pytest-dev","scikit-learn","sphinx-doc","sympy","pydata","matplotlib","pylint-dev"}:
+                  why.append("unsupported_python_repo")
+              if why:
+                  rejected[id]=why
+                  continue
+              st="HISTORICAL_RESOLVED" if id in resolved else "HISTORICAL_NOT_RESOLVED"
+              rank=hashlib.sha256((S+"|"+id).encode()).hexdigest()
+              eligible[st].append({
+                "instance_id":id,"stratum":st,"rank_sha256":rank,"repo_key":repo,
+                "patch_sha256":hashlib.sha256(patch.encode()).hexdigest(),
+                "patch_length":len(patch),"changed_paths":paths,
+                "historical_score_source":"firstparty SWE-bench/experiments results/results.json, NOT current regrade",
+                "model_name":"codestory-midwit",
+                "selection_uses_correctness":False
+              })
+          for k in eligible:eligible[k].sort(key=lambda x:(x["rank_sha256"],x["instance_id"]))
+          # Selection order and reserve logic fixed upfront, not after reading scientific outcomes
+          selected=[];backup=[];used=set()
+          for st in ("HISTORICAL_RESOLVED","HISTORICAL_NOT_RESOLVED"):
+              for row in eligible[st]:
+                  if row["repo_key"] in used:continue
+                  selected.append(row);used.add(row["repo_key"])
+                  if sum(z["stratum"]==st for z in selected)==2:break
+              assert sum(z["stratum"]==st for z in selected)==2,st
+          for st in ("HISTORICAL_RESOLVED","HISTORICAL_NOT_RESOLVED"):
+              count=0
+              for row in eligible[st]:
+                  if row["repo_key"] in used:continue
+                  backup.append(row);used.add(row["repo_key"])
+                  count+=1
+                  if count==2:break
+          assert len(selected)==4 and len({x["repo_key"] for x in selected})==4
+          # FAIL CLOSED: historical not resolved does NOT prove an actual issue violation or even executable prediction
+          report={
+            "protocol_id":S,
+            "report_status":"SOURCE_SELECTION_ONLY_NO_PATCH_EXECUTION",
+            "dataset":"SWE-bench Verified public original model predictions CodeStory Midwit",
+            "source_code_path":"data/tool_results/20241221_codestory_midwit_claude-3-5-sonnet_swe-search/all_preds.jsonl",
+            "source_repo_commit":repo_commit,"source_bytes_sha256":hashlib.sha256(source_bytes).hexdigest(),
+            "historical_official_score_commit":score_commit,
+            "historical_score_bytes_sha256":hashlib.sha256(score_bytes).hexdigest(),
+            "total_archive_records":len(rows),
+            "cohort_sizes":{k:len(v) for k,v in eligible.items()},
+            "excluded_n":len(rejected),
+            "selection_rule":"predeclared 2 per historical grade stratum, deterministic SHA256 rank of source ID with literal fixed seed, 4 distinct repos, no R398 task, bounded patch/changed file requirements, backups fixed before correctness inspection",
+            "primary_four_ordered":selected,"reserve_ordered":backup,
+            "legal":"Public primary benchmark patch records inspected nonredistributively only; upstream per-repo license and third-party patch redistribution rights require per-case verification",
+            "interpretation":"Historical NOT_RESOLVED=not listed resolved in archival scorer, not independently proven semantic wrong, no estimate of model quality from purposive stratified selected set",
+            "scientific_gate":"G0 REDESIGN PASS NO; formal G1 G2 G3 not started; method novelty not established"
+          }
+          pathlib.Path("evidence/R399_predeclared_selection.json").write_text(json.dumps(report,indent=2,sort_keys=True)+"\n")
+          print(json.dumps({k:report[k] for k in ("protocol_id","total_archive_records","cohort_sizes","excluded_n","primary_four_ordered","reserve_ordered")},indent=2))
+          PY
+          python3 /tmp/select_r399.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tid-r399-predeclared-public-source-selection
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
