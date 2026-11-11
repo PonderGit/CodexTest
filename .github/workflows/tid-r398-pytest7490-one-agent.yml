@@ -68,9 +68,19 @@ jobs:
           git clone -q --filter=blob:none --no-checkout https://github.com/pytest-dev/pytest.git private/pytest
           git -C private/pytest fetch -q --depth=1 origin 7f7a36478abe7dd1fa993b115d22606aa0e35e88
           git -C private/pytest checkout -q 7f7a36478abe7dd1fa993b115d22606aa0e35e88
-          git -C private/pytest fetch -q --depth=1 origin 2878938626aed211d03db33a9a135c9b1d933069
-          git -C private/pytest diff 7f7a36478abe7dd1fa993b115d22606aa0e35e88 2878938626aed211d03db33a9a135c9b1d933069 -- src/_pytest/skipping.py > private/gold.patch
+          python3 - <<'PY'
+          import urllib.request,json,pathlib
+          req=urllib.request.Request("https://api.github.com/repos/pytest-dev/pytest/pulls/7490/files",headers={"User-Agent":"TID-R398-pr-original-gold/1.0"})
+          with urllib.request.urlopen(req,timeout=40) as r: files=json.load(r)
+          selected=[x for x in files if x.get("filename")=="src/_pytest/skipping.py"]
+          assert len(selected)==1 and selected[0].get("patch")
+          p=selected[0]["patch"]
+          path="src/_pytest/skipping.py"
+          text="diff --git a/"+path+" b/"+path+"\n--- a/"+path+"\n+++ b/"+path+"\n"+p+"\n"
+          pathlib.Path("private/gold.patch").write_text(text)
+          PY
           test -s private/gold.patch
+          git -C private/pytest apply --check "$GITHUB_WORKSPACE/private/gold.patch"
       - name: Extract one exact published real-agent patch without republishing it
         shell: bash
         run: |
