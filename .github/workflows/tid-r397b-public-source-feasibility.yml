@@ -83,6 +83,10 @@ jobs:
                           if alt["ok"]:
                               rows=alt["json"].get("rows",[])
                               out["matched_search_rows"]=len(rows)
+                              out["search_total_matches"]=alt["json"].get("num_rows_total")
+                              out["returned_search_ids"]=[str(z.get("row",{}).get("instance_id")) for z in rows[:2]]
+                              out["returned_search_indices"]=[z.get("row_idx") for z in rows[:2]]
+                              out["returned_row_keys"]=[list(z.get("row",{}).keys())[:20] for z in rows[:2]]
                               if len(rows)==1 and rows[0].get("row",{}).get("instance_id")==target:
                                   row=rows[0]["row"]
                                   out["status"]="EXACT_ORIGINAL_BENCHMARK_ROW_VERIFIED"
