@@ -171,6 +171,28 @@ jobs:
               print('augmented_union','SUCCEEDS',dict(v))
           except Exception as e: print('augmented_union','FAILS',type(e).__name__,str(e))
           PY
+          # Independent reproduction of upstream Ansible bug #81659; diagnostic
+          # correctness oracle, NEVER part of the benchmark grading.
+          cat > /workspace/issue81659.yml <<'YAML'
+          - hosts: localhost
+            gather_facts: no
+            tasks:
+              - add_host:
+                  name: "{{ item }}"
+                  groups: resource_types
+                with_items:
+                  - node
+                  - pod
+                  - namespace
+                  - ResourceQuota
+          YAML
+          set +e
+          ANSIBLE_DEBUG=1 timeout 90 ansible-playbook -i localhost, -c local /workspace/issue81659.yml > /workspace/issue81659_full.log 2>&1
+          original_issue_rc=$?
+          set -e
+          printf '%s\n' "$original_issue_rc" > /workspace/issue81659_exit.txt
+          echo "ORIGINAL_UPSTREAM_ISSUE81659_PLAYBOOK_RC=$original_issue_rc"
+          tail -n 8 /workspace/issue81659_full.log || true
           echo "ORIGINAL_V1_VERIFIER_AND_PARSER_COMPLETED"
           INNER
             set +e
@@ -205,6 +227,12 @@ jobs:
                                 resolved=status['docker_exit']=='0' and required <=passed and len(tests)==16)
               else:
                   status.update(grade_usable=False,resolved=None,error='missing official output.json')
+              if (d/'issue81659_exit.txt').exists():
+                  status['issue81659_exit']=(d/'issue81659_exit.txt').read_text().strip()
+                  if (d/'issue81659_full.log').exists():
+                      raw=(d/'issue81659_full.log').read_text(errors='replace')
+                      status['issue81659_log_bytes']=len(raw.encode())
+                      status['issue81659_tail']=raw[-1800:]
               if (d/'independent_operators.txt').exists():
                   status['operator_check']=(d/'independent_operators.txt').read_text()[:1600]
               report.append(status)
