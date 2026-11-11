@@ -45,7 +45,7 @@ jobs:
               if id=="pytest-dev__pytest-7490":why.append("R398_already_studied")
               if id in nogeneration:why.append("NO_GENERATION")
               if id in nologs:why.append("NO_LOGS")
-              if x.get("model_name_or_path")!="codestory-midwit":why.append("model_not_exact")
+              if x.get("model_name_or_path") not in (None,"codestory-midwit"):why.append("different_model_name")
               patch=x.get("model_patch","")
               if not isinstance(patch,str) or not 100<=len(patch)<=8000:why.append("patch_length")
               paths=[t.split(" b/")[-1] for t in patch.splitlines() if t.startswith("diff --git ")]
@@ -65,7 +65,8 @@ jobs:
                 "patch_sha256":hashlib.sha256(patch.encode()).hexdigest(),
                 "patch_length":len(patch),"changed_paths":paths,
                 "historical_score_source":"firstparty SWE-bench/experiments results/results.json, NOT current regrade",
-                "model_name":"codestory-midwit",
+                "row_model_name":x.get("model_name_or_path") or "NOT_VERIFIED_ROW_LEVEL",
+                "submission_source":"firstparty CodeStory experiment ID, collection-level only",
                 "selection_uses_correctness":False
               })
           for k in eligible:eligible[k].sort(key=lambda x:(x["rank_sha256"],x["instance_id"]))
@@ -97,6 +98,7 @@ jobs:
             "total_archive_records":len(rows),
             "cohort_sizes":{k:len(v) for k,v in eligible.items()},
             "excluded_n":len(rejected),
+            "data_quality_correction":"C01: 311/311 historical resolved rows carry exact row model_name, 144/144 not-resolved rows omit it; original strict exact-row model filter would deterministically exclude all not-resolved. For selection only accept missing row model with collection-level official CodeStory submission, but NEVER claim model identity independently verified at row-level. Cross-strata source metadata is perfectly confounded and not a model performance comparison.",
             "selection_rule":"predeclared 2 per historical grade stratum, deterministic SHA256 rank of source ID with literal fixed seed, 4 distinct repos, no R398 task, bounded patch/changed file requirements, backups fixed before correctness inspection",
             "primary_four_ordered":selected,"reserve_ordered":backup,
             "legal":"Public primary benchmark patch records inspected nonredistributively only; upstream per-repo license and third-party patch redistribution rights require per-case verification",
