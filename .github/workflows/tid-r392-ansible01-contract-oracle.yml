@@ -335,8 +335,8 @@ jobs:
           release=os.environ['RELEASE']; task=os.environ['TASK_ID']
           if release=='v1':
               row=json.loads((root/'original_row_metadata.json').read_text())
-              f2p=ast.literal_eval(row['FAIL_TO_PASS'])
-              p2p=json.loads(row['PASS_TO_PASS'])
+              f2p=ast.literal_eval(row['FAIL_TO_PASS']) if isinstance(row['FAIL_TO_PASS'],str) else row['FAIL_TO_PASS']
+              p2p=json.loads(row['PASS_TO_PASS']) if isinstance(row['PASS_TO_PASS'],str) else row['PASS_TO_PASS']
           else:
               raw=json.loads(pathlib.Path('upstream/v2/tasks/'+task+'/tests/config.json').read_text())
               get=lambda k:json.loads(raw[k]) if isinstance(raw[k],str) else raw[k]
