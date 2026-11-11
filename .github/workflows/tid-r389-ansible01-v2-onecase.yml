@@ -186,6 +186,31 @@ jobs:
           (p/"result_summary.json").write_text(json.dumps(d,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
           print(json.dumps(d,sort_keys=True))
           PY
+      - name: Repair Docker root-owned evidence files without changing grader results
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d out ]; then
+            sudo chown -R "$(id -u):$(id -g)" out
+            chmod -R u+rwX out
+            python3 - <<'PY'
+          import json,pathlib
+          p=pathlib.Path("out")
+          q=p/"output.json"
+          if q.exists():
+              o=json.loads(q.read_text())
+              tests=o.get("tests",[])
+              from collections import Counter
+              c=Counter(t.get("status") for t in tests)
+              print("PARSER_TEST_ROWS",len(tests),"STATUS_COUNT",dict(c))
+              print("PARSER_STATUS_SAMPLE",[(t.get("name"),t.get("status")) for t in tests[:5]])
+          else:
+              print("PARSER_OUTPUT_MISSING")
+          q=p/"independent_operator_oracle.txt"
+          print("Q_ORACLE",q.read_text()[:1600] if q.exists() else "MISSING")
+          PY
+          fi
       - name: Upload bounded single-arm logs
         if: always()
         uses: actions/upload-artifact@v4
