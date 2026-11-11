@@ -221,6 +221,10 @@ jobs:
               print(json.dumps({k:v for k,v in result.items() if k!="issue_text_excerpt"},sort_keys=True))
           pathlib.Path("evidence/R399_source_recovery.json").write_text(json.dumps(output,indent=2,sort_keys=True)+"\n")
           PY
+      - uses: actions/checkout@v4
+      - name: Scoped predeclared original Sphinx and Pylint issue/PR behavior pilot
+        shell: bash
+        run: bash research/tid_r399_two_pilots.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:
