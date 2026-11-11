@@ -173,6 +173,54 @@ jobs:
           pathlib.Path("evidence/R399_original_task_identity.json").write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
           print("FOUR_IDENTITY_MATCH="+str(out["all_identified"]))
           PY
+      - name: Source API transient 500 targeted recovery (only failed exact IDs, max 2 retries each)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,urllib.request,urllib.error,urllib.parse,pathlib,time,hashlib
+          p=pathlib.Path("evidence/R399_original_task_identity.json")
+          old=json.loads(p.read_text())
+          todo=[r for r in old["records"] if not r.get("data_verified") and r.get("hf_status")=="HTTP_500"]
+          assert len(todo)<=4
+          output={"cause":"transient HF public datasets-server HTTP500 on exact SQL filters", "max_retries_per_failed_task":2,
+                  "no_privilege_or_rate_limit_bypass":True,"retrieved":[]}
+          for r in todo:
+              task=r["instance_id"]
+              params={"dataset":"princeton-nlp/SWE-bench_Verified","config":"default","split":"test",
+                      "where":'"instance_id"='+"'"+task+"'","offset":0,"length":1}
+              url="https://datasets-server.huggingface.co/filter?"+urllib.parse.urlencode(params)
+              result={"instance_id":task,"status":"NOT_VERIFIED","attempts":[]}
+              for n in (1,2):
+                  if n>1:time.sleep(2)
+                  try:
+                      req=urllib.request.Request(url,headers={"User-Agent":"TID-R399-traceable-single-identity-retry/1.0","Accept":"application/json"})
+                      with urllib.request.urlopen(req,timeout=28) as x:
+                          raw=x.read(650000)
+                          obj=json.loads(raw)
+                      rows=obj.get("rows",[])
+                      verified=len(rows)==1 and rows[0].get("row",{}).get("instance_id")==task
+                      result["attempts"].append({"n":n,"http":200,"strict_id":verified,"total":obj.get("num_rows_total")})
+                      if verified:
+                          row=rows[0]["row"]
+                          base=row.get("base_commit")
+                          result.update({"status":"VERIFIED_ORIGINAL_ROW" if base==r.get("pr_base_sha") and row.get("repo")==r.get("repo") else "MATERIAL_SOURCE_MISMATCH",
+                            "row_idx":rows[0].get("row_idx"),"base_commit":base,"pr_base_sha":r.get("pr_base_sha"),
+                            "version":row.get("version"),"environment_setup_commit":row.get("environment_setup_commit"),
+                            "repo":row.get("repo"),
+                            "issue_text_sha256":hashlib.sha256(str(row.get("problem_statement","")).encode()).hexdigest(),
+                            "issue_text_excerpt":str(row.get("problem_statement",""))[:1500],
+                            "gold_patch_sha256":hashlib.sha256(str(row.get("patch","")).encode()).hexdigest(),
+                            "test_patch_sha256":hashlib.sha256(str(row.get("test_patch","")).encode()).hexdigest(),
+                            "FAIL_TO_PASS_count":len(json.loads(row.get("FAIL_TO_PASS","[]"))),
+                            "PASS_TO_PASS_count":len(json.loads(row.get("PASS_TO_PASS","[]")))})
+                          break
+                  except urllib.error.HTTPError as e:result["attempts"].append({"n":n,"http":e.code})
+                  except Exception as e:result["attempts"].append({"n":n,"error":type(e).__name__})
+              output["retrieved"].append(result)
+              print(json.dumps({k:v for k,v in result.items() if k!="issue_text_excerpt"},sort_keys=True))
+          pathlib.Path("evidence/R399_source_recovery.json").write_text(json.dumps(output,indent=2,sort_keys=True)+"\n")
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
