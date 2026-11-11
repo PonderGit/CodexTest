@@ -1,0 +1,199 @@
+name: TID R398 One Real Agent Issue-Oracle Pilot
+on:
+  push:
+    branches: [tid-r398-pytest7490-one-agent-20261111]
+    paths: [".github/workflows/tid-r398-pytest7490-one-agent.yml"]
+permissions:
+  contents: read
+jobs:
+  one_case:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Preregister issue-specific independent checks and fetch fixed original source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p private evidence oracle
+          cat > oracle/probe.py <<'PY'
+          import json,os,pytest
+          data=[]
+          @pytest.hookimpl(hookwrapper=True)
+          def pytest_runtest_makereport(item,call):
+              o=yield
+              r=o.get_result()
+              if r.when=="call":
+                  data.append({"outcome":r.outcome,"wasxfail":getattr(r,"wasxfail",None),"longrepr":str(r.longrepr)[:200]})
+          def pytest_sessionfinish(session,exitstatus):
+              with open(os.environ["R398_REPORT"],"w") as f:
+                  json.dump({"exit":exitstatus,"calls":data},f)
+          PY
+          cat > oracle/issue.py <<'PY'
+          import pytest
+          def test_dynamic_xfail_fail(request):
+              request.node.add_marker(pytest.mark.xfail(reason="issue7486 dynamic mark"))
+              assert False,"intended dynamic expected failure"
+          PY
+          cat > oracle/strict.py <<'PY'
+          import pytest
+          def test_dynamic_xpass_strict(request):
+              request.node.add_marker(pytest.mark.xfail(reason="strict positive control",strict=True))
+              assert True
+          PY
+          cat > oracle/static.py <<'PY'
+          import pytest
+          @pytest.mark.xfail(reason="static marker control")
+          def test_static_failure():
+              assert False
+          PY
+          cat > oracle/plain.py <<'PY'
+          def test_unmarked_failure():
+              assert False
+          PY
+          python3 - <<'PY'
+          import hashlib,pathlib,json
+          f={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in pathlib.Path("oracle").glob("*.py")}
+          assert len(f)==5
+          pathlib.Path("evidence/preregistered.json").write_text(json.dumps({
+          "task":"pytest-dev__pytest-7490","base_sha":"7f7a36478abe7dd1fa993b115d22606aa0e35e88",
+          "source":"CodeStory Midwit publicly archived one AI candidate from SWE-bench Verified",
+          "arms":["baseline","agent","gold"],"test_names":["issue","strict","static","plain"],
+          "primary":"dynamic xfail added during runtest on failing assertion => call skipped with wasxfail; pytest exit 0",
+          "secondary":"dynamic strict xfail added during runtest on passing assertion => failed XPASS(strict)",
+          "controls":"ordinary static xfail must be xfailed; unmarked failure must fail",
+          "no_benchmark_tests_or_gold_used_to_design_primary":True,
+          "limitations":"one selected task; official historical resolved is not newly regraded; source code reuse beyond isolated scientific testing NOT VERIFIED; no raw agent patch redistribution",
+          "oracle_sha256":f},sort_keys=True,indent=2)+"\n")
+          PY
+          git clone -q --filter=blob:none --no-checkout https://github.com/pytest-dev/pytest.git private/pytest
+          git -C private/pytest fetch -q --depth=1 origin 7f7a36478abe7dd1fa993b115d22606aa0e35e88
+          git -C private/pytest checkout -q 7f7a36478abe7dd1fa993b115d22606aa0e35e88
+          git -C private/pytest fetch -q --depth=1 origin 2878938626aed211d03db33a9a135c9b1d933069
+          git -C private/pytest diff 7f7a36478abe7dd1fa993b115d22606aa0e35e88 2878938626aed211d03db33a9a135c9b1d933069 -- src/_pytest/skipping.py > private/gold.patch
+          test -s private/gold.patch
+      - name: Extract one exact published real-agent patch without republishing it
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib,json,urllib.request,hashlib
+          commit="0a8ed608f9f19396e1bb3f6f3dd88b0fb88b49d6"
+          path="data/tool_results/20241221_codestory_midwit_claude-3-5-sonnet_swe-search/all_preds.jsonl"
+          url="https://raw.githubusercontent.com/ZJU-CTAG/PatchDiff/"+commit+"/"+path
+          req=urllib.request.Request(url,headers={"User-Agent":"TID-R398-exact-replay/1.0"})
+          with urllib.request.urlopen(req,timeout=60) as r:
+              found=None
+              for b in r:
+                  x=json.loads(b)
+                  if x.get("instance_id")=="pytest-dev__pytest-7490":
+                      found=x;break
+          assert found is not None and found.get("model_name_or_path")=="codestory-midwit"
+          patch=found["model_patch"]
+          assert len(patch)==1032
+          changed=[z.split(" b/")[-1] for z in patch.splitlines() if z.startswith("diff --git ")]
+          assert changed==["reproduce_error.py","src/_pytest/skipping.py"],changed
+          pathlib.Path("private/agent.patch").write_text(patch)
+          info={"patch_sha256":hashlib.sha256(patch.encode()).hexdigest(),"length":len(patch),
+            "paths":changed,"source_repo_commit":commit,"task":found["instance_id"],
+            "allowed_operation":"nonredistributive single-case published benchmark scientific verification",
+            "broader_reuse_license":"NOT_VERIFIED"}
+          pathlib.Path("evidence/agent_source.json").write_text(json.dumps(info,sort_keys=True,indent=2)+"\n")
+          print(json.dumps(info,sort_keys=True))
+          PY
+      - name: Build isolated original Python 3.9 pytest source image
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > private/Dockerfile <<'EOF'
+          FROM python:3.9-slim-bookworm
+          RUN apt-get update -qq && apt-get install -y -qq git > /dev/null && rm -rf /var/lib/apt/lists/*
+          WORKDIR /app
+          COPY pytest/ /app/
+          RUN python -m pip install --no-cache-dir -q 'pip<25' 'setuptools<70' 'setuptools-scm<8' wheel
+          RUN python -m pip install --no-cache-dir -q -e .
+          EOF
+          docker build -q -t tid-r398:source -f private/Dockerfile private > evidence/docker_build_id.txt
+          docker image inspect tid-r398:source --format '{{.Id}}' > evidence/image_id.txt
+      - name: Run three clean arms times four predeclared tests in network-isolated containers
+        shell: bash
+        run: |
+          set -euo pipefail
+          for ARM in baseline agent gold; do
+            mkdir -p "evidence/$ARM"
+            case "$ARM" in
+              agent) PATCH=agent.patch ;;
+              gold) PATCH=gold.patch ;;
+              *) PATCH=none ;;
+            esac
+            for TEST in issue strict static plain; do
+              set +e
+              timeout 100 docker run --rm --network none --cpus=1 --memory=2g --pids-limit=128 --cap-drop ALL --security-opt no-new-privileges \
+                -v "$PWD/private:/private:ro" -v "$PWD/oracle:/oracle:ro" -v "$PWD/evidence/$ARM:/evidence" \
+                -e R398_REPORT="/evidence/$TEST.json" -e PYTHONPATH=/oracle -e PATCH="$PATCH" -e CASE="$TEST" \
+                tid-r398:source /bin/sh -lc '
+                   cd /app
+                   if [ "$PATCH" != none ]; then
+                     git apply --check "/private/$PATCH" || exit 49
+                     git apply "/private/$PATCH" || exit 50
+                   fi
+                   python -m pytest -q -o "addopts=" -p probe "/oracle/$CASE.py" > "/evidence/$CASE.stdout" 2>&1
+                   echo "$?" > "/evidence/$CASE.exit"
+                   exit 0
+                ' > "evidence/$ARM/$TEST.docker.log" 2>&1
+              DRC=$?
+              set -e
+              echo "$DRC" > "evidence/$ARM/$TEST.docker.exit"
+            done
+          done
+      - name: Score exact issue outcomes and negative controls without changing their definitions
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import pathlib,json,hashlib
+          root=pathlib.Path("evidence")
+          rows={}
+          for arm in ("baseline","agent","gold"):
+              sub={}
+              for case in ("issue","strict","static","plain"):
+                  p=root/arm/(case+".json");d=root/arm/(case+".docker.exit")
+                  if not p.exists() or not d.exists() or d.read_text().strip()!="0":
+                      sub[case]={"status":"NOT_VERIFIED","docker":d.read_text().strip() if d.exists() else None};continue
+                  obj=json.loads(p.read_text());call=obj.get("calls",[])
+                  if len(call)!=1:
+                      sub[case]={"status":"NOT_VERIFIED","calls":len(call)};continue
+                  c=call[0];xf=bool(c.get("wasxfail"));out=c.get("outcome");ret=obj.get("exit")
+                  if case in ("issue","static"):
+                      valid=out=="skipped" and xf and ret==0
+                  elif case=="strict":
+                      valid=out=="failed" and "XPASS(strict)" in str(c.get("longrepr")) and ret!=0
+                  else:
+                      valid=out=="failed" and not xf and ret!=0
+                  sub[case]={"status":"PASS" if valid else "FAIL","call":out,
+                    "wasxfail":xf,"exit":ret,
+                    "has_strict_xpass":"XPASS(strict)" in str(c.get("longrepr")),
+                    "log_sha256":hashlib.sha256(p.read_bytes()).hexdigest()}
+              rows[arm]=sub
+          report={"task":"pytest-dev__pytest-7490","source_code_base":"7f7a36478abe7dd1fa993b115d22606aa0e35e88",
+                  "selected_real_agent_patches":1,"arms":rows,
+                  "historical_official_resolved":True,
+                  "official_grader_independently_rerun":False,
+                  "actual_rivals_executed":["original pytest baseline","one real agent candidate","original developer gold","four issue-derived oracle tests"],
+                  "rival_methods_NOT_executed":["UTBoost","PatchDiff","Testora","Issue2Test","SWEPatchTest"],
+                  "scope":"one preselected task and one candidate; no population or method-superiority inference"}
+          (root/"R398_report.json").write_text(json.dumps(report,sort_keys=True,indent=2)+"\n")
+          print(json.dumps({k:{t:v["status"] for t,v in vs.items()} for k,vs in rows.items()},indent=2,sort_keys=True))
+          PY
+      - name: Preserve sanitized original outputs and remove root-owned bits
+        if: always()
+        shell: bash
+        run: |
+          if [ -d evidence ]; then sudo chown -R "$(id -u):$(id -g)" evidence; fi
+          test ! -e evidence/agent.patch
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tid-r398-pytest7490-sanitized-evidence
+          path: evidence/
+          retention-days: 14
+          if-no-files-found: error
