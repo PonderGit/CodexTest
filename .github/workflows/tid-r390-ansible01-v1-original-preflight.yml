@@ -1,0 +1,72 @@
+name: TID R390 Ansible01 V1 Original Source-Only Preflight
+on:
+  push:
+    branches: [tid-r390-ansible01-v1-singlecase-20261111]
+    paths: [".github/workflows/tid-r390-ansible01-v1-original-preflight.yml"]
+permissions:
+  contents: read
+jobs:
+  scoped_v1_source_metadata:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      V1_REV: ca10a60a5fcae51e6948ffe1485d4153d421e6c5
+      TASK_ID: instance_ansible__ansible-0ea40e09d1b35bcb69ff4d9cecf3d0defa4b36e8-v30a923fb5c164d6cd18280c02422f75e611e8fb2
+    steps:
+      - name: Free-only and source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os
+          e=json.load(open(os.environ['GITHUB_EVENT_PATH']))
+          assert e['repository']['full_name']=='PonderGit/CodexTest'
+          assert e['repository']['private'] is False
+          print("PUBLIC_STANDARD_FREE_RUNNER_GUARD=PASS")
+          PY
+          git init -q upstream
+          git -C upstream remote add origin https://github.com/scaleapi/SWE-bench_Pro-os.git
+          git -C upstream sparse-checkout init --cone
+          git -C upstream sparse-checkout set helper_code run_scripts/"$TASK_ID"
+          git -C upstream -c protocol.version=2 fetch --depth=1 origin "$V1_REV"
+          git -C upstream checkout -q --detach FETCH_HEAD
+          test "$(git -C upstream rev-parse HEAD)" = "$V1_REV"
+          test "$(git -C upstream hash-object helper_code/sweap_eval_full_v2.jsonl)" = "b054bcc78503e0af80cddfeca0d4293051c60687"
+          test "$(git -C upstream hash-object run_scripts/$TASK_ID/parser.py)" = "50ea2903f9ef3428910fdae9901ad42af00ac550"
+          test "$(git -C upstream hash-object run_scripts/$TASK_ID/run_script.sh)" = "883098acec7410da610b13c67ddbee0d506fc516"
+          echo "UPSTREAM_V1_REV_AND_GIT_BLOBS=PASS"
+      - name: Extract only exact original row and report bounded metadata without executing any row-supplied commands
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os,ast,hashlib
+          task=os.environ['TASK_ID']
+          p='upstream/helper_code/sweap_eval_full_v2.jsonl'
+          rows=0;match=[]
+          with open(p,encoding='utf-8') as f:
+              for line_no,line in enumerate(f,1):
+                  rows+=1
+                  obj=json.loads(line)
+                  if obj.get('instance_id')==task: match.append((line_no,obj))
+          assert len(match)==1, ('EXPECTED_ONE_ROW',len(match))
+          line_no,obj=match[0]
+          print('ORIGINAL_ROWS',rows,'MATCH_LINE',line_no,'MATCHES',len(match))
+          print('V1_KEYS',sorted(obj.keys()))
+          for k in ['instance_id','repo','base_commit','dockerhub_tag','selected_test_files_to_run','FAIL_TO_PASS','PASS_TO_PASS','before_repo_set_cmd','problem_statement','test_patch','patch','gold_patch','repo_name']:
+              v=obj.get(k,'__FIELD_MISSING__')
+              if k in ('test_patch','patch','gold_patch','problem_statement','before_repo_set_cmd'):
+                  s=str(v)
+                  print('ROW_FIELD',k,'charlen',len(s),'sha256',hashlib.sha256(s.encode()).hexdigest(),'preview',repr(s[:1100]))
+              else:
+                  s=str(v)
+                  print('ROW_FIELD',k,'charlen',len(s),'value',repr(s[:1500]))
+          tag=obj.get('dockerhub_tag')
+          if not tag:
+              repo=(obj.get('repo') or '').lower()
+              assert repo=='ansible/ansible'
+              hsh=task.replace('instance_','')
+              tag=('ansible.ansible-'+hsh)[:128]
+          print('DERIVED_DOCKER_IMAGE','jefzda/sweap-images:'+str(tag))
+          print('SOURCE_ONLY_NO_DOCKER_RUN=TRUE')
+          PY
