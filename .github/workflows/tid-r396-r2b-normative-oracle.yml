@@ -1,0 +1,524 @@
+name: TID R396 R2B Bounded Independent Normative Oracle
+on:
+  push:
+    branches: [tid-r396-r2b-normative-oracle-20261111]
+    paths: [".github/workflows/tid-r396-r2b-normative-oracle.yml"]
+permissions:
+  contents: read
+jobs:
+  pinned_single_task:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        release: [v2]
+    env:
+      RELEASE: ${{ matrix.release }}
+      TASK_ID: instance_ansible__ansible-0ea40e09d1b35bcb69ff4d9cecf3d0defa4b36e8-v30a923fb5c164d6cd18280c02422f75e611e8fb2
+      V1_REV: ca10a60a5fcae51e6948ffe1485d4153d421e6c5
+      V2_REV: 66f92766bba642462d4bbe5479e83f91f9211862
+    steps:
+      - name: Public free runner guard and checkout original source by full SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os,json
+          e=json.load(open(os.environ['GITHUB_EVENT_PATH']))
+          assert e['repository']['full_name']=='PonderGit/CodexTest' and e['repository']['private'] is False
+          print('FREE_PUBLIC_STANDARD_RUNNER=TRUE')
+          PY
+          git init -q upstream
+          git -C upstream remote add origin https://github.com/scaleapi/SWE-bench_Pro-os.git
+          git -C upstream sparse-checkout init --cone
+          if [ "$RELEASE" = v1 ]; then
+            git -C upstream sparse-checkout set helper_code "run_scripts/$TASK_ID"
+            REV="$V1_REV"
+          else
+            git -C upstream sparse-checkout set "v2/tasks/$TASK_ID"
+            REV="$V2_REV"
+          fi
+          git -C upstream -c protocol.version=2 fetch --depth=1 origin "$REV"
+          git -C upstream checkout -q --detach FETCH_HEAD
+          test "$(git -C upstream rev-parse HEAD)" = "$REV"
+          mkdir -p evidence
+          if [ "$RELEASE" = v1 ]; then
+            test "$(git -C upstream hash-object helper_code/sweap_eval_full_v2.jsonl)" = b054bcc78503e0af80cddfeca0d4293051c60687
+            test "$(git -C upstream hash-object run_scripts/$TASK_ID/run_script.sh)" = 883098acec7410da610b13c67ddbee0d506fc516
+            test "$(git -C upstream hash-object run_scripts/$TASK_ID/parser.py)" = 50ea2903f9ef3428910fdae9901ad42af00ac550
+          else
+            base="v2/tasks/$TASK_ID"
+            test "$(git -C upstream hash-object "$base/instruction.md")" = f4b0acc2656b658e5425358a4ff1a7a5d2ae04b4
+            test "$(git -C upstream hash-object "$base/tests/test.sh")" = 70b0d1aa40351d358dab48e1b0a7f19b94250270
+            test "$(git -C upstream hash-object "$base/tests/test_patch.patch")" = 173960d787f4ab3baf6eff40c4b55c4a4a2d1464
+            test "$(git -C upstream hash-object "$base/solution/gold_patch.diff")" = 5d6053a6a1d4d5da5c6f5fe46528bafd821122e7
+          fi
+      - name: Preserve original per-version contract and exact original author gold
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$RELEASE" = v1 ]; then
+            python3 - <<'PY'
+          import os,json,pathlib,hashlib
+          task=os.environ['TASK_ID']
+          matches=[]
+          count=0
+          for line in open('upstream/helper_code/sweap_eval_full_v2.jsonl',encoding='utf-8'):
+              count+=1
+              x=json.loads(line)
+              if x.get('instance_id')==task: matches.append(x)
+          assert count==731 and len(matches)==1
+          row=matches[0]
+          assert row['base_commit']=='f7234968d241d7171aadb1e873a67510753f3163'
+          assert hashlib.sha256(row['patch'].encode()).hexdigest()=='59a87bfccdfec081873ba2381668e1af6f336a19d3dc64ae10b9ef976c9856a0'
+          assert hashlib.sha256(row['test_patch'].encode()).hexdigest()=='7de812e77770f2cf22ffe8441294ec99330dc36a20ac01517d606b5c1caaa99f'
+          pathlib.Path('evidence/contract_original.txt').write_text(row['problem_statement'])
+          pathlib.Path('evidence/gold.patch').write_text(row['patch'])
+          pathlib.Path('evidence/test.patch').write_text(row['test_patch'])
+          pathlib.Path('evidence/original_row_metadata.json').write_text(json.dumps({k:row[k] for k in ['instance_id','base_commit','FAIL_TO_PASS','PASS_TO_PASS','selected_test_files_to_run','before_repo_set_cmd']},indent=2))
+          PY
+            IMAGE="jefzda/sweap-images:ansible.ansible-ansible__ansible-0ea40e09d1b35bcb69ff4d9cecf3d0defa4b36e8-v30a923fb5c164d6cd18280c02422f75e611e8fb2"
+            EXPECT=f33e649225791eef0da314cce6065a3f6dadfa48e707584e815d4bf3af4062b5
+          else
+            base="upstream/v2/tasks/$TASK_ID"
+            cp "$base/instruction.md" evidence/contract_original.txt
+            cp "$base/solution/gold_patch.diff" evidence/gold.patch
+            cp "$base/tests/test_patch.patch" evidence/test.patch
+            IMAGE="ghcr.io/scaleapi/swe-bench_pro-v2:$TASK_ID"
+            EXPECT=af7d28fe6608951bf88e39b6a24d5574dcd1b5b82a6c983147666289f8014f18
+          fi
+          printf '%s\n' "$IMAGE" > evidence/image_uri.txt
+          printf '%s\n' "$EXPECT" > evidence/image_digest_expected.txt
+          sha256sum evidence/contract_original.txt evidence/gold.patch evidence/test.patch > evidence/input_sha256.txt
+          sha256sum -c evidence/input_sha256.txt
+      - name: Preserve exact R389 manual __ror__ candidate and prepare normative behavior probes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > evidence/ror_correct.patch <<'PATCH'
+          diff --git a/lib/ansible/vars/manager.py b/lib/ansible/vars/manager.py
+          --- a/lib/ansible/vars/manager.py
+          +++ b/lib/ansible/vars/manager.py
+          @@ -786,3 +786,10 @@ class VarsWithSources(MutableMapping):
+           
+               def copy(self):
+                   return VarsWithSources.new_vars_with_sources(self.data.copy(), self.sources.copy())
+          +
+          +    def __ror__(self, other):
+          +        if isinstance(other, MutableMapping):
+          +            merged = dict(other)
+          +            merged.update(self.data)
+          +            return merged
+          +        return NotImplemented
+          PATCH
+          echo "3699498d6d2aa2238f487d067114f396f969a5fb60bf1524c0712534756a7914  evidence/ror_correct.patch" | sha256sum -c -
+          cat > evidence/issue81659.yml <<'YAML'
+          - hosts: localhost
+            gather_facts: no
+            tasks:
+              - add_host:
+                  name: "{{ item }}"
+                  groups: resource_types
+                with_items:
+                  - node
+                  - pod
+                  - namespace
+                  - ResourceQuota
+          YAML
+          cat > evidence/create_patch.py <<'PY'
+          import os,subprocess,pathlib,difflib,hashlib
+          arm=os.environ['ARM']
+          base=pathlib.Path('/app/lib/ansible/vars/manager.py')
+          workspace=pathlib.Path('/workspace')
+          original=base.read_text()
+          target='    def copy(self):\n        return VarsWithSources.new_vars_with_sources(self.data.copy(), self.sources.copy())\n'
+          assert original.endswith(target), "unexpected base or altered code"
+          assert subprocess.check_output(['git','hash-object',str(base)],cwd='/app',text=True).strip()=='93a1b9ad382d9e9f2d880de8ccbbac27b150f9ab'
+          or_snip='''
+              def __or__(self, other):
+                  if not isinstance(other, MutableMapping):
+                      return NotImplemented
+                  merged = dict(self.data)
+                  merged.update(other)
+                  return merged
+          '''
+          ror_correct='''
+              def __ror__(self, other):
+                  if not isinstance(other, MutableMapping):
+                      return NotImplemented
+                  merged = dict(other)
+                  merged.update(self.data)
+                  return merged
+          '''
+          ror_bad='''
+              def __ror__(self, other):
+                  if not isinstance(other, MutableMapping):
+                      return NotImplemented
+                  merged = dict(self.data)
+                  merged.update(other)
+                  return merged
+          '''
+          ior_snip='''
+              def __ior__(self, other):
+                  if not isinstance(other, MutableMapping):
+                      return NotImplemented
+                  self.data.update(other)
+                  return self
+          '''
+          if arm=='or_only':
+              added=or_snip
+          elif arm=='ror_badprecedence':
+              added=ror_bad
+          elif arm=='independent_full':
+              added=or_snip+ror_correct+ior_snip
+          else:
+              raise ValueError('unsupported')
+          import textwrap
+          added=textwrap.dedent(added)
+          added='\n'+textwrap.indent(added,'    ')
+          new=original+added
+          d=''.join(difflib.unified_diff(original.splitlines(True),new.splitlines(True),fromfile='a/lib/ansible/vars/manager.py',tofile='b/lib/ansible/vars/manager.py',n=3))
+          d='diff --git a/lib/ansible/vars/manager.py b/lib/ansible/vars/manager.py\n'+d
+          patch=workspace/'patch.diff'
+          patch.write_text(d)
+          print('GENERATED_PATCH_SHA256',arm,hashlib.sha256(d.encode()).hexdigest(),flush=True)
+          PY
+          cat > evidence/probe_contract.py <<'PY'
+          import json,collections.abc,traceback
+          from ansible.vars.manager import VarsWithSources
+          from ansible.utils.vars import combine_vars
+          result={}
+          def make(data):
+              return VarsWithSources.new_vars_with_sources(dict(data),{k:'fixture' for k in data})
+          def test(key,fn):
+              try:
+                  value=fn()
+                  result[key]={'pass':bool(value),'observed':str(value)}
+              except Exception as exc:
+                  result[key]={'pass':False,'exception':type(exc).__name__,'message':str(exc)}
+          def left_union():
+              v=make({'collision':'right','r':2})
+              x={'collision':'left','l':1}|v
+              return isinstance(x,collections.abc.MutableMapping) and dict(x)=={'collision':'right','r':2,'l':1}
+          def right_union():
+              v=make({'collision':'left','l':1})
+              x=v|{'collision':'right','r':2}
+              return isinstance(x,collections.abc.MutableMapping) and dict(x)=={'collision':'right','r':2,'l':1} and dict(v)=={'collision':'left','l':1}
+          def inplace():
+              v=make({'collision':'left','l':1})
+              original=v
+              data_id=id(v.data)
+              ret=v.__ior__({'collision':'right','r':2})
+              return isinstance(ret,collections.abc.MutableMapping) and dict(original.data)=={'collision':'right','l':1,'r':2} and id(original.data)==data_id
+          def combine():
+              a={'collision':'left','l':1}
+              b=make({'collision':'right','r':2})
+              x=combine_vars(a,b,merge=False)
+              return isinstance(x,collections.abc.MutableMapping) and dict(x)=={'collision':'right','l':1,'r':2}
+          def is_typeerror(fn):
+              try: fn()
+              except TypeError: return True
+              except Exception: return False
+              return False
+          test('Q_v2_explicit_mapping_left_collision',left_union)
+          test('Q_v2_explicit_combine_vars_replace_collision',combine)
+          test('Q_v1_explicit_vars_left_collision',right_union)
+          test('Q_v1_explicit_inplace_mutates_store',inplace)
+          test('Q_v1_explicit_nonmap_left',lambda:is_typeerror(lambda:make({'a':1})|42))
+          test('Q_v1_explicit_nonmap_right',lambda:is_typeerror(lambda:42|make({'a':1})))
+          print(json.dumps(result,sort_keys=True,indent=2))
+          open('/workspace/contract_checks.json','w').write(json.dumps(result,sort_keys=True,indent=2)+'\n')
+          PY
+          cat > evidence/probe_normative.py <<'PY'
+          import json
+          from collections.abc import MutableMapping
+          from ansible.vars.manager import VarsWithSources
+          from ansible.utils.vars import combine_vars
+          
+          def mk(data):
+              return VarsWithSources.new_vars_with_sources(dict(data), {k: "R396_explicit_contract" for k in data})
+          
+          def exec_case(key):
+              left = {key: "L", "left_only": 13}
+              right = {key: "R", "right_only": 29}
+              expected = dict(left)
+              expected.update(right)
+              out = {"key_kind": type(key).__name__}
+              try:
+                  v = mk(right)
+                  result = left | v
+                  out["union_result_type"] = type(result).__name__
+                  out["oracle_A_union_expected"] = isinstance(result, MutableMapping) and dict(result) == expected
+                  out["left_unchanged"] = left[key] == "L" and "right_only" not in left
+                  out["right_unchanged"] = v.data[key] == "R" and "left_only" not in v.data
+              except Exception as e:
+                  out["oracle_A_union_expected"] = False
+                  out["union_exception"] = type(e).__name__
+              try:
+                  result = combine_vars(dict(left), mk(right), merge=False)
+                  out["oracle_A_combine_expected"] = isinstance(result, MutableMapping) and dict(result) == expected
+                  out["combine_result_type"] = type(result).__name__
+              except Exception as e:
+                  out["oracle_A_combine_expected"] = False
+                  out["combine_exception"] = type(e).__name__
+              # Independently specified metamorphic oracle: changing the LEFT conflict value
+              # must not change the chosen RIGHT value; changing RIGHT must change the result.
+              try:
+                  v = lambda rv: mk({key: rv, "right_only": 29})
+                  first = left | v("R")
+                  changed_left = dict(left)
+                  changed_left[key] = "L_modified"
+                  second = changed_left | v("R")
+                  changed_right = left | v("R_modified")
+                  out["oracle_B_left_independence"] = first[key] == second[key]
+                  out["oracle_B_right_sensitivity"] = first[key] != changed_right[key] and changed_right[key] == "R_modified"
+              except Exception as e:
+                  out["oracle_B_left_independence"] = False
+                  out["oracle_B_right_sensitivity"] = False
+                  out["metamorphic_exception"] = type(e).__name__
+              out["A"] = bool(out.get("oracle_A_union_expected") and out.get("oracle_A_combine_expected"))
+              out["B"] = bool(out.get("oracle_B_left_independence") and out.get("oracle_B_right_sensitivity"))
+              return out
+          
+          result = {
+              "protocol": "R396 independent bounded clause-oracle pilot; original V2 contract only",
+              "clause_quote": "keys of the second operand should prevail in case of a conflict in replace mode",
+              "traces": [
+                  exec_case("collision"),
+                  exec_case(13),
+                  exec_case(("tuple", 29))
+              ],
+          }
+          result["oracle_A_all"] = all(x["A"] for x in result["traces"])
+          result["oracle_B_all"] = all(x["B"] for x in result["traces"])
+          result["Q_tested_explicit_clause"] = result["oracle_A_all"] and result["oracle_B_all"]
+          print(json.dumps(result, indent=2, sort_keys=True))
+          with open("/workspace/R396_normative_oracle.json", "w") as o:
+              json.dump(result, o, indent=2, sort_keys=True)
+              o.write("\n")
+          
+          PY
+          # Syntax check BEFORE any containers (fail closed on invalid oracle)
+          python3 -m py_compile evidence/probe_contract.py evidence/create_patch.py evidence/probe_normative.py
+      - name: Download original released image and enforce known immutable digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE="$(cat evidence/image_uri.txt)"
+          EXPECT="$(cat evidence/image_digest_expected.txt)"
+          timeout 900 docker pull "$IMAGE"
+          docker image inspect --format '{{json .RepoDigests}}' "$IMAGE" > evidence/image_digests.json
+          docker image inspect --format '{{.Id}}' "$IMAGE" > evidence/image_id.txt
+          grep -q "$EXPECT" evidence/image_digests.json
+          echo "EXACT_ORIGINAL_IMAGE_RESOLVED=PASS"
+      - name: Run original benchmarks and independent contract and real bug oracles for six single-task arms
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE="$(cat evidence/image_uri.txt)"
+          for ARM in baseline ror_correct ror_badprecedence or_only independent_full gold; do
+            mkdir -p "evidence/$ARM" "evidence/$ARM/verifier"
+            cp evidence/issue81659.yml "evidence/$ARM/issue81659.yml"
+            cp evidence/probe_contract.py "evidence/$ARM/probe_contract.py"
+            cp evidence/probe_normative.py "evidence/$ARM/probe_normative.py"
+            cp evidence/create_patch.py "evidence/$ARM/create_patch.py"
+            case "$ARM" in
+              baseline) : > "evidence/$ARM/patch.diff" ;;
+              ror_correct) cp evidence/ror_correct.patch "evidence/$ARM/patch.diff" ;;
+              gold) cp evidence/gold.patch "evidence/$ARM/patch.diff" ;;
+              *) : > "evidence/$ARM/patch.diff" ;;
+            esac
+            if [ "$RELEASE" = v1 ]; then
+              cp "upstream/run_scripts/$TASK_ID/run_script.sh" "evidence/$ARM/run_script.sh"
+              cp "upstream/run_scripts/$TASK_ID/parser.py" "evidence/$ARM/parser.py"
+            fi
+            cat > "evidence/$ARM/run_case.sh" <<'INNER'
+          #!/bin/bash
+          set -euo pipefail
+          cd /app
+          git reset --hard f7234968d241d7171aadb1e873a67510753f3163
+          git checkout f7234968d241d7171aadb1e873a67510753f3163
+          test "$(git hash-object lib/ansible/vars/manager.py)" = 93a1b9ad382d9e9f2d880de8ccbbac27b150f9ab
+          test "$(git hash-object lib/ansible/utils/vars.py)" = 66f872f4f4e7cf8f7d47598dd1d5ab90f8bbd32e
+          if [ "$ARM" = or_only ] || [ "$ARM" = ror_badprecedence ] || [ "$ARM" = independent_full ]; then
+            python3 /workspace/create_patch.py
+          fi
+          if [ "$ARM" != baseline ]; then
+            git apply --check /workspace/patch.diff
+            git apply /workspace/patch.diff
+          fi
+          echo "PATCH_SHA256=$(sha256sum /workspace/patch.diff)"
+          git diff --name-only > /workspace/modified_files.txt
+          if [ "$RELEASE" = v1 ]; then
+            git checkout 0ea40e09d1b35bcb69ff4d9cecf3d0defa4b36e8 -- test/units/utils/test_vars.py
+            test "$(git hash-object test/units/utils/test_vars.py)" = 727e04c86f1d0aeb1629ca53f30eb46b72ec8150
+            set +e
+            bash /workspace/run_script.sh test/units/utils/test_vars.py > /workspace/benchmark_stdout.txt 2> /workspace/benchmark_stderr.txt
+            runner_code=$?
+            set -e
+            printf '%s\n' "$runner_code" > /workspace/benchmark_process_exit.txt
+            python3 /workspace/parser.py /workspace/benchmark_stdout.txt /workspace/benchmark_stderr.txt /workspace/output.json
+          else
+            set +e
+            bash /tests/test.sh > /workspace/benchmark_verifier_stdout.txt 2>&1
+            runner_code=$?
+            set -e
+            printf '%s\n' "$runner_code" > /workspace/benchmark_process_exit.txt
+            cp /logs/verifier/output.json /workspace/output.json
+            cp /logs/verifier/reward.txt /workspace/reward.txt
+            cp /logs/verifier/run-script-stdout.txt /workspace/benchmark_stdout.txt
+            cp /logs/verifier/run-script-stderr.txt /workspace/benchmark_stderr.txt
+          fi
+          python3 /workspace/probe_contract.py > /workspace/contract_probe_console.txt 2>&1
+          python3 /workspace/probe_normative.py > /workspace/normative_console.txt 2>&1
+          set +e
+          ANSIBLE_DEBUG=1 timeout 75 ansible-playbook -i localhost, -c local /workspace/issue81659.yml > /workspace/issue81659.log 2>&1
+          issue_code=$?
+          set -e
+          printf '%s\n' "$issue_code" > /workspace/issue81659_exit.txt
+          echo "ARM=$ARM RELEASE=$RELEASE BENCHMARK_PROCESS=$runner_code ISSUE=$issue_code"
+          INNER
+            set +e
+            if [ "$RELEASE" = v1 ]; then
+              timeout 380 docker run --rm --cpus=1 --memory=4096m --network=bridge -e "ARM=$ARM" -e "RELEASE=$RELEASE" \
+                -v "$GITHUB_WORKSPACE/evidence/$ARM:/workspace" \
+                --entrypoint /bin/bash "$IMAGE" -lc "bash /workspace/run_case.sh" > "evidence/$ARM/docker_console.txt" 2>&1
+            else
+              timeout 380 docker run --rm --cpus=1 --memory=4096m --network=bridge -e "ARM=$ARM" -e "RELEASE=$RELEASE" \
+                -v "$GITHUB_WORKSPACE/evidence/$ARM:/workspace" \
+                -v "$GITHUB_WORKSPACE/upstream/v2/tasks/$TASK_ID/tests:/tests:ro" \
+                -v "$GITHUB_WORKSPACE/evidence/$ARM/verifier:/logs/verifier" \
+                --entrypoint /bin/bash "$IMAGE" -lc "bash /workspace/run_case.sh" > "evidence/$ARM/docker_console.txt" 2>&1
+            fi
+            rc=$?
+            set -e
+            echo "$rc" > "evidence/$ARM/docker_exit.txt"
+            echo "$RELEASE $ARM docker_exit=$rc"
+            tail -n 5 "evidence/$ARM/docker_console.txt" || true
+          done
+      - name: Compute strict source-test acceptance and independent contract oracle table
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os,pathlib,collections,json,ast
+          root=pathlib.Path('evidence')
+          release=os.environ['RELEASE']; task=os.environ['TASK_ID']
+          if release=='v1':
+              row=json.loads((root/'original_row_metadata.json').read_text())
+              f2p=ast.literal_eval(row['FAIL_TO_PASS']) if isinstance(row['FAIL_TO_PASS'],str) else row['FAIL_TO_PASS']
+              p2p=json.loads(row['PASS_TO_PASS']) if isinstance(row['PASS_TO_PASS'],str) else row['PASS_TO_PASS']
+          else:
+              raw=json.loads(pathlib.Path('upstream/v2/tasks/'+task+'/tests/config.json').read_text())
+              def parse_tests(k):
+                  v=raw[k]
+                  if not isinstance(v,str):
+                      return v
+                  try:
+                      return json.loads(v)
+                  except json.JSONDecodeError:
+                      return ast.literal_eval(v)
+              f2p=parse_tests('fail_to_pass');p2p=parse_tests('pass_to_pass')
+          expected=set(f2p+p2p)
+          assert len(expected)==16
+          report=[]
+          for arm in ['baseline','ror_correct','ror_badprecedence','or_only','independent_full','gold']:
+              p=root/arm
+              z={'arm':arm,'release':release}
+              for k,f in [('docker_exit','docker_exit.txt'),('issue_exit','issue81659_exit.txt'),('benchmark_exit','benchmark_process_exit.txt')]:
+                  z[k]=(p/f).read_text().strip() if (p/f).exists() else None
+              if (p/'output.json').exists():
+                  tests=json.loads((p/'output.json').read_text())['tests']
+                  status={x['name']:x['status'] for x in tests}
+                  passed={k for k,v in status.items() if v=='PASSED'}
+                  z['reported_test_count']=len(tests);z['unique_test_count']=len(status)
+                  z['required_count']=len(expected)
+                  z['required_passed']=len(passed&expected)
+                  z['bench_accept']=(z['docker_exit']=='0' and len(tests)==16 and len(status)==16 and expected<=passed)
+                  z['test_statuses']=dict(collections.Counter(status.values()))
+                  z['test_ids_statuses']=status
+              else:
+                  z['bench_accept']=None
+                  z['error']='missing original output.json'
+              if (p/'contract_checks.json').exists():
+                  c=json.loads((p/'contract_checks.json').read_text())
+                  z['contract_atom_truth']={k:v.get('pass') for k,v in c.items()}
+                  z['tested_Q_v2_atoms_pass']=all(c[k]['pass'] for k in ['Q_v2_explicit_mapping_left_collision','Q_v2_explicit_combine_vars_replace_collision'])
+                  z['tested_Q_v1_atoms_pass']=all(x['pass'] for x in c.values())
+              z['original_issue_success']=z['issue_exit']=='0' if z['issue_exit'] is not None else None
+              report.append(z)
+              brief={k:v for k,v in z.items() if k not in ('test_ids_statuses','test_statuses')}
+              print(json.dumps(brief,sort_keys=True))
+          (root/'R392_report.json').write_text(json.dumps({'task':task,'release':release,'arms':report},sort_keys=True,indent=2)+'\n')
+          # fail closed if evidence is missing; actual candidate negative result is acceptable
+          assert all(x.get('bench_accept') is not None and x.get('issue_exit') is not None and x.get('tested_Q_v2_atoms_pass') is not None for x in report),'missing case evidence'
+          assert all(x['docker_exit']=='0' for x in report),'container process error'
+          PY
+      - name: Independently compare source grader and source-grounded normative metamorhpic oracles
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, collections,hashlib
+          root=pathlib.Path("evidence")
+          prior=json.loads((root/"R392_report.json").read_text())
+          out=[]
+          for a in prior["arms"]:
+              arm=a["arm"]
+              file=root/arm/"R396_normative_oracle.json"
+              assert file.exists(), f"R396 exact original container normative output missing: {arm}"
+              z=json.loads(file.read_text())
+              assert len(z["traces"])==3
+              assert all("A" in x and "B" in x for x in z["traces"])
+              status={
+                  "arm":arm,
+                  "B_original_scorer":a["bench_accept"],
+                  "Q_spec_A":z["oracle_A_all"],
+                  "Q_metamorphic_B":z["oracle_B_all"],
+                  "Q_both":z["Q_tested_explicit_clause"],
+                  "Q_issue_upstream81659":a["original_issue_success"],
+                  "Q_original_R392_atoms":a["tested_Q_v2_atoms_pass"],
+                  "input_key_types":[x["key_kind"] for x in z["traces"]],
+                  "unresolved_execution":any("exception" in k for x in z["traces"] for k in x),
+                  "class_types":[x.get("union_result_type") for x in z["traces"]],
+                  "patch_sha256":hashlib.sha256((root/arm/"patch.diff").read_bytes()).hexdigest()
+              }
+              out.append(status)
+              print(json.dumps(status,sort_keys=True))
+          expected={"baseline":False,"ror_correct":True,"ror_badprecedence":False,"or_only":False,"independent_full":True,"gold":True}
+          assert set(expected)=={a["arm"] for a in out}
+          assert all(a["Q_both"] is expected[a["arm"]] for a in out)
+          assert all(a["Q_both"]==a["Q_original_R392_atoms"] for a in out), "R396–R392 contradiction: independent audit needed"
+          assert all(a["Q_spec_A"]==a["Q_metamorphic_B"] for a in out), "two oracle methods disagree"
+          assert sum(a["B_original_scorer"] and not a["Q_both"] for a in out)==1
+          assert sum(a["B_original_scorer"] for a in out)==4
+          report={
+           "task":prior["task"],"release":"v2","n":len(out),
+           "design":"single known Ansible task, six manually authored/reference arms, three predeclared key types, official original V2 scorer versus two independently specified explicit normative oracles",
+           "interpretation":"calibration demonstration ONLY; no unseen AI patch, no method delta vs executed UTBoost/PatchDiff/SWEPatchTest baseline, no population estimate",
+           "original_official_accepted_count":sum(a["B_original_scorer"] for a in out),
+           "official_accept_but_explicit_clause_fail_count":sum(a["B_original_scorer"] and not a["Q_both"] for a in out),
+           "acceptance_discordances":[a["arm"] for a in out if a["B_original_scorer"] and not a["Q_both"]],
+           "rows":out,
+          }
+          (root/"R396_report.json").write_text(json.dumps(report,indent=2,sort_keys=True)+"\n")
+          print("R396_SINGLE_TASK_CALIBRATION_PASS; NO PUBLICATION/NOVELTY/GATE INFERENCE")
+          
+          PY
+      - name: Fix Docker root-owned artifacts and upload complete raw audit
+        if: always()
+        shell: bash
+        run: |
+          if [ -d evidence ]; then
+            sudo chown -R "$(id -u):$(id -g)" evidence
+            chmod -R u+rwX evidence
+          fi
+      - name: Upload original evidence for independent re-review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tid-r396-r2b-contract-${{ matrix.release }}
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 14
