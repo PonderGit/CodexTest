@@ -216,9 +216,6 @@ jobs:
               b=make({'collision':'right','r':2})
               x=combine_vars(a,b,merge=False)
               return isinstance(x,collections.abc.MutableMapping) and dict(x)=={'collision':'right','l':1,'r':2}
-          def nonmapping():
-              for fn in [lambda: make({'a':1})|42,lambda: 42|make({'a':1}),lambda: make({'a':1})|=42]:
-                  pass
           def is_typeerror(fn):
               try: fn()
               except TypeError: return True
