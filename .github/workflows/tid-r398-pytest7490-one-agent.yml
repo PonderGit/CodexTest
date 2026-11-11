@@ -137,7 +137,7 @@ jobs:
             esac
             for TEST in issue strict static plain; do
               set +e
-              timeout 100 docker run --rm --network none --cpus=1 --memory=2g --pids-limit=128 --cap-drop ALL --security-opt no-new-privileges \
+              timeout 100 docker run --rm --network none --cpus=1 --memory=2g --pids-limit=128 --cap-drop ALL --cap-add DAC_OVERRIDE --security-opt no-new-privileges \
                 -v "$PWD/private:/private:ro" -v "$PWD/oracle:/oracle:ro" -v "$PWD/evidence/$ARM:/evidence" \
                 -e R398_REPORT="/evidence/$TEST.json" -e PYTHONPATH=/oracle -e PATCH="$PATCH" -e CASE="$TEST" \
                 tid-r398:source /bin/sh -lc '
@@ -148,6 +148,7 @@ jobs:
                    fi
                    python -m pytest -q -o "addopts=" -p probe "/oracle/$CASE.py" > "/evidence/$CASE.stdout" 2>&1
                    echo "$?" > "/evidence/$CASE.exit"
+                   test -s "/evidence/$CASE.json" || exit 69
                    exit 0
                 ' > "evidence/$ARM/$TEST.docker.log" 2>&1
               DRC=$?
@@ -193,6 +194,7 @@ jobs:
                   "scope":"one preselected task and one candidate; no population or method-superiority inference"}
           (root/"R398_report.json").write_text(json.dumps(report,sort_keys=True,indent=2)+"\n")
           print(json.dumps({k:{t:v["status"] for t,v in vs.items()} for k,vs in rows.items()},indent=2,sort_keys=True))
+          assert all(v["status"]!="NOT_VERIFIED" for arm in rows.values() for v in arm.values()),"R398 fails closed: incomplete oracles"
           PY
       - name: Preserve sanitized original outputs and remove root-owned bits
         if: always()
