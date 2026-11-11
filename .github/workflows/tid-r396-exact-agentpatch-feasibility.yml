@@ -1,0 +1,74 @@
+name: TID R396 Exact Single-Task Agent-Patch Source Feasibility
+on:
+  push:
+    branches: [tid-r396-r2b-normative-oracle-20261111]
+    paths: [".github/workflows/tid-r396-exact-agentpatch-feasibility.yml"]
+permissions:
+  contents: read
+jobs:
+  single_exact_dataset_record:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Confirm free public runner and fixed exact source task
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os,json
+          e=json.load(open(os.environ['GITHUB_EVENT_PATH']))
+          assert e['repository']['full_name']=='PonderGit/CodexTest' and not e['repository']['private']
+          print('PUBLIC_FREE_STANDARD_GITHUB_RUNNER=TRUE')
+          PY
+      - name: Read one exactly matched HF record via documented filter API without bulk download
+        shell: bash
+        run: |
+          mkdir -p evidence
+          python3 - <<'PY'
+          import json,urllib.parse,urllib.request,hashlib,pathlib,datetime
+          ds="anonymous-swepatchtest/SWEPatchTest"
+          exact="instance_ansible__ansible-0ea40e09d1b35bcb69ff4d9cecf3d0defa4b36e8-v30a923fb5c164d6cd18280c02422f75e611e8fb2"
+          p={"dataset":ds,"config":"default","split":"train","where":'"instance_id"='+repr(exact),"offset":"0","length":"1"}
+          url="https://datasets-server.huggingface.co/filter?"+urllib.parse.urlencode(p)
+          report={"dataset":ds,"task":exact,"endpoint":"datasets-server/filter","selection":"EXACT instance_id, length1, no broad download","query_url":url,"status":"NOT_VERIFIED","retrieved_full_data":False}
+          try:
+            req=urllib.request.Request(url,headers={"User-Agent":"TID-R396-scoped-research/1.0"})
+            with urllib.request.urlopen(req,timeout=40) as resp:
+                raw=resp.read(2500000)
+                report["http_status"]=resp.status
+                data=json.loads(raw)
+            report["partial"]=data.get("partial",None)
+            report["num_rows_total"]=data.get("num_rows_total")
+            rows=data.get("rows",[])
+            report["matched_returned_rows"]=len(rows)
+            if len(rows)==1:
+                row=rows[0].get("row",{})
+                assert row.get("instance_id")==exact
+                report["status"]="MATCHED_EXACT_ONE_AUTHOR_DATASET_ROW"
+                report["repo"]=row.get("repo")
+                report["swe_type"]=row.get("swe_type")
+                report["base_commit"]=row.get("base_commit")
+                report["correct_patch_count"]=len(row.get("correct_patches",[]) or [])
+                report["incorrect_patch_count"]=len(row.get("incorrect_patches",[]) or [])
+                report["correct_first_sha256"]=hashlib.sha256(str((row.get("correct_patches") or [""])[0]).encode()).hexdigest()
+                report["incorrect_first_sha256"]=hashlib.sha256(str((row.get("incorrect_patches") or [""])[0]).encode()).hexdigest()
+                report["user_patch_source"]="real agent candidate, author label originally operational official grader; not independently validated"
+            elif not rows and data.get("partial") is False:
+                report["status"]="EXACT_MATCH_NOT_FOUND_IN_RETURNED_FILTER"
+            elif not rows:
+                report["status"]="NO_MATCH_RETURNED_PARTIAL_COVERAGE_UNKNOWN"
+            else:
+                report["status"]="MULTIPLE_MATCH_UNEXPECTED"
+          except Exception as exc:
+            report["status"]="SOURCE_API_UNAVAILABLE_NOT_VERIFIED"
+            report["error_type"]=type(exc).__name__
+            report["error_message"]=str(exc)[:220]
+          pathlib.Path("evidence/R396_agentpatch_single_task_lookup.json").write_text(json.dumps(report,indent=2,sort_keys=True)+"\n")
+          print(json.dumps({k:v for k,v in report.items() if k not in ("query_url",)},sort_keys=True))
+          PY
+      - name: Archive bounded lookup result
+        uses: actions/upload-artifact@v4
+        with:
+          name: tid-r396-agentpatch-exact-lookup
+          path: evidence/R396_agentpatch_single_task_lookup.json
+          retention-days: 14
+          if-no-files-found: error
