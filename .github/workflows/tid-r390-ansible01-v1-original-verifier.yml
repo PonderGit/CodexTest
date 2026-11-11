@@ -1,0 +1,229 @@
+name: TID R390 Ansible01 V1 Original Verifier Three-Arm Case
+on:
+  push:
+    branches: [tid-r390-ansible01-v1-singlecase-20261111]
+    paths: [".github/workflows/tid-r390-ansible01-v1-original-verifier.yml"]
+permissions:
+  contents: read
+concurrency:
+  group: tid-r390-ansible01-v1-singlecase
+  cancel-in-progress: false
+jobs:
+  original_v1_case:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      V1_REV: ca10a60a5fcae51e6948ffe1485d4153d421e6c5
+      TASK_ID: instance_ansible__ansible-0ea40e09d1b35bcb69ff4d9cecf3d0defa4b36e8-v30a923fb5c164d6cd18280c02422f75e611e8fb2
+    steps:
+      - name: Enforce PUBLIC free runner and checkout exact original legacy source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os,json
+          event=json.load(open(os.environ['GITHUB_EVENT_PATH']))
+          assert event['repository']['full_name']=='PonderGit/CodexTest'
+          assert event['repository']['private'] is False
+          print('FREE_STANDARD_PUBLIC_RUNNER=PASS')
+          PY
+          git init -q upstream
+          git -C upstream remote add origin https://github.com/scaleapi/SWE-bench_Pro-os.git
+          git -C upstream sparse-checkout init --cone
+          git -C upstream sparse-checkout set helper_code "run_scripts/$TASK_ID"
+          git -C upstream -c protocol.version=2 fetch --depth=1 origin "$V1_REV"
+          git -C upstream checkout -q --detach FETCH_HEAD
+          test "$(git -C upstream rev-parse HEAD)" = "$V1_REV"
+          check_blob () {
+            test "$(git -C upstream hash-object "$1")" = "$2"
+            echo "BLOB_OK $1 $2"
+          }
+          check_blob helper_code/sweap_eval_full_v2.jsonl b054bcc78503e0af80cddfeca0d4293051c60687
+          check_blob "run_scripts/$TASK_ID/run_script.sh" 883098acec7410da610b13c67ddbee0d506fc516
+          check_blob "run_scripts/$TASK_ID/parser.py" 50ea2903f9ef3428910fdae9901ad42af00ac550
+          check_blob "run_scripts/$TASK_ID/instance_info.txt" 8529c07252124b4f77fe08ad6f90da9c349d9725
+      - name: Extract single original row and patch, ensure original V1 test and GOLD identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p results
+          python3 - <<'PY'
+          import json,os,hashlib,ast,pathlib,sys
+          sys.path.insert(0,'upstream')
+          from helper_code.image_uri import get_dockerhub_image_uri
+          task=os.environ['TASK_ID']
+          obj=[]
+          for l in open('upstream/helper_code/sweap_eval_full_v2.jsonl',encoding='utf-8'):
+              x=json.loads(l)
+              if x.get('instance_id')==task: obj.append(x)
+          assert len(obj)==1,('row_count',len(obj))
+          r=obj[0]
+          assert r['repo']=='ansible/ansible'
+          assert r['base_commit']=='f7234968d241d7171aadb1e873a67510753f3163'
+          assert r['before_repo_set_cmd'].strip().splitlines()[-1].strip() == 'git checkout 0ea40e09d1b35bcb69ff4d9cecf3d0defa4b36e8 -- test/units/utils/test_vars.py'
+          assert hashlib.sha256(r['test_patch'].encode()).hexdigest() == '7de812e77770f2cf22ffe8441294ec99330dc36a20ac01517d606b5c1caaa99f'
+          assert hashlib.sha256(r['patch'].encode()).hexdigest() == '59a87bfccdfec081873ba2381668e1af6f336a19d3dc64ae10b9ef976c9856a0'
+          a=ast.literal_eval(r['FAIL_TO_PASS']) if isinstance(r['FAIL_TO_PASS'],str) else r['FAIL_TO_PASS']
+          b=json.loads(r['PASS_TO_PASS']) if isinstance(r['PASS_TO_PASS'],str) else r['PASS_TO_PASS']
+          target=json.loads(r['selected_test_files_to_run']) if isinstance(r['selected_test_files_to_run'],str) else r['selected_test_files_to_run']
+          assert len(a)==1 and len(b)==15 and target==['test/units/utils/test_vars.py']
+          image=get_dockerhub_image_uri(task,'jefzda',r['repo'])
+          assert image.startswith('jefzda/sweap-images:ansible.ansible-')
+          assert len(image.split(':')[-1])<=128
+          pathlib.Path('results/v1_image_uri.txt').write_text(image+'\n')
+          pathlib.Path('results/v1_inputs.json').write_text(json.dumps({
+              'task_id':task,'v1_source_rev':os.environ['V1_REV'],'original_source_rows':731,
+              'original_row_problem_statement_sha256':hashlib.sha256(str(r['problem_statement']).encode()).hexdigest(),
+              'original_test_patch_sha256':hashlib.sha256(r['test_patch'].encode()).hexdigest(),
+              'original_gold_sha256':hashlib.sha256(r['patch'].encode()).hexdigest(),
+              'F2P':a,'P2P':b,'selected_test_files':target,'v1_image':image,
+              'before_repo_set_cmd':r['before_repo_set_cmd']
+          },sort_keys=True,indent=2)+'\n')
+          pathlib.Path('results/original_v1_gold.patch').write_text(r['patch'])
+          pathlib.Path('results/original_v1_test_patch.patch').write_text(r['test_patch'])
+          print('SOURCE_ROW_AND_PATCH_HASHES=PASS')
+          print('IMAGE',image)
+          print('REQUIRED_TESTS',len(set(a+b)))
+          PY
+      - name: Create same candidate patch as R389, verify exact bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > results/candidate.patch <<'PATCH'
+          diff --git a/lib/ansible/vars/manager.py b/lib/ansible/vars/manager.py
+          --- a/lib/ansible/vars/manager.py
+          +++ b/lib/ansible/vars/manager.py
+          @@ -786,3 +786,10 @@ class VarsWithSources(MutableMapping):
+           
+               def copy(self):
+                   return VarsWithSources.new_vars_with_sources(self.data.copy(), self.sources.copy())
+          +
+          +    def __ror__(self, other):
+          +        if isinstance(other, MutableMapping):
+          +            merged = dict(other)
+          +            merged.update(self.data)
+          +            return merged
+          +        return NotImplemented
+          PATCH
+          printf '%s  %s\n' 3699498d6d2aa2238f487d067114f396f969a5fb60bf1524c0712534756a7914 results/candidate.patch | sha256sum -c -
+      - name: Obtain original V1 public Docker Hub image, record immutable digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="$(cat results/v1_image_uri.txt)"
+          echo "V1_IMAGE=$image"
+          timeout 1000 docker pull "$image"
+          docker image inspect --format '{{json .RepoDigests}}' "$image" > results/v1_image_digests.json
+          docker image inspect --format '{{.Id}}' "$image" > results/v1_image_id.txt
+          df -h .
+      - name: Three isolated original V1 per-task parser and F2P-P2P checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="$(cat results/v1_image_uri.txt)"
+          for arm in baseline candidate gold; do
+            echo "=== V1 arm $arm ==="
+            mkdir -p "results/$arm"
+            cp "upstream/run_scripts/$TASK_ID/run_script.sh" "results/$arm/run_script.sh"
+            cp "upstream/run_scripts/$TASK_ID/parser.py" "results/$arm/parser.py"
+            case "$arm" in
+              baseline) : > "results/$arm/patch.diff" ;;
+              candidate) cp results/candidate.patch "results/$arm/patch.diff" ;;
+              gold) cp results/original_v1_gold.patch "results/$arm/patch.diff" ;;
+            esac
+            cat > "results/$arm/entryscript.sh" <<'INNER'
+          #!/bin/bash
+          set -euo pipefail
+          cd /app
+          git reset --hard f7234968d241d7171aadb1e873a67510753f3163
+          git checkout f7234968d241d7171aadb1e873a67510753f3163
+          test "$(git hash-object lib/ansible/vars/manager.py)" = "93a1b9ad382d9e9f2d880de8ccbbac27b150f9ab"
+          test "$(git hash-object lib/ansible/utils/vars.py)" = "66f872f4f4e7cf8f7d47598dd1d5ab90f8bbd32e"
+          if [ "$ARM" != baseline ]; then
+            git apply --check /workspace/patch.diff
+            git apply /workspace/patch.diff
+            echo "PATCH_APPLIED"
+          else
+            echo "EMPTY_PATCH_BASELINE"
+          fi
+          # Exact final line from source V1 before_repo_set_cmd, after patch:
+          git checkout 0ea40e09d1b35bcb69ff4d9cecf3d0defa4b36e8 -- test/units/utils/test_vars.py
+          test "$(git hash-object test/units/utils/test_vars.py)" = "727e04c86f1d0aeb1629ca53f30eb46b72ec8150"
+          export PYTHONPATH=/app:"${PYTHONPATH:-}"
+          export PATH=/app/bin:$PATH
+          echo "IMAGE_PYTHON=$(python3 --version 2>&1)"
+          set +e
+          bash /workspace/run_script.sh test/units/utils/test_vars.py > /workspace/stdout.log 2> /workspace/stderr.log
+          native_runner_exit=$?
+          set -e
+          printf '%s\n' "$native_runner_exit" > /workspace/native_runner_exit.txt
+          python3 /workspace/parser.py /workspace/stdout.log /workspace/stderr.log /workspace/output.json
+          python3 - <<'PY' > /workspace/independent_operators.txt 2>&1
+          from ansible.vars.manager import VarsWithSources
+          for name, fn in [
+              ('dict_left',lambda: {'a':1}|VarsWithSources({'b':2})),
+              ('vars_left',lambda: VarsWithSources({'b':2})|{'a':1})
+          ]:
+              try: print(name,'SUCCEEDS',dict(fn()))
+              except Exception as e: print(name,'FAILS',type(e).__name__,str(e))
+          try:
+              v=VarsWithSources({'b':2}); v|={'c':3}
+              print('augmented_union','SUCCEEDS',dict(v))
+          except Exception as e: print('augmented_union','FAILS',type(e).__name__,str(e))
+          PY
+          echo "ORIGINAL_V1_VERIFIER_AND_PARSER_COMPLETED"
+          INNER
+            set +e
+            timeout 600 docker run --rm --cpus=1 --memory=4096m --network=bridge \
+              --env ARM="$arm" -v "$GITHUB_WORKSPACE/results/$arm:/workspace" \
+              --entrypoint /bin/bash "$image" -lc "bash /workspace/entryscript.sh" > "results/$arm/docker_stdout.txt" 2>&1
+            rc=$?
+            set -e
+            printf '%s\n' "$rc" > "results/$arm/docker_exit.txt"
+            echo "ARM=$arm DOCKER_EXIT=$rc"
+            tail -15 "results/$arm/docker_stdout.txt" || true
+          done
+      - name: Independently evaluate EXACT legacy V1 F2P-P2P sets; fail closed on missing files or nonzero container
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json,pathlib,sys,collections
+          r=pathlib.Path('results'); inp=json.loads((r/'v1_inputs.json').read_text())
+          required=set(inp['F2P']+inp['P2P']); report=[]
+          for arm in ['baseline','candidate','gold']:
+              d=r/arm
+              status={'arm':arm,'docker_exit':(d/'docker_exit.txt').read_text().strip() if (d/'docker_exit.txt').exists() else None}
+              if (d/'output.json').exists():
+                  tests=json.loads((d/'output.json').read_text()).get('tests',[])
+                  passed={x['name'] for x in tests if x.get('status')=='PASSED'}
+                  status.update(parsed_count=len(tests),unique_names=len({x['name'] for x in tests}),
+                                test_statuses=dict(collections.Counter(x.get('status') for x in tests)),
+                                required=len(required),passed_required=len(required&passed),
+                                missing=sorted(required-passed),
+                                grade_usable=status['docker_exit']=='0' and len(tests)==16 and len({x['name'] for x in tests})==16,
+                                resolved=status['docker_exit']=='0' and required <=passed and len(tests)==16)
+              else:
+                  status.update(grade_usable=False,resolved=None,error='missing official output.json')
+              if (d/'independent_operators.txt').exists():
+                  status['operator_check']=(d/'independent_operators.txt').read_text()[:1600]
+              report.append(status)
+              print(json.dumps(status,sort_keys=True))
+          (r/'v1_result_summary.json').write_text(json.dumps({'results':report,'original_inputs':inp},sort_keys=True,indent=2)+'\n')
+          PY
+      - name: Repair runner ownership and upload all raw logs and immutable inputs
+        if: always()
+        shell: bash
+        run: |
+          if [ -d results ]; then
+            sudo chown -R "$(id -u):$(id -g)" results
+            chmod -R u+rwX results
+          fi
+      - name: Upload V1 original-source and grader evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tid-r390-ansible01-v1-singlecase
+          path: results/
+          if-no-files-found: error
+          retention-days: 14
