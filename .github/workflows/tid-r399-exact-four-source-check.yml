@@ -1,0 +1,83 @@
+name: TID R399 Four Preselected Task Identities
+on:
+  push:
+    branches: [tid-r399-predeclared-matched-cohort-20261111]
+    paths: [".github/workflows/tid-r399-exact-four-source-check.yml"]
+permissions:
+  contents: read
+jobs:
+  bounded_identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Four exact source rows, PR base commits, issue text hashes only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python3 - <<'PY'
+          import json,urllib.request,urllib.parse,urllib.error,hashlib,pathlib
+          target=[
+            ("django__django-12713","django/django",12713,"HISTORICAL_RESOLVED"),
+            ("sphinx-doc__sphinx-9367","sphinx-doc/sphinx",9367,"HISTORICAL_RESOLVED"),
+            ("pylint-dev__pylint-4661","pylint-dev/pylint",4661,"HISTORICAL_NOT_RESOLVED"),
+            ("matplotlib__matplotlib-26466","matplotlib/matplotlib",26466,"HISTORICAL_NOT_RESOLVED"),
+          ]
+          hf_dataset="princeton-nlp/SWE-bench_Verified"
+          def get(url,cap=700000):
+              r=urllib.request.Request(url,headers={"User-Agent":"TID-R399-source-identity-only/1.0","Accept":"application/json"})
+              try:
+                  with urllib.request.urlopen(r,timeout=35) as response:
+                      b=response.read(cap+1)
+                      if len(b)>cap:return {"ok":False,"error":"response_exceeds_cap"}
+                      return {"ok":True,"data":json.loads(b),"bytes_sha256":hashlib.sha256(b).hexdigest()}
+              except urllib.error.HTTPError as e:return {"ok":False,"error":"HTTP_"+str(e.code)}
+              except Exception as e:return {"ok":False,"error":type(e).__name__+":"+str(e)[:120]}
+          out={"fixed_selected_ids":[z[0] for z in target],"research_stage":"bounded original source feasibility; no experimental grading",
+              "source_dataset":hf_dataset,"records":[]}
+          for id,repo,n,stratum in target:
+              q={"dataset":hf_dataset,"config":"default","split":"test",
+                 "where":'"instance_id"='+"'"+id+"'","offset":0,"length":1}
+              endpoint="https://datasets-server.huggingface.co/filter?"+urllib.parse.urlencode(q)
+              a=get(endpoint)
+              p=get("https://api.github.com/repos/"+repo+"/pulls/"+str(n))
+              d={"instance_id":id,"repo":repo,"stratum":stratum,
+                 "hf_exact_query":"filter EXACT instance_id length=1",
+                 "hf_status":a.get("error","HTTP200"),
+                 "pr_status":p.get("error","HTTP200"),
+                 "data_verified":False}
+              if p["ok"]:
+                  pr=p["data"]
+                  d.update({"pr_base_sha":pr.get("base",{}).get("sha"),"pr_head_sha":pr.get("head",{}).get("sha"),
+                            "original_pr_title":pr.get("title"),"pr_url":pr.get("html_url"),
+                            "pr_merged":bool(pr.get("merged_at"))})
+              if a["ok"]:
+                  x=a["data"].get("rows",[])
+                  d["response_n"]=len(x)
+                  d["reported_matching_total"]=a["data"].get("num_rows_total")
+                  if len(x)==1 and x[0].get("row",{}).get("instance_id")==id:
+                      row=x[0]["row"]
+                      d.update({"hf_exact_row_idx":x[0].get("row_idx"),
+                        "base_commit":row.get("base_commit"),"environment_setup_commit":row.get("environment_setup_commit"),
+                        "version":row.get("version"),"source_repo":row.get("repo"),
+                        "issue_text_sha256":hashlib.sha256(str(row.get("problem_statement","")).encode()).hexdigest(),
+                        "issue_text_excerpt":str(row.get("problem_statement",""))[:1200],
+                        "gold_patch_sha256":hashlib.sha256(str(row.get("patch","")).encode()).hexdigest(),
+                        "test_patch_sha256":hashlib.sha256(str(row.get("test_patch","")).encode()).hexdigest(),
+                        "FAIL_TO_PASS_length":len(json.loads(row.get("FAIL_TO_PASS","[]"))),
+                        "PASS_TO_PASS_length":len(json.loads(row.get("PASS_TO_PASS","[]"))),
+                        "data_verified":row.get("base_commit")==d.get("pr_base_sha") and row.get("repo")==repo,
+                        "match_rationale":"official dataset base commit must match original PR base; no merging on name alone"})
+              out["records"].append(d)
+              print(json.dumps({k:v for k,v in d.items() if k!="issue_text_excerpt"},sort_keys=True))
+          out["all_identified"]=all(x["data_verified"] for x in out["records"])
+          pathlib.Path("evidence/R399_original_task_identity.json").write_text(json.dumps(out,indent=2,sort_keys=True)+"\n")
+          print("FOUR_IDENTITY_MATCH="+str(out["all_identified"]))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tid-r399-original-identity-metadata-only
+          path: evidence/R399_original_task_identity.json
+          if-no-files-found: error
+          retention-days: 14
