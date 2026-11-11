@@ -1,0 +1,114 @@
+name: TID R397B One-Row Public Provenance Check
+on:
+  push:
+    branches: [tid-r397b-public-source-feasibility-20261111]
+    paths: [".github/workflows/tid-r397b-public-source-feasibility.yml"]
+permissions:
+  contents: read
+jobs:
+  bounded_public_api:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - name: Public metadata-only checks and exact one-row retrieval
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python3 - <<'PY'
+          import json,hashlib,urllib.request,urllib.parse,urllib.error,pathlib,os
+          target="pytest-dev__pytest-7490"
+          sources=["princeton-nlp/SWE-bench_Verified","anonymous-swepatchtest/SWEPatchTest"]
+          report={"scope":"non-experimental public metadata read and exact ONE task row only; NO bulk data/download, no grader runs",
+                  "target":target,"sources":{}}
+          def get(endpoint,params,limit=1200000):
+              url="https://datasets-server.huggingface.co/"+endpoint+"?"+urllib.parse.urlencode(params)
+              request=urllib.request.Request(url,headers={"User-Agent":"TID-R397B-public-research-one-row/1.0","Accept":"application/json"})
+              try:
+                  with urllib.request.urlopen(request,timeout=28) as response:
+                      payload=response.read(limit+1)
+                      if len(payload)>limit:
+                          return {"ok":False,"error":"response_too_large","url":url}
+                      obj=json.loads(payload)
+                      return {"ok":True,"json":obj,"url":url,"http":response.status}
+              except urllib.error.HTTPError as e:
+                  return {"ok":False,"error":f"HTTP_{e.code}","url":url,"detail":e.read(180).decode('utf-8','replace')}
+              except Exception as e:
+                  return {"ok":False,"error":type(e).__name__+":"+str(e)[:180],"url":url}
+          def digest(s):
+              return hashlib.sha256(str(s).encode()).hexdigest()
+          for ds in sources:
+              out={"dataset":ds,"status":"NOT_VERIFIED"}
+              splits=get("splits",{"dataset":ds},limit=90000)
+              out["splits_call"]={k:v for k,v in splits.items() if k!="json"}
+              if splits["ok"]:
+                  records=splits["json"].get("splits",[])
+                  out["configs_splits"]=[{k:x.get(k) for k in ("dataset","config","split","num_rows","num_bytes","dataset_name")} for x in records][:12]
+                  out["status"]="SPLITS_METADATA_VERIFIED"
+              if ds.startswith("princeton-nlp/"):
+                  candidates=out.get("configs_splits",[])
+                  choice=next((x for x in candidates if x.get("config")=="default" and x.get("split")=="test"),None)
+                  if choice:
+                      where='"instance_id"='+repr(target)
+                      params={"dataset":ds,"config":"default","split":"test","where":where,"offset":0,"length":1}
+                      exact=get("filter",params,limit=700000)
+                      out["exact_filter_call"]={k:v for k,v in exact.items() if k!="json"}
+                      if exact["ok"]:
+                          rows=exact["json"].get("rows",[])
+                          out["matched_row_count"]=len(rows)
+                          out["reported_total_matching_rows"]=exact["json"].get("num_rows_total")
+                          if len(rows)==1 and rows[0].get("row",{}).get("instance_id")==target:
+                              row=rows[0]["row"]
+                              out["status"]="EXACT_ORIGINAL_BENCHMARK_ROW_VERIFIED"
+                              out["original_row"]={k:row.get(k) for k in ("instance_id","repo","base_commit","version","environment_setup_commit")}
+                              out["original_row"]["issue_sha256"]=digest(row.get("problem_statement",""))
+                              out["original_row"]["issue_excerpt"]=str(row.get("problem_statement",""))[:450]
+                              out["original_row"]["gold_patch_sha256"]=digest(row.get("patch",""))
+                              out["original_row"]["test_patch_sha256"]=digest(row.get("test_patch",""))
+                              for name in ("FAIL_TO_PASS","PASS_TO_PASS"):
+                                  val=row.get(name)
+                                  try:parsed=json.loads(val) if isinstance(val,str) else val
+                                  except Exception:parsed=[]
+                                  out["original_row"][name+"_count"]=len(parsed or []) if isinstance(parsed,list) else None
+                                  out["original_row"][name+"_sha256"]=digest(val)
+                              out["reported_row_idx"]=rows[0].get("row_idx")
+                          elif len(rows)==0:
+                              out["status"]="NO_EXACT_MATCH_FOUND_IN_FILTER"
+                          else:
+                              out["status"]="AMBIGUOUS_FILTER_RESULT_NOT_VERIFIED"
+                      else:
+                          # Avoid scanning dataset. Small bounded indexed search fallback.
+                          alt=get("search",{"dataset":ds,"config":"default","split":"test","column":"instance_id","query":target,"offset":0,"length":1},limit=700000)
+                          out["exact_search_call"]={k:v for k,v in alt.items() if k!="json"}
+                          if alt["ok"]:
+                              rows=alt["json"].get("rows",[])
+                              out["matched_search_rows"]=len(rows)
+                              if len(rows)==1 and rows[0].get("row",{}).get("instance_id")==target:
+                                  row=rows[0]["row"]
+                                  out["status"]="EXACT_ORIGINAL_BENCHMARK_ROW_VERIFIED"
+                                  out["original_row"]={k:row.get(k) for k in ("instance_id","repo","base_commit","version","environment_setup_commit")}
+                                  out["original_row"]["issue_sha256"]=digest(row.get("problem_statement",""))
+                                  out["original_row"]["issue_excerpt"]=str(row.get("problem_statement",""))[:450]
+                                  out["original_row"]["gold_patch_sha256"]=digest(row.get("patch",""))
+                                  out["original_row"]["test_patch_sha256"]=digest(row.get("test_patch",""))
+                                  for name in ("FAIL_TO_PASS","PASS_TO_PASS"):
+                                      val=row.get(name)
+                                      try:parsed=json.loads(val) if isinstance(val,str) else val
+                                      except Exception:parsed=[]
+                                      out["original_row"][name+"_count"]=len(parsed or []) if isinstance(parsed,list) else None
+                                      out["original_row"][name+"_sha256"]=digest(val)
+                                  out["reported_row_idx"]=rows[0].get("row_idx")
+                  else:
+                      out["error"]="exact default/test split not returned; no guessed route"
+              report["sources"][ds]=out
+          path=pathlib.Path("evidence/R397B_exact_public_source_report.json")
+          path.write_text(json.dumps(report,indent=2,sort_keys=True,ensure_ascii=False)+"\n")
+          print(json.dumps(report,indent=2,sort_keys=True,ensure_ascii=False))
+          PY
+      - name: Archive exact source-feasibility result
+        uses: actions/upload-artifact@v4
+        with:
+          name: tid-r397b-exact-source-metadata
+          path: evidence/R397B_exact_public_source_report.json
+          if-no-files-found: error
+          retention-days: 14
