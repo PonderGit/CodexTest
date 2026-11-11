@@ -340,8 +340,15 @@ jobs:
               p2p=json.loads(row['PASS_TO_PASS']) if isinstance(row['PASS_TO_PASS'],str) else row['PASS_TO_PASS']
           else:
               raw=json.loads(pathlib.Path('upstream/v2/tasks/'+task+'/tests/config.json').read_text())
-              get=lambda k:json.loads(raw[k]) if isinstance(raw[k],str) else raw[k]
-              f2p=get('fail_to_pass');p2p=get('pass_to_pass')
+              def parse_tests(k):
+                  v=raw[k]
+                  if not isinstance(v,str):
+                      return v
+                  try:
+                      return json.loads(v)
+                  except json.JSONDecodeError:
+                      return ast.literal_eval(v)
+              f2p=parse_tests('fail_to_pass');p2p=parse_tests('pass_to_pass')
           expected=set(f2p+p2p)
           assert len(expected)==16
           report=[]
