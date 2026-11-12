@@ -1,0 +1,29 @@
+name: TID R404 Matplotlib Compiler-Diagnostic Baseline (same official test)
+on:
+  push:
+    branches: [tid-r404-two-official-test-arm-20261112]
+    paths: [".github/workflows/tid-r404-mpl-compiler-diagnostic.yml"]
+permissions:
+  contents: read
+jobs:
+  baseline_environment_canary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    env:
+      TARGET: matplotlib
+      ARM: baseline
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - run: python -m pip install --quiet --disable-pip-version-check pyarrow==21.0.0
+      - run: python research/tid_r404_one_arm.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tid-r404-mpl-compiler-baseline
+          path: evidence/
+          if-no-files-found: warn
+          retention-days: 30
