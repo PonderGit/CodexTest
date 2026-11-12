@@ -52,12 +52,12 @@ try:
   assert code==0
   code,logs=cmd(["sudo","apt-get","install","-y","-qq","libfreetype6-dev","libpng-dev","libqhull-dev","pkg-config"],timeout=180)
   assert code==0
-  code,logs=cmd(["python","-m","pip","install","-q","numpy==1.26.4","setuptools<70","setuptools_scm<9","wheel","pybind11<3","Cython<3","meson-python<0.17","pytest==7.4.4"],timeout=180)
+  code,logs=cmd(["python","-m","pip","install","-q","numpy==1.26.4","pyparsing==3.0.9","setuptools<70","setuptools_scm<9","wheel","pybind11<3","Cython<3","meson-python<0.17","pytest==7.4.4"],timeout=180)
  else:code,logs=cmd(["python","-m","pip","install","-q","appdirs==1.4.4","pytest==7.4.4","setuptools<70","wheel"],timeout=180)
  assert code==0
  if key=="matplotlib":
   pathlib.Path("src/mplsetup.cfg").write_text("[libs]\nsystem_freetype = True\nsystem_qhull = True\n")
-  result["runtime_recovery"]="SYSTEM_FREETYPE_AND_QHULL_ONLY_NO_TEST_CHANGE"
+  result["runtime_recovery"]="SYSTEM_FREETYPE_QHULL_AND_PYPARSING_3_0_9_NO_TEST_CHANGE"
  code,logs=cmd(["python","-m","pip","install","--no-build-isolation","-e","."],cwd="src",timeout=500)
  if code:result["status"]="INFRA_INSTALL_BLOCKED"
  else:
