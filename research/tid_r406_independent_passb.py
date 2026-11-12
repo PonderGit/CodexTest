@@ -14,7 +14,7 @@ IDS=("pylint-dev__pylint-4661","matplotlib__matplotlib-26466")
 assert ann["original_download_bytes"]==2397074
 assert ann["original_zip_sha256"]=="b9297c31f6c2ef712218b5bb2830bd47a7f600dedf6b927191d0170177266ab9"
 assert len(ann["matches"])==8
-assert len([x for x in ann["archive_files"] if x["name"].endswith(".csv")])==2
+assert len([x for x in ann["archive_files"] if x["name"].endswith(".csv") and not x["name"].startswith("__MACOSX/")])==2
 assert set(agent["cases"])==set(trace["cases"])==set(IDS)
 assert agent["source_archive_sha256"]=="74070d038a8dfb1e814f4f7bf6730c81643446688d4232b6553ecb93caa95bac"
 out={"audit":"R406_PASS_B_INDEPENDENT","evidence_class_source":"VERIFIED_DIRECT",
