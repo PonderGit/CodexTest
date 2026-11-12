@@ -12,7 +12,7 @@ result={"target":target,"arm":arm,"base":base,"test_id":test,"kind":"NATIVE_OFFI
 def cmd(argv,cwd=None,timeout=450):
  try:
   p=subprocess.run(argv,cwd=cwd,timeout=timeout,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,errors="replace")
-  result["commands"].append({"argv":argv,"exit":p.returncode,"tail":p.stdout[-600:]})
+  result["commands"].append({"argv":argv,"exit":p.returncode,"tail":p.stdout[-9000:] if p.returncode else p.stdout[-600:]})
   return p.returncode,p.stdout
  except subprocess.TimeoutExpired:
   result["commands"].append({"argv":argv,"exit":124,"tail":"TIMEOUT"})
@@ -50,7 +50,7 @@ try:
  if key=="matplotlib":
   code,logs=cmd(["sudo","apt-get","update","-qq"],timeout=180)
   assert code==0
-  code,logs=cmd(["sudo","apt-get","install","-y","-qq","libfreetype6-dev","libpng-dev","pkg-config"],timeout=180)
+  code,logs=cmd(["sudo","apt-get","install","-y","-qq","libfreetype6-dev","libpng-dev","libqhull-dev","pkg-config"],timeout=180)
   assert code==0
   code,logs=cmd(["python","-m","pip","install","-q","numpy==1.26.4","setuptools<70","setuptools_scm<9","wheel","pybind11<3","Cython<3","meson-python<0.17","pytest==7.4.4"],timeout=180)
  else:code,logs=cmd(["python","-m","pip","install","-q","appdirs==1.4.4","pytest==7.4.4","setuptools<70","wheel"],timeout=180)
