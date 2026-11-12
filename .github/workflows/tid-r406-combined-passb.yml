@@ -2,7 +2,7 @@ name: TID R406 Original Human Annotation / Agent Input Independent Pass B
 on:
   push:
     branches: [tid-r406-two-task-original-annotation-audit-20261112]
-    paths: [".github/workflows/tid-r406-combined-passb.yml"]
+    paths: [".github/workflows/tid-r406-combined-passb.yml", "research/tid_r406_independent_passb.py"]
 permissions:
   contents: read
   actions: read
