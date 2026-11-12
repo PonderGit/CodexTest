@@ -1,0 +1,89 @@
+name: TID R402 Matplotlib Source-Contract Hints and Test Audit
+on:
+  push:
+    branches: [tid-r401-single-official-row-20261112]
+    paths: [".github/workflows/tid-r402-hints-tests-source-only.yml"]
+permissions:
+  contents: read
+jobs:
+  scope_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - name: Reinspect exact authorized one original row, no tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python -m pip install --quiet --disable-pip-version-check pyarrow==21.0.0
+          cat > /tmp/tid_r402.py <<'PY'
+          import hashlib,json, pathlib,re, urllib.request
+          import pyarrow.parquet as pq
+          COMMIT="c104f840cc67f8b6eec6f759ebc8b2693d585d4a"
+          URI="https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified/resolve/"+COMMIT+"/data/test-00000-of-00001.parquet"
+          expected="a45b1fe4e2f0c8390b2b2938ac83e92ed5979000856808f3679c07812e9e6dcd"
+          request=urllib.request.Request(URI,headers={"User-Agent":"TID-R402-predeclared-Matplotlib-one-row-only/1.0"})
+          with urllib.request.urlopen(request,timeout=60) as x: raw=x.read(2100001)
+          assert len(raw)==2096679 and hashlib.sha256(raw).hexdigest()==expected
+          path=pathlib.Path("/tmp/tid_r402.parquet")
+          path.write_bytes(raw)
+          f=pq.ParquetFile(path)
+          assert f.metadata.num_rows==500
+          ids=f.read(columns=["instance_id"]).column("instance_id").to_pylist()
+          matching=[i for i,v in enumerate(ids) if v=="matplotlib__matplotlib-26466"]
+          assert matching==[286]
+          row=f.read().slice(286,1).to_pylist()[0]
+          assert row["base_commit"]=="3dd06a46750d174f821df5377996f493f1af4ebb"
+          hints=row["hints_text"] or ""
+          patch=row["test_patch"] or ""
+          assert len(hints)==562
+          assert hashlib.sha256(hints.encode()).hexdigest()=="0643d9e893c5176289f58e50407894a1f0e303ccc0b5c7ef4f2c8cddc257bf0c"
+          assert len(patch)==1368
+          assert hashlib.sha256(patch.encode()).hexdigest()=="c847fc26deeffea2f11d4d5315d91e5b3d1ae023b115ab9d7763b4252dec6dfc"
+          names=re.findall(r"^\+def\s+(test_[A-Za-z0-9_]+)\s*\(",patch,re.M)
+          clues={
+             "hints_contains_OffsetFrom":bool(re.search("OffsetFrom",hints,re.I)),
+             "hints_contains_Annotation":bool(re.search("Annotation",hints,re.I)),
+             "hints_contains__AnnotationBase":("_AnnotationBase" in hints),
+             "hints_contains_copy":bool(re.search("copy",hints,re.I)),
+             "hints_contains_PR_link":("pull/" in hints),
+             "hints_lines_count":len(hints.splitlines()),
+             "hints_sample_start_100chars":hints[:100],
+             "hints_sample_end_100chars":hints[-100:],
+             "official_test_patch_function_names":names,
+             "official_test_mentions_OffsetFrom":("OffsetFrom" in patch),
+             "official_test_mentions_annotate":("annotate" in patch),
+             "official_test_mentions_array_mutation":("of_xy[:]" in patch or "an_xy[:]" in patch),
+             "official_test_mentions_image_comparison":("check_figures_equal" in patch),
+             "official_test_mentions_original_report_horizontal_arrows":("horizontal" in patch.lower()),
+             "official_test_patch_files":re.findall(r"^\+\+\+ b/(.+)$",patch,re.M),
+          }
+          result={
+             "audit_id":"TID_R402_SOURCE_CLAUSE_ONLY",
+             "provenance":"original publisher one-row, commit pinned, sha256 reverified",
+             "dataset_repo":"princeton-nlp/SWE-bench_Verified",
+             "commit":COMMIT,
+             "source_parquet_bytes":len(raw),
+             "source_sha256":expected,
+             "matched_target_id":"matplotlib__matplotlib-26466",
+             "matched_index_zero_based":286,
+             "original_hints_sha256":hashlib.sha256(hints.encode()).hexdigest(),
+             "original_test_patch_sha256":hashlib.sha256(patch.encode()).hexdigest(),
+             "clues":clues,
+             "restriction":"No other records inspected, benchmark grader executed, patches redistributed or agent correctness inferred."
+          }
+          out=pathlib.Path("evidence/TID_R402_Matplotlib_hint_test_source_features.json")
+          out.write_text(json.dumps(result,ensure_ascii=False,sort_keys=True,indent=2)+"\n")
+          print("Verified source one-row hint/test provenance:",json.dumps(clues,ensure_ascii=False,sort_keys=True))
+          path.unlink()
+          assert not path.exists()
+          PY
+          python /tmp/tid_r402.py
+      - name: Preserve minimal source fingerprints, not raw dataset
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tid-r402-hint-test-source-features
+          path: evidence/TID_R402_Matplotlib_hint_test_source_features.json
+          if-no-files-found: warn
+          retention-days: 30
