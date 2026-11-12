@@ -1,0 +1,22 @@
+name: TID R406 Two-Case CodeStory Actual-Prompt Source Probe
+on:
+  push:
+    branches: [tid-r406-two-task-original-annotation-audit-20261112]
+    paths: [".github/workflows/tid-r406-codestory-two-prompt-probe.yml"]
+permissions:
+  contents: read
+jobs:
+  source_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source-only two-target public CodeStory agent input / trajectory availability
+        run: python research/tid_r406_public_codestory_two_inputs.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tid-r406-codestory-two-source-prompt-features
+          path: evidence/
+          if-no-files-found: warn
+          retention-days: 30
