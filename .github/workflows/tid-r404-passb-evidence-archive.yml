@@ -1,0 +1,62 @@
+name: TID R404 Combine Original Raw Evidence and Independent Pass B
+on:
+  push:
+    branches: [tid-r404-two-official-test-arm-20261112]
+    paths: [".github/workflows/tid-r404-passb-evidence-archive.yml"]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  passb_review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 43166213100
+          pattern: tid-r404-preflight-two-cases-source-only
+          path: collected/source
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 43167033151
+          pattern: tid-r404-*-native
+          path: collected/original
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 43167403762
+          pattern: tid-r404-mpl-recovery-*
+          path: collected/recovery1
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 43167756221
+          pattern: tid-r404-mpl-compiler-baseline
+          path: collected/compiler
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 43168118022
+          pattern: tid-r404-mpl-pyparsing-canary
+          path: collected/canary
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 43168350559
+          pattern: tid-r404-mpl-compatible-*
+          path: collected/pair
+          github-token: ${{ github.token }}
+      - name: Independently verify all raw original IDs, arm outcomes, and runtime barriers
+        run: python research/tid_r404_passb_final.py
+      - name: Archive source-only JSON evidence, no raw patches or full dataset
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tid-r404-combined-passb-source-and-native-tests
+          path: |
+            collected/
+            evidence/R404_PASSB_FINAL.json
+          if-no-files-found: warn
+          retention-days: 90
