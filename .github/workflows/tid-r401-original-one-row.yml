@@ -1,0 +1,104 @@
+name: TID R401 Original SWE-bench Verified One-Row Source Audit
+on:
+  push:
+    branches: [tid-r401-single-official-row-20261112]
+    paths: [".github/workflows/tid-r401-original-one-row.yml"]
+permissions:
+  contents: read
+jobs:
+  official_one_row_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Obtain pinned official 2.1MB source and extract only preselected row
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          python -m pip install --quiet --disable-pip-version-check pyarrow==21.0.0
+          cat > /tmp/tid_r401_one_row.py <<'PY'
+          import hashlib, json, pathlib, urllib.request
+          import pyarrow as pa
+          import pyarrow.parquet as pq
+          ID="matplotlib__matplotlib-26466"
+          COMMIT="c104f840cc67f8b6eec6f759ebc8b2693d585d4a"
+          EXPECTED_SHA="a45b1fe4e2f0c8390b2b2938ac83e92ed5979000856808f3679c07812e9e6dcd"
+          EXPECTED_SIZE=2096679
+          EXPECTED_BASE="3dd06a46750d174f821df5377996f493f1af4ebb"
+          URL="https://huggingface.co/datasets/princeton-nlp/SWE-bench_Verified/resolve/"+COMMIT+"/data/test-00000-of-00001.parquet"
+          request=urllib.request.Request(URL,headers={"User-Agent":"TID-R401-single-official-source-audit/1.0"})
+          with urllib.request.urlopen(request,timeout=70) as response:
+              data=response.read(2100001)
+          assert len(data)==EXPECTED_SIZE, "Fail closed: official byte size mismatch / overlimit"
+          got=hashlib.sha256(data).hexdigest()
+          assert got==EXPECTED_SHA, "Fail closed: official SHA-256 mismatch"
+          temp=pathlib.Path("/tmp/tid_r401_official_source.parquet")
+          temp.write_bytes(data)
+          pf=pq.ParquetFile(temp)
+          assert pf.metadata.num_rows==500,"Dataset source row count mismatch"
+          col=pf.read(columns=["instance_id"]).column("instance_id").to_pylist()
+          matches=[i for i,item in enumerate(col) if item==ID]
+          assert len(matches)==1,"Target row absent or duplicate in pinned official source"
+          row=pf.read().slice(matches[0],1).to_pylist()[0]
+          assert row["repo"]=="matplotlib/matplotlib"
+          assert row["base_commit"]==EXPECTED_BASE,"Target version differs from firstparty PR base"
+          def digest(s):
+              return hashlib.sha256((s or "").encode("utf-8")).hexdigest()
+          def parse_tests(key):
+              s=row.get(key)
+              if isinstance(s,str):
+                  val=json.loads(s)
+              else:
+                  val=s
+              assert isinstance(val,list) and all(isinstance(x,str) for x in val)
+              return val
+          fail_tests=parse_tests("FAIL_TO_PASS")
+          pass_tests=parse_tests("PASS_TO_PASS")
+          full_row_canonical=json.dumps(row,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode("utf-8")
+          summary={
+            "audit_id":"TID_R401_SOURCE_ONLY_20261112",
+            "source_type":"FIRSTPARTY_HF_PINNED_ORIGINAL_BYTES",
+            "dataset":"princeton-nlp/SWE-bench_Verified",
+            "source_commit":COMMIT,
+            "source_file":"data/test-00000-of-00001.parquet",
+            "source_url":URL,
+            "source_size_bytes":len(data),
+            "source_sha256":got,
+            "source_expected_sha256":EXPECTED_SHA,
+            "source_row_count_metadata":pf.metadata.num_rows,
+            "target_row_index_zero_based":matches[0],
+            "target_row_canonical_json_sha256":hashlib.sha256(full_row_canonical).hexdigest(),
+            "target_fields":{k:row.get(k) for k in ("repo","instance_id","base_commit","created_at","version","environment_setup_commit","difficulty")},
+            "problem_statement":row.get("problem_statement"),
+            "hints_text_sha256":digest(row.get("hints_text")),
+            "hints_text_length":len(row.get("hints_text") or ""),
+            "gold_patch_sha256":digest(row.get("patch")),
+            "gold_patch_length":len(row.get("patch") or ""),
+            "test_patch_sha256":digest(row.get("test_patch")),
+            "test_patch_length":len(row.get("test_patch") or ""),
+            "FAIL_TO_PASS":fail_tests,
+            "PASS_TO_PASS_count":len(pass_tests),
+            "PASS_TO_PASS_sha256":hashlib.sha256(json.dumps(pass_tests,sort_keys=True,separators=(",",":")).encode()).hexdigest(),
+            "restriction":"Only one preselected record extracted; all other records are not analyzed, written or redistributed. No patches redistributed; no tests/agents/graders executed."
+          }
+          dest=pathlib.Path("evidence/TID_R401_matplotlib_official_single_row_metadata.json")
+          dest.write_text(json.dumps(summary,indent=2,ensure_ascii=False,sort_keys=True)+"\n",encoding="utf-8")
+          assert summary["target_fields"]["instance_id"]==ID
+          print("PINNED OFFICIAL SOURCE PASS: bytes",len(data),"SHA256",got,"exact row index",matches[0],"FAIL_TO_PASS",len(fail_tests),"PASS_TO_PASS",len(pass_tests))
+          PY
+          python /tmp/tid_r401_one_row.py
+          sha256sum /tmp/tid_r401_official_source.parquet > evidence/TID_R401_original_parquet_sha256sum.txt
+          test "$(cut -d ' ' -f1 evidence/TID_R401_original_parquet_sha256sum.txt)" = "a45b1fe4e2f0c8390b2b2938ac83e92ed5979000856808f3679c07812e9e6dcd"
+          cat > evidence/TID_R401_scope.txt <<'TXT'
+          A single publisher-original immutable 2,096,679-byte Parquet object was fetched transiently for sha256 verification and extraction of predeclared matplotlib__matplotlib-26466 only. No other records were analyzed or persisted. The full Parquet file, GOLD patch content, other benchmark rows, and third-party Agent patch were NOT rehosted. No benchmarks, model, grader, runtime or Docker executed. This is a bounded G0 source-truth action, not a G1/data-route freeze or an original benchmark regrade.
+          TXT
+          rm -f /tmp/tid_r401_official_source.parquet /tmp/tid_r401_one_row.py
+          test ! -e /tmp/tid_r401_official_source.parquet
+      - name: Upload audit only, never raw dataset
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tid-r401-single-row-evidence
+          path: evidence/
+          if-no-files-found: warn
+          retention-days: 30
