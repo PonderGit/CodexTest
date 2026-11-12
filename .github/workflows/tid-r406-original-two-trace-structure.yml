@@ -1,0 +1,22 @@
+name: TID R406 Firstparty Two CodeStory Trajectory Prompt Structure Audit
+on:
+  push:
+    branches: [tid-r406-two-task-original-annotation-audit-20261112]
+    paths: [".github/workflows/tid-r406-original-two-trace-structure.yml"]
+permissions:
+  contents: read
+jobs:
+  source_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify original two S3 logs hashes and inspect only input boundaries
+        run: python research/tid_r406_trace_header_audit.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tid-r406-two-actual-code-story-trace-input-boundaries
+          path: evidence/
+          if-no-files-found: warn
+          retention-days: 30
