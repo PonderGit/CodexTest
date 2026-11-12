@@ -1,0 +1,44 @@
+name: TID R406 Original Human Annotation / Agent Input Independent Pass B
+on:
+  push:
+    branches: [tid-r406-two-task-original-annotation-audit-20261112]
+    paths: [".github/workflows/tid-r406-combined-passb.yml"]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  passb:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 43171265580
+          name: tid-r406-original-human-annotations-two-targets
+          path: collected/annotations
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 43171742319
+          name: tid-r406-codestory-two-source-prompt-features
+          path: collected/agent
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 43172148462
+          name: tid-r406-two-actual-code-story-trace-input-boundaries
+          path: collected/trace
+          github-token: ${{ github.token }}
+      - name: Independent exact two-id 2024 rater reaggregation / source & semantic limits
+        run: python research/tid_r406_independent_passb.py
+      - name: Retain one bounded provenance package only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tid-r406-combined-two-task-2024-original-raters-prompt-and-passb
+          path: |
+            collected/
+            evidence/R406_PASSB_two_case_original_annotation_and_input_claim_boundaries.json
+          if-no-files-found: warn
+          retention-days: 60
