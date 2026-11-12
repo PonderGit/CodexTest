@@ -1,0 +1,22 @@
+name: TID R406 Original SWE-bench Verified Human Annotations Exact Two Cases
+on:
+  push:
+    branches: [tid-r406-two-task-original-annotation-audit-20261112]
+    paths: [".github/workflows/tid-r406-2024-annotation-two.yml"]
+permissions:
+  contents: read
+jobs:
+  two_only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect published OpenAI original 2024 annotation ZIP, filter exact two IDs
+        run: python research/tid_r406_official_annotations_two.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tid-r406-original-human-annotations-two-targets
+          path: evidence/
+          if-no-files-found: warn
+          retention-days: 30
