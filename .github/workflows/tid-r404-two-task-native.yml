@@ -1,0 +1,39 @@
+name: TID R404 Two-Task Three-Arm Original Native Tests
+on:
+  push:
+    branches: [tid-r404-two-official-test-arm-20261112]
+    paths: [".github/workflows/tid-r404-two-task-native.yml"]
+permissions:
+  contents: read
+jobs:
+  bounded_native_official_test:
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [pylint, matplotlib]
+        arm: [baseline, agent, gold]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      TARGET: ${{ matrix.target }}
+      ARM: ${{ matrix.arm }}
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          clean: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - name: Install pinned source reader
+        run: python -m pip install --quiet --disable-pip-version-check pyarrow==21.0.0
+      - name: Execute exact native official test on pinned original source and original Agent or GOLD
+        run: python research/tid_r404_one_arm.py
+      - name: Archive metadata and status only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tid-r404-${{ matrix.target }}-${{ matrix.arm }}-native
+          path: evidence/
+          if-no-files-found: warn
+          retention-days: 30
